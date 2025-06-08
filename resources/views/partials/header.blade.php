@@ -1,0 +1,78 @@
+<nav class="top-nav">
+  <a href="{{ route('home') }}" class="logo">🎫 EvenTickets</a>
+
+  <!-- Hamburger button for mobile -->
+  <button class="hamburger" aria-label="Toggle menu">&#9776;</button>
+
+  <!-- Desktop search -->
+  <div class="search-container desktop-search">
+    <input type="text" placeholder="Search events..." class="search-bar" />
+  </div>
+
+  <!-- Desktop Navigation -->
+  <ul class="nav-links desktop-nav">
+    <li><a href="{{ url('buy_tickets') }}"><i class="fa fa-ticket-alt"></i> Buy Tickets</a></li>
+    <li><a href="{{ url('upcoming') }}"><i class="fa fa-calendar-alt"></i> Upcoming</a></li>
+    <li><a href="{{ url('popular') }}"><i class="fa fa-fire"></i> Popular</a></li>
+    <li><a href="{{ url('cart') }}"><i class="fa fa-shopping-cart"></i> Cart</a></li>
+    <li><a href="{{ url('my-tickets') }}"><i class="fa fa-clipboard-list"></i> My Tickets</a></li>
+
+    <li class="user-dropdown">
+      @if(Auth::check())
+      <a href="#" onclick="toggleDropdown(event)"><i class="fa fa-user-check"></i></a>
+      <div class="dropdown-menu">
+      <a href="{{ url('profile') }}" class="dropdown-button"><i class="fa fa-user"></i> Profile</a>
+      <form action="{{ route('logout') }}" id="logout-form" style="display: none;">@csrf</form>
+      <a href="#" class="dropdown-button"
+        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+        <i class="fa fa-sign-out-alt"></i> Logout
+      </a>
+      </div>
+    @else
+      <a href="#" onclick="toggleDropdown(event)"><i class="fa fa-user"></i></a>
+      <div class="dropdown-menu">
+      <a href="#" class="dropdown-button" data-bs-toggle="modal" data-bs-target="#loginModal">
+        <i class="fa fa-sign-in-alt"></i> Login
+      </a>
+      <div class="dropdown-or">OR</div>
+      <a href="#" class="dropdown-button open-signup-btn">
+        <i class="fa fa-user-plus"></i> Signup
+      </a>
+
+  @endif
+    </li>
+  </ul>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu">
+    <div class="search-container">
+      <input type="text" placeholder="Search events..." class="search-bar" />
+    </div>
+
+    <ul class="nav-links">
+      <li><a href="{{ url('buy_tickets') }}"><i class="fa fa-ticket-alt"></i> Buy Tickets</a></li>
+      <li><a href="{{ url('upcoming') }}"><i class="fa fa-calendar-alt"></i> Upcoming</a></li>
+      <li><a href="{{ url('popular') }}"><i class="fa fa-fire"></i> Popular</a></li>
+      <li><a href="{{ url('cart') }}"><i class="fa fa-shopping-cart"></i> Cart</a></li>
+      <li><a href="{{ url('my-tickets') }}"><i class="fa fa-clipboard-list"></i> My Tickets</a></li>
+
+      @if(Auth::check())
+      <li><a href="{{ url('profile') }}"><i class="fa fa-user"></i> Profile</a></li>
+      <li>
+      <form action="{{ route('logout') }}" id="mobile-logout-form" style="display: none;">@csrf</form>
+      <a href="#" onclick="event.preventDefault(); document.getElementById('mobile-logout-form').submit();">
+        <i class="fa fa-sign-out-alt"></i> Logout
+      </a>
+      </li>
+    @else
+      <li><a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"><i class="fa fa-sign-in-alt"></i> Login</a>
+      </li>
+      <li><a href="#" class="open-signup-btn" data-bs-toggle="modal" data-bs-target="#signupModal">
+        <i class="fa fa-user-plus"></i> Signup
+      </a>
+
+      </li>
+    @endif
+    </ul>
+  </div>
+</nav>

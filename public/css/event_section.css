@@ -1,0 +1,209 @@
+/* Event Sections */
+.event-section {
+    padding: 2rem;
+    background: #f9f9f9;
+}
+
+.event-section h2 {
+    font-size: 2.2rem;
+    margin-bottom: 1.5rem;
+    color: #ff0000;
+    text-align: center;
+}
+
+/* Swiper Container */
+.swiper-container {
+    width: 100%;
+    overflow: hidden; /* Prevent overflow */
+}
+
+/* Swiper Wrapper */
+.swiper-wrapper {
+    display: flex; /* Ensure horizontal layout */
+}
+
+/* Event Cards */
+.event-cards {
+    display: flex; /* Maintain the flex layout for cards */
+    flex-direction: row; /* force horizontal */
+    flex-wrap: nowrap; /* Prevent wrapping */
+    justify-content: center;
+    gap: 2rem; /* Maintain existing gap */
+}
+
+/* Swiper Slide */
+.swiper-slide {
+    display: flex; /* Ensure slide behavior */
+    justify-content: center; /* Center content */
+    align-items: center; /* Center align vertically */
+}
+
+/* Event Card */
+.event-card {
+    width: 350px; /* Maintain card width */
+    background: white;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    transform: translateY(0);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    will-change: transform, box-shadow;
+}
+
+/* Card Hover - Only lifts the card */
+.event-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
+}
+
+/* Image styling */
+.event-card img {
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+/* Image zoom on image hover only */
+.event-card img:hover {
+    transform: scale(1.23);
+    cursor: pointer;
+}
+
+.event-card h3 {
+    font-size: 1.2rem;
+    color: #cc0000;
+    margin: 0.5rem 0;
+    text-align: center;
+}
+
+.event-card .event-location {
+    text-align: right;
+    margin: 0.2rem 0;
+}
+
+.price-button-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.event-card .event-price {
+    font-size: 1.1rem; /* Slightly larger font for emphasis */
+    color: #cc0000; /* Emphasized color */
+    margin: 0.2rem 0;
+}
+
+/* Smaller Button */
+.small-button {
+    padding: 0.3rem 0.6rem;
+    background: linear-gradient(135deg, #cc0000, #ff3300);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.8rem;
+    transition: background 0.3s ease, transform 0.3s ease;
+    position: relative;
+    top: -3px;
+    right: 3px;
+}
+
+/* Button Hover Effect */
+.small-button:hover {
+    background: linear-gradient(135deg, #ff3300, #cc0000);
+    transform: translateY(-1px);
+}
+
+.event-card p {
+    font-size: 0.9rem;
+    color: #333;
+    margin: 0.2rem 0;
+}
+
+/* Button default styling */
+.event-card button {
+    padding: 0.6rem 1.2rem;
+    background: linear-gradient(135deg, #cc0000, #ff3300);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+/* Button Hover Effect */
+.event-card button:hover {
+    background: linear-gradient(135deg, #ff3300, #cc0000);
+    transform: translateY(-2px);
+}
+
+/* Style for icons */
+.event-card i {
+    margin-right: 0.3rem;
+    font-size: 1rem;
+    vertical-align: middle;
+}
+
+/* Card Content */
+.card-content {
+    padding: 0.25rem;
+    text-align: left; /* Align all inner content left */
+}
+
+.event-card .event-location {
+    font-size: 0.9rem;
+    color: #444;
+    margin: 0.8rem 0 0.3rem 0;
+    text-align: left;
+    width: 100%;
+}
+
+.fas {
+    margin-right: 8px; /* Space between the icon and text */
+    font-size: 1.2em;  /* Adjust size */
+    vertical-align: text-top; /* Moves the icon up */
+    position: relative;
+    top: -2px; /* Moves it up by 2px */
+    transform: scale(0.8);
+}
+
+/* Price and Button Container */
+.price-button-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: -0.3rem;
+    width: 100%; /* ensure button aligns right */
+}
+
+.event-card .event-price {
+    font-size: 1.1rem;
+    color: #cc0000;
+    margin: 0; /* FIX: remove any extra spacing */
+}
+.see-more-container {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  padding-right: 2rem;
+}
+
+.see-more-link {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #cc0000;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  
+}
+
+.see-more-link:hover {
+  color: #ff3300;
+}

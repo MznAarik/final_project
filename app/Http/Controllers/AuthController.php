@@ -22,8 +22,28 @@ class AuthController extends Controller
         try {
             $role = $request['role'];
 
+            // Check if email is already in use
+            if (User::where('email', $request['email'])->exists()) {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'This email is already in use.',
+                    ], 409);
+                }
+                return redirect()->route('login')->with([
+                    'status' => 0,
+                    'message' => 'This email is already in use.',
+                ]);
+            }
+
             // Only allow admins to create admin accounts
             if ($role === 'admin' && (!Auth::check() || Auth::user()->role !== 'admin')) {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Only admins can create admin accounts.',
+                    ], 403);
+                }
                 return redirect()->route('login')->with([
                     'status' => 0,
                     'message' => 'Only admins can create admin accounts.',
@@ -42,24 +62,38 @@ class AuthController extends Controller
                 'province' => $request['province'],
                 'country' => $request['country'],
                 'date_of_birth' => $request['date_of_birth'],
-                'role' => $request['role'],
+                'role' => $request['role']
             ]);
 
-            // Trigger the Registered event and send email verification
             event(new Registered($user));
             Log::info('Verification email sent to: ' . $user->email);
-
             DB::commit();
 
-            return redirect()->route('login')->with([
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Registration successful. Please verify your email.',
+                ]);
+            }
+
+            return redirect()->route('home')->with([
                 'status' => 1,
                 'message' => 'Registration successful. Please verify your email.',
             ]);
+
         } catch (\Exception $e) {
             DB::rollback();
             Log::error('Registration failed: ' . $e->getMessage());
 
-            return redirect()->route('login')->with([
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Registration failed. Please try again.',
+                    'error' => $e->getMessage(),
+                ], 500);
+            }
+
+            return redirect()->route('home')->with([
                 'status' => 0,
                 'message' => 'Registration failed. Please try again.',
                 'error' => $e->getMessage(),
@@ -67,73 +101,67 @@ class AuthController extends Controller
         }
     }
 
+
     public function login(Request $request)
     {
-        $checkUser = User::where('email',$request->email )->where('delete_flag',0)->first();
-        if(!$checkUser){
-            return redirect()->route('home')->with([
-                'status' => 0,
-                'error' => 'User not found. Please register first.',
+        if ($request->expectsJson()) {
+            // Validate credentials, etc...
+
+            if (!User::where('email', $request->email)->where('delete_flag', 0)->exists()) {
+                return response()->json(['success' => false, 'message' => 'User not found. Please register first.'], 404);
+            }
+
+            $credentials = $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
             ]);
-        }
-        
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
 
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            if (!$user->hasVerifiedEmail()) {
-                Auth::logout();
-                return redirect()->route('login')->with([
-                    'status' => 0,
-                    'message' => 'Please verify your email first.',
+            if (Auth::attempt($credentials)) {
+                $user = Auth::user();
+                if (!$user->hasVerifiedEmail()) {
+                    Auth::logout();
+                    return response()->json(['success' => false, 'message' => 'Please verify your email first.'], 403);
+                }
+
+                $request->session()->regenerate();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Login successful!',
+                    'redirect_url' => $user->role === 'admin' ? route('admin.dashboard') : route('home')
                 ]);
             }
-            
-            $request->session()->regenerate();
-            
 
-            $checkRole = $request->role;
-            if ($user->role === 'admin' && $checkRole === 'admin') {
-                return redirect()->route('admin.dashboard')->with([
-                    'status' => 1,
-                    'message' => 'Welcome ' . $user->name . '!',
-                ]);
-            } elseif ($user->role === 'user') {
-                return redirect()->route('user.dashboard')->with([
-                    'status' => 1,
-                    'message' => 'Welcome ' . $user->name . '!',
-                ]);
-            } else {
-                abort(403, 'Unauthorized action.');
-            }
+            return response()->json(['success' => false, 'message' => 'Invalid credentials'], 401);
         }
 
-        return redirect()->route('login')->with([
+        // Fallback for non-AJAX:
+        return redirect()->route('home')->with([
             'status' => 0,
             'message' => 'Invalid credentials',
         ]);
     }
+
 
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('login')->with([
+
+        return redirect()->route('home')->with([
             'status' => 1,
             'message' => 'Logged out successfully',
         ]);
     }
+
 
     public function verifyEmail(Request $request, $id, $hash)
     {
         $user = User::findOrFail($id);
 
         if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
-            return redirect()->route('login')->with([
+            return redirect()->route('home')->with([
                 'status' => 0,
                 'message' => 'Invalid verification link.',
             ]);
@@ -145,7 +173,7 @@ class AuthController extends Controller
             Log::info('Email verified for user: ' . $user->email);
         }
 
-        return redirect()->route('login')->with([
+        return redirect()->route('home')->with([
             'status' => 1,
             'message' => 'Email verified successfully!',
         ]);
@@ -157,18 +185,18 @@ class AuthController extends Controller
             if ($request->user() && !$request->user()->hasVerifiedEmail()) {
                 $request->user()->sendEmailVerificationNotification();
                 Log::info('Verification email resent to: ' . $request->user()->email);
-                return redirect()->route('login')->with([
+                return redirect()->route('home')->with([
                     'status' => 1,
                     'message' => 'Verification link sent',
                 ]);
             }
-            return redirect()->route('login')->with([
+            return redirect()->route('home')->with([
                 'status' => 0,
                 'message' => 'Already verified or not logged in',
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to resend verification email: ' . $e->getMessage());
-            return redirect()->route('login')->with([
+            return redirect()->route('home')->with([
                 'status' => 0,
                 'message' => 'Failed to resend verification email.',
                 'error' => $e->getMessage(),

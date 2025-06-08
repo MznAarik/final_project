@@ -39,11 +39,10 @@ class EventController extends Controller
             $events->name = strtolower($request['name']);
             $events->venue = $request['venue'];
             $events->location = $request['location'];
-            $events->district = $request['district'];
-            $events->province = $request['province'];
-            $events->country = $request['country'];
+            $events->district = $request['district'];  // Should be district_id if FK
+            $events->province = $request['province'];  // Same note
+            $events->country = $request['country'];    // Same note
             $events->capacity = $request['capacity'];
-            $events->ticket_price = $request['ticket_price'];
             $events->description = $request['description'];
             $events->contact_info = $request['contact_info'];
             $events->start_date = $request['start_date'];
@@ -51,18 +50,30 @@ class EventController extends Controller
             $events->category = $request['category'];
             $events->status = $request['status'];
             $events->organizer = $request['organizer'];
+            $events->tickets_sold = $request['tickets_sold'];
+            $events->currency = $request['currency'];
+            $events->created_by = Auth::id();
+            $events->updated_by = Auth::id();
 
-            if ($request->has('image')) {
+            $ticket_category = $request['ticket_category'];
+            $ticket_price = $request['ticket_price'];
+            $pricing = [];
+            foreach ($ticket_category as $index => $category) {
+                $pricing[] = [
+                    'category' => $category,
+                    'price' => $ticket_price[$index] ?? 0
+                ];
+            }
+            $pricing1 = $events->pricing = json_encode($pricing);
+            dd($pricing1);
+
+            if ($request->hasFile('image')) {
                 $file = $request->file('image');
                 $imageName = time() . '.' . $file->getClientOriginalExtension();
                 $img_path = $file->storeAs('images/events', $imageName, 'public');
                 $events->img_path = $img_path;
             }
 
-            $events->tickets_sold = $request['tickets_sold'];
-            $events->currency = $request['currency'];
-            $events->created_by = Auth::id();
-            $events->updated_by = Auth::id();
             $events->save();
 
             DB::commit();

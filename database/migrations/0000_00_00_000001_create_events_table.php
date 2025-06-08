@@ -27,9 +27,9 @@ return new class extends Migration {
             $table->string('img_path', 255)->nullable();
             $table->integer('tickets_sold')->nullable()->default(0);
             $table->string('currency', 10)->default('NPR')->nullable();
-            $table->string('district',100)->nullable();
-            $table->string('province',100)->nullable();
-            $table->string('country',100)->nullable();
+            $table->string('district', 100)->nullable();
+            $table->string('province', 100)->nullable();
+            $table->string('country', 100)->nullable();
             $table->timestamps();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();

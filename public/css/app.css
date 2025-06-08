@@ -1,0 +1,821 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+
+}
+
+body {
+  overflow-x: hidden;
+
+}
+
+.app-container {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+}
+
+
+/* Header */
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* Ensure items are vertically centered */
+  padding: 3rem 1rem;
+  /* Set padding to 0 */
+  height: 50px;
+  /* Set a fixed height */
+  background: linear-gradient(90deg, #860303, #ff3300);
+  color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+
+.logo {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-links li a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  padding: 10px;
+  /* Remove padding */
+  line-height: 50px;
+  /* Match the height of the navbar */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.nav-links li a:hover {
+  transform: scale(1.05);
+  color: #ffd700;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  margin-left: 26rem;
+  padding: 0 1rem;
+}
+
+.search-bar {
+  width: 30vw;
+  /* Adjust this value as needed */
+  max-width: 400px;
+  /* Set a max width for better responsiveness */
+  padding: 1rem;
+  border: 1px solid #cc0000;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  outline: none;
+  background: #ffffff;
+  color: black;
+}
+
+.user-dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #b22222;
+  /* Vibrant red */
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  min-width: 180px;
+  padding: 4px 0;
+  overflow: hidden;
+  display: none;
+  /* Initially hidden */
+  flex-direction: column;
+  opacity: 0;
+  /* Start hidden for animation */
+  transition: opacity 0.2s ease;
+  /* Smooth fade-in */
+}
+
+.dropdown-menu.show {
+  display: flex;
+  /* Show on toggle */
+  opacity: 1;
+  /* Fade in effect */
+}
+
+
+.user-dropdown>a {
+  cursor: pointer;
+  line-height: 50px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  /* Changed text color */
+  text-decoration: none;
+  padding: 0;
+  margin: 0;
+  display: block;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.user-dropdown>a:hover {
+  transform: scale(1.05);
+  color: #ffd700;
+  border-radius: 6px;
+}
+
+.dropdown-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  background: #b22222;
+  /* Button background color */
+  border: none;
+  color: white;
+  /* Button text color */
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  text-decoration: none;
+  border-radius: 4px;
+  /* Rounded corners */
+  transition: background 0.3s ease, transform 0.2s ease;
+  /* Smoother transition */
+}
+
+/* Center the login and signup buttons */
+.dropdown-menu .dropdown-button {
+  margin: 6px auto;
+  /* Centers horizontally with spacing */
+  width: fit-content;
+  /* Shrinks to content width */
+  text-align: center;
+  /* Ensures icon + text are centered */
+  justify-content: center;
+  /* Centers icon and text inside the button */
+}
+
+.dropdown-button:hover,
+.dropdown-button:focus {
+  background: #c62828;
+  /* Darker shade on hover */
+  transform: scale(1.05);
+  /* Slightly enlarge on hover */
+  color: #ffd700;
+  /* Highlight text on hover */
+}
+
+/* Fixes button size, alignment, and spacing */
+.dropdown-menu .dropdown-button {
+  margin: 6px auto;
+  padding: 10px 20px;
+  width: 80%;
+  /* Makes buttons balanced and wider */
+  justify-content: center;
+  /* Center text and icon */
+  text-align: center;
+  background: #b22222;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 15px;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+/* Make the "or" separator subtle and centered */
+.dropdown-menu .dropdown-or {
+  font-weight: 600;
+  font-size: 15px;
+  color: #eee;
+  text-align: center;
+  margin: 0 auto 4px;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Hide mobile menu & hamburger by default */
+.mobile-menu,
+.hamburger {
+  display: none;
+}
+
+/* Desktop nav and search visible on desktop */
+.desktop-nav,
+.desktop-search {
+  display: flex;
+  align-items: center;
+}
+
+/* Media query for mobile screens */
+@media (max-width: 768px) {
+
+  /* Hide desktop nav and search */
+  .desktop-nav,
+  .desktop-search {
+    display: none;
+  }
+
+  /* Show hamburger and mobile menu */
+  .hamburger {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #fff;
+    cursor: pointer;
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    z-index: 1001;
+  }
+
+  .mobile-menu {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 80vw;
+    max-width: 300px;
+    height: 100vh;
+    background-color: #333;
+    /* Dark grey background */
+    color: #fff;
+    padding: 1rem;
+    overflow-y: auto;
+    /* Vertical scrollbar only */
+    box-shadow: -3px 0 8px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    flex-direction: column;
+  }
+
+  /* Show mobile menu when active */
+  .mobile-menu.active {
+    display: flex;
+  }
+
+  .mobile-menu .search-container {
+    margin-bottom: 1rem;
+  }
+
+  /* Style search input */
+  .mobile-menu .search-bar {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: none;
+    font-size: 1rem;
+  }
+
+  /* Nav links vertical list */
+  .mobile-menu .nav-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .mobile-menu .nav-links li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Remove dropdown styles from mobile */
+  .mobile-menu .user-dropdown>div.dropdown-menu {
+    display: none !important;
+  }
+}
+
+/* Hero Section */
+.hero {
+  height: 40vh;
+  padding: 2rem 2rem;
+  text-align: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  position: relative;
+  transition: background-image 1s ease-in-out;
+
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Hero Heading */
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #ff0000;
+  text-shadow: 1px 1px 2px #ffffff;
+}
+
+/* Hero Paragraph */
+.hero p {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  color: #ffffff;
+  -webkit-text-stroke: 0.1px black;
+  text-shadow: 2px 2px 4px black;
+}
+
+/* Call-to-action Button */
+.cta-button {
+  margin-top: 10px;
+  padding: 0.8rem 1.6rem;
+  background-color: #ffffff;
+  color: #ff0000;
+  font-weight: bold;
+  font-size: 1rem;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.cta-button:hover {
+  background-color: #f80000;
+  color: #ffffff;
+}
+
+/* Slider Dots */
+.slider-dots {
+  position: absolute;
+  bottom: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.slider-dots .dot {
+  width: 12px;
+  height: 12px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.slider-dots .dot.active {
+  background-color: #ffffff;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero h1 {
+    font-size: 2.2rem;
+  }
+
+  .hero p {
+    font-size: 1.2rem;
+  }
+
+  .cta-button {
+    font-size: 0.9rem;
+  }
+}
+
+/* Optional Logo Animation */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+/* Footer Styles */
+.site-footer {
+  background: linear-gradient(90deg, #860303, #ff3300);
+  color: white;
+  padding: 4rem 2rem;
+  font-family: Arial, sans-serif;
+}
+
+.footer-top {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 3rem;
+}
+
+.footer-section {
+  flex-grow: 1;
+  min-width: 200px;
+}
+
+.footer-section:nth-child(1) {
+  flex: 2;
+  /* EvenTickets gets more space */
+}
+
+.footer-section:nth-child(n+2):nth-child(-n+4) {
+  flex: 1;
+  /* Others get equal but less space */
+}
+
+.footer-section h4 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  color: white;
+}
+
+.footer-section p {
+  font-size: 1rem;
+  color: #d1d1d1;
+  line-height: 1.6;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-section ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 0.5rem 0;
+  display: block;
+  transition: color 0.3s ease;
+}
+
+.footer-section ul li a:hover {
+  color: #ffd700;
+}
+
+.social-icons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.social-icons a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.1rem;
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.social-icons a:hover {
+  color: #ffd700;
+}
+
+.social-icons i {
+  width: 24px;
+  /* Ensures all icons occupy same width */
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+.footer-bottom {
+  background: linear-gradient(90deg, #860303, #ff3300);
+  text-align: center;
+  /* Center the text */
+  color: #ccc;
+  font-size: 0.9rem;
+  padding: 1rem 0;
+  width: 100%;
+}
+
+.footer-bottom p {
+  margin: 0;
+}
+
+
+/* Modal */
+.modal.show.d-block {
+  display: flex !important;
+  align-items: center;
+  /* vertically center */
+  justify-content: center;
+  /* horizontally center */
+  height: 100vh;
+  /* full viewport height */
+  width: 100vw;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  padding: 0 1rem;
+  /* horizontal padding, optional */
+  box-sizing: border-box;
+}
+
+.modal-dialog {
+  margin-top: 100px;
+}
+
+.login-modal-content {
+  width: 90%;
+  max-width: 700px;
+  height: calc(100vh - 120px);
+  border-radius: 16px;
+  padding: 2rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  /* Blurred background */
+  backdrop-filter: blur(4px);
+  justify-content: center;
+  align-items: center;
+}
+
+body.modal-open {
+  padding-right: 0 !important;
+  overflow-y: scroll !important;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  right: 10px;
+  top: 5px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+
+/* === Modal Background Overlay === */
+.modal-backdrop-custom {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(6px);
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1040;
+}
+
+/* === Modal Box === */
+.login-modal-content {
+  background: #fff;
+  border-radius: 16px;
+  max-width: 420px;
+  margin: auto;
+  padding: 2rem;
+  position: relative;
+  animation: slideFadeIn 0.4s ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  z-index: 1051;
+  /* just above overlay */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-height: 70vh;
+
+}
+
+.login-modal-content h2 {
+  color: #860303;
+  /* or any color you want */
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* === Close Button === */
+.login-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 1.5rem;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.login-modal-close:hover {
+  color: #333;
+}
+
+/* === Input Fields === */
+.login-modal-content input[type="email"],
+.login-modal-content input[type="password"] {
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 6px;
+  margin-bottom: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  transition: border-color 0.3s;
+  background: #fff;
+}
+
+.login-modal-content input[type="password"] {
+  margin-bottom: 2rem;
+  /* More space before Login button */
+}
+
+.login-modal-content input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* === Submit Button === */
+.login-modal-content button[type="submit"] {
+  width: 100%;
+  padding: 12px;
+  background-color: #ff3300;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+  margin-bottom: 1.5rem;
+  /* Space before Signup button */
+}
+
+.login-modal-content button[type="submit"]:hover {
+  background-color: #860303;
+  cursor: pointer;
+}
+
+.signup-link-container {
+  color: #000;
+  /* Black text */
+  font-size: 1rem;
+  text-align: center;
+}
+
+.signup-link-container a {
+  color: #860303;
+  text-decoration: underline;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.signup-link-container a:hover {
+  text-decoration: none;
+  color: #ff3300;
+}
+
+/* Alert container reserves fixed height, always takes up space */
+#login-alert-container,
+#signup-alert-container {
+  min-height: 2em;
+  /* Reserve enough vertical space */
+  visibility: hidden;
+  /* Hide content visually */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  overflow: hidden;
+}
+
+/* When alert is shown, make container visible */
+#login-alert-container:not(.empty),
+#signup-alert-container:not(.empty) {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Alert styles */
+.alert {
+  margin: 0;
+  /* No extra margin to avoid spacing issues */
+  padding: 0.4em 0.8em;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  line-height: 1.2;
+}
+
+/* Success alert */
+.alert-success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+/* Danger alert */
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.alert {
+  animation: fadeSlideIn 0.4s ease-out;
+}
+
+
+.loader {
+  color: #ff0000;
+  /* Red color */
+  width: 4px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  box-shadow: 19px 0 0 7px, 38px 0 0 3px, 57px 0 0 0;
+  transform: translateX(-38px);
+  animation: l21 0.5s infinite alternate linear;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1051;
+}
+
+@keyframes l21 {
+  50% {
+    box-shadow: 19px 0 0 3px, 38px 0 0 7px, 57px 0 0 3px;
+  }
+
+  100% {
+    box-shadow: 19px 0 0 0, 38px 0 0 3px, 57px 0 0 7px;
+  }
+}
+
+body.blurred {
+  filter: blur(5px);
+  transition: filter 0.3s ease;
+}
