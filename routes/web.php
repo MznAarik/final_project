@@ -14,12 +14,37 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('login', function () {
-    return view('login');
+    return view('auth.login');
 })->name('login');
 
 Route::get('signup', function () {
-    return view('signup');
+    return view('auth.signup');
 })->name('signup');
+
+// New added
+Route::get('/buy_tickets', function () {
+    return view('buy_tickets');
+});
+
+Route::get('/upcoming', function () {
+    return view('upcoming');
+});
+
+Route::get('/popular', function () {
+    return view('popular');
+});
+
+Route::get('/cart', function () {
+    return view('cart');
+});
+
+Route::get('/my-tickets', function () {
+    return view('my_tickets');
+});
+
+Route::middleware('auth')->get('/profile', function () {
+    return view('profile');
+});
 
 Route::post('register', [AuthController::class, 'register'])->name('register.submit');
 Route::post('login', [AuthController::class, 'login'])->name('login.submit');
@@ -31,9 +56,9 @@ Route::get('/email/verify', [AuthController::class, 'sendVerificationEmail'])
     ->middleware('auth')
     ->name('verification.send');
 
-Route::middleware(['auth', 'role:user'])->prefix('user')->group(function () {
-    Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');
-});
+// Route::middleware(['auth', 'role:user'])->prefix('user')->group(function () {
+//     Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');
+// });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');

@@ -60,6 +60,7 @@
             padding: 10px 20px;
             border: none;
             border-radius: 5px;
+            cursor: pointer;
         }
 
         .footer {
@@ -96,6 +97,7 @@
             .btn-link button {
                 padding: 8px 16px;
                 font-size: 14px;
+                cursor: pointer;
             }
         }
     </style>
