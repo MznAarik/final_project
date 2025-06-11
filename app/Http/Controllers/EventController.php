@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EventsValidate;
+use App\Models\Country;
 use App\Models\Event;
+use App\Models\Province;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -16,6 +18,7 @@ class EventController extends Controller
     public function index()
     {
         $events = Event::all();
+        $ticket_pricing = Event::select('ticket_pricing')->first();
         return view('admin.events.index', compact('events'));
     }
 
@@ -35,13 +38,23 @@ class EventController extends Controller
         DB::beginTransaction();
 
         try {
+
+            $country = Country::firstOrCreate(['name' => $request->input(strtolower('country_name'))]);
+            $province = $country->provinces()->firstOrCreate(
+                ['name' => $request->input(strtolower('province_name')), 'country_id' => $country->id]
+            );
+
+            $district = $province->districts()->firstOrCreate(
+                ['name' => $request->input(strtolower('district_name'))]
+            );
+
             $events = new Event();
             $events->name = strtolower($request['name']);
-            $events->venue = $request['venue'];
-            $events->location = $request['location'];
-            $events->district = $request['district'];  // Should be district_id if FK
-            $events->province = $request['province'];  // Same note
-            $events->country = $request['country'];    // Same note
+            $events->venue = strtolower($request['venue']);
+            $events->location = strtolower($request['location']);
+            $events->district_id = $district->id;  // Should be district_id if FK
+            $events->province_id = $province->id;  // Same note
+            $events->country_id = $country->id;    // Same note
             $events->capacity = $request['capacity'];
             $events->description = $request['description'];
             $events->contact_info = $request['contact_info'];
@@ -64,8 +77,7 @@ class EventController extends Controller
                     'price' => $ticket_price[$index] ?? 0
                 ];
             }
-            $pricing1 = $events->pricing = json_encode($pricing);
-            dd($pricing1);
+            $events->ticket_pricing = json_encode($pricing);
 
             if ($request->hasFile('image')) {
                 $file = $request->file('image');
@@ -73,7 +85,6 @@ class EventController extends Controller
                 $img_path = $file->storeAs('images/events', $imageName, 'public');
                 $events->img_path = $img_path;
             }
-
             $events->save();
 
             DB::commit();
@@ -145,7 +156,8 @@ class EventController extends Controller
     {
         try {
             $event = Event::findOrFail($id);
-            $event->delete();
+            // $event->delete();
+            $event->update(['delete_flag' => 1]);
             return redirect()->route('events.index')->with([
                 'status' => 1,
                 'message' => 'Event deleted successfully',

@@ -16,7 +16,7 @@ class Event extends Model
         'province_id',
         'country_id',
         'capacity',
-        'ticket_price',
+        'ticket_pricing',
         'description',
         'contact_info',
         'start_date',
@@ -28,6 +28,10 @@ class Event extends Model
         'tickets_sold',
         'currency',
         'created_by'
+    ];
+
+    protected $casts = [
+        'ticket_pricing' => 'json',
     ];
 
     public function user()

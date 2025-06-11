@@ -25,9 +25,9 @@ class EventsValidate extends FormRequest
             'name' => 'required|string|max:255',
             'venue' => 'required|string|max:255',
             'location' => 'required|string|max:255',
-            'district' => 'required|string|max:255',
-            'province' => 'required|string|max:255',
-            'country' => 'required|string|max:255',
+            // 'district' => 'required|string|max:255',
+            // 'province' => 'required|string|max:255',
+            // 'country' => 'required|string|max:255',
             'capacity' => 'required|integer|min:1',
             'description' => 'required|string',
             'contact_info' => 'required|email',
@@ -40,9 +40,6 @@ class EventsValidate extends FormRequest
 
             'ticket_category' => 'required|array|min:1',
             'ticket_category.*' => 'required|string|max:50',
-
-            'ticket_price' => 'required|array|min:1',
-            'ticket_price.*' => 'required|numeric|min:0',
 
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:20480'
         ];
@@ -57,9 +54,6 @@ class EventsValidate extends FormRequest
             'description.max' => 'Description must not exceed 1000 characters.',
             'image.image' => 'Image must be a valid image file.',
             'capacity.required' => 'Capacity is required and must be a positive integer.',
-            'ticket_price.required' => 'Ticket price is required and must be a non-negative number.',
-            'ticket_price.*.required' => 'Each ticket price is required.',
-            'ticket_price.*.numeric' => 'Each ticket price must be a valid number.',
             'contact_info.required' => 'Contact information is required and must not exceed 255 characters.',
             'start_date.required' => 'Start date is required and must be today or later.',
             'end_date.required' => 'End date is required and must be after the start date.',

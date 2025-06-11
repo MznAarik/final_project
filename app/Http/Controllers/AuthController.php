@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserValidate;
+use App\Models\Country;
+use App\Models\District;
+use App\Models\Province;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +18,7 @@ use Illuminate\Auth\Events\Verified;
 class AuthController extends Controller
 {
 
-    public function register(UserValidate $request)
+    public function register(Request $request)
     {
         DB::beginTransaction();
 
@@ -50,20 +53,38 @@ class AuthController extends Controller
                     'error' => 'Unauthorized role assignment',
                 ]);
             }
+            $country = Country::firstOrCreate(['name' => $request->input(strtolower('country_name'))]);
 
-            $user = User::create([
-                'name' => $request['name'],
-                'email' => $request['email'],
-                'password' => Hash::make($request['password']),
-                'gender' => $request['gender'],
-                'phoneno' => $request['phoneno'],
-                'address' => $request['address'],
-                'district' => $request['district'],
-                'province' => $request['province'],
-                'country' => $request['country'],
-                'date_of_birth' => $request['date_of_birth'],
-                'role' => $request['role']
-            ]);
+            $province = Province::firstOrCreate(
+                ['name' => $request->input(strtolower('province_name')), 'country_id' => $country->id]
+            );
+
+            $district = District::firstOrCreate(
+                ['name' => $request->input(strtolower('district_name')), 'province_id' => $province->id],
+                ['country_id' => $country->id]
+            );
+
+
+            if (!$district || !$province || !$country) {
+                return response()->json(['error' => 'Invalid location data provided.'], 422);
+            }
+
+            $user = new User();
+            $user->name = $request->input(strtolower('name'));
+            $user->email = $request->input(strtolower('email'));
+            $user->password = Hash::make($request['password']);
+            $user->gender = $request->input(strtolower('gender'));
+            $user->phoneno = $request['phoneno'];
+            $user->address = $request->input(strtolower('address'));
+            $user->district_id = $district->id;
+            $user->province_id = $province->id;
+            $user->country_id = $country->id;
+            $user->date_of_birth = $request['date_of_birth'];
+            $user->role = $request['role'];
+            $user->created_by = Auth::check() ? Auth::id() : null; // Set created_by if logged in
+            $user->updated_by = Auth::check() ? Auth::id() : null; // Set updated_by if logged in
+            $user->save();
+
 
             event(new Registered($user));
             Log::info('Verification email sent to: ' . $user->email);

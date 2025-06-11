@@ -463,41 +463,17 @@
               }
             }
           </script>
-          <label for="districtIdUnique">District ID</label>
-          <input type="text" name="district_id" id="districtIdUnique" placeholder="District ID"
-            value="{{ old('district_id') }}" required pattern="[1-9][0-9]*" inputmode="numeric" maxlength="50"
-            class="form-control" oninput="
-         // Remove all non-digit characters
-         this.value = this.value.replace(/[^0-9]/g, '');
+          <label for="districtIdUnique">District Name</label>
+          <input type="text" name="district_name" id="districtIdUnique" placeholder="District Name"
+            value="{{ old('district_name') }}" required title=" Please write correct district." />
 
-         // Remove leading zeros
-         this.value = this.value.replace(/^0+/, '');
+          <label for="provinceIdUnique">Province Name</label>
+          <input type="text" name="province_name" id="provinceIdUnique" placeholder="Province Name"
+            value="{{ old('province_name') }}" required title="Please write correct province." />
 
-         // Enforce min 1 and max 99 (or change max as needed)
-         if(this.value !== '') {
-           let val = parseInt(this.value);
-           if(val < 1) this.value = '1';
-         }
-       " title="Please write correct ID." />
-
-          <label for="provinceIdUnique">Province ID</label>
-          <input type="number" name="province_id" id="provinceIdUnique" placeholder="Province ID"
-            value="{{ old('province_id') }}" required pattern="[1-9][0-9]*" inputmode="numeric" maxlength="1"
-            class="form-control" oninput="
-         // Remove all non-digit characters
-         this.value = this.value.replace(/[^0-7]/g, '');
-
-         // Remove leading zeros
-         this.value = this.value.replace(/^0+/, '');
-
-         // Enforce min 1 and max 99 (or change max as needed)
-         if(this.value !== '') {
-           let val = parseInt(this.value);
-           if(val < 1) this.value = '1';
-           if(val > 7) this.value = '7';
-         }
-       " title="Please write correct ID." />
-
+          <label for="countryIdUnique">Country Name</label>
+          <input type="text" name="country_name" id="countryIdUnique" placeholder="Country Name" value="Nepal" readonly
+            title="Please write correct country." />
         </div>
 
         <div class="rightColumnUnique">
