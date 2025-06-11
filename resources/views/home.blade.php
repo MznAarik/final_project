@@ -1,15 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-</head>
 
-<body>
-    <h1>Home</h1>
-    <img src="{{ asset('./storage/images/email.png') }}" alt="logo">
-</body>
+@section('title', 'Home')
 
-</html>
+@section('content')
+
+    @include('components.hero')
+
+    @include('components.event_section', ['title' => 'Latest Events', 'seeMoreLink' => '/buy_tickets'])
+    @include('components.event_section', ['title' => 'Most Popular', 'seeMoreLink' => '/popular'])
+    @include('components.event_section', ['title' => 'Upcoming Events', 'seeMoreLink' => '/upcoming'])
+
+@endsection

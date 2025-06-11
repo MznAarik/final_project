@@ -16,7 +16,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        return view('user.dashboard', ['message' => 'Welcome to the User Dashboard']);
+        // return view('user.dashboard', ['message' => 'Welcome to the User Dashboard']);
     }
 
     /**

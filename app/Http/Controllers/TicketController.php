@@ -33,27 +33,40 @@ class TicketController extends Controller
      * Store a newly created resource in storage.
      */
 
-    public function generateQrCode($ticket_id, $event_id)
+    public function generateQrCode($user_name, $ticket_id, $event_id)
     {
-        $sensitiveData = json_encode([
-            'ticket_id' => $ticket_id,
-            'event_id' => $event_id,
-        ]);
-        $encryptedData = Crypt::encryptString($sensitiveData);
+        try {
+            $sensitiveData = json_encode([
+                'user_name' => $user_name,
+                'ticket_id' => $ticket_id,
+                'event_id' => $event_id,
+            ]);
+            $encryptedData = Crypt::encryptString($sensitiveData);
+            dump($encryptedData); // Debugging line to check the encrypted data
+            $decryptedData = Crypt::decryptString($encryptedData);
+            dd($decryptedData); // Debugging line to check the decrypted data
 
-        $publicUrl = url('/') . '?data=' . urlencode($encryptedData);
-        $qrCodeSvg = QrCode::size(200)->generate($publicUrl);
 
-        $fileName = 'qrcodes/ticket_' . $ticket_id . '_event_' . $event_id . '.svg';
-        Storage::disk('public')->put($fileName, $qrCodeSvg);
+            $publicUrl = url('/') . '?data=' . urlencode($encryptedData);
+            $qrCodeSvg = QrCode::size(200)->generate($publicUrl);
 
-        $ticket = Ticket::findOrFail($ticket_id);
-        Log::info('File path to store: ' . $fileName); // Log the intended value
-        $ticket->qr_code = $fileName;
-        $ticket->save();
+            $fileName = 'qrcodes/ticket_' . $ticket_id . '_event_' . $event_id . '.svg';
+            Storage::disk('public')->put($fileName, $qrCodeSvg);
 
-        $qrCodeUrl = asset('storage/' . $fileName);
-        return $qrCodeUrl; // Return the URL for display, or return $fileName if you need the path
+            $ticket = Ticket::findOrFail($ticket_id);
+            Log::info('File path to store: ' . $fileName);
+            $ticket->qr_code = $fileName;
+            $ticket->save();
+
+            $qrCodeUrl = asset('storage/' . $fileName);
+            return $qrCodeUrl;
+        } catch (\Exception $e) {
+            Log::error('Error generating QR code: ' . $e->getMessage());
+            return redirect()->back()->with([
+                'status' => 0,
+                'message' => 'Error generating QR code: ' . $e->getMessage(),
+            ]);
+        }
     }
 
     public function store(Request $request)
@@ -71,7 +84,7 @@ class TicketController extends Controller
             $availableTickets = $totalCapacity - $ticketsSold;
             $ticketPrice = $event->ticket_price;
             if ($ticketPrice == 0) {
-                return response()->json([
+                return redirect()->back()->with([
                     'status' => 0,
                     'message' => 'Ticket price not set for this event.',
                 ]);
@@ -89,22 +102,20 @@ class TicketController extends Controller
                 $ticket->cancellation_reason = null;
                 $ticket->created_by = Auth::user()->id;
                 $ticket->updated_by = Auth::user()->id;
-                $ticket->save();
-
-                $ticket->qr_code = $this->generateQrCode($ticket->id, $ticket->event_id);
+                $ticket->qr_code = $this->generateQrCode(Auth::user()->name, $ticket->id, $ticket->event_id);
                 $ticket->save();
 
                 return view('user.tickets.qr-code', [
                     'ticket' => $ticket,
                 ]);
             }
-            return response()->json([
+            return redirect()->back()->with([
                 'status' => 0,
-                'message' => 'Not enough tickets available. Only ' . $availableTickets . ' tickets left.',
+                'message' => 'Sorry! All seats reserved.',
             ]);
         } catch (\Exception $e) {
             Log::error('Error purchasing ticket: ' . $e->getMessage());
-            return response()->json([
+            return redirect()->back()->with([
                 'status' => 0,
                 'message' => 'Error purchasing ticket: ' . $e->getMessage(),
             ]);
@@ -152,8 +163,7 @@ class TicketController extends Controller
             'total_price' => $request->price * $request->quantity,
             'deadline' => now()->addDays(7),
             'cancellation_reason' => null,
-            'qr_code' => null, // QR code handling later
-            'created_by' => Auth::user()->id,
+            'qr_code' => null,
             'updated_by' => Auth::user()->id,
         ]);
         $ticket->save();
@@ -165,7 +175,7 @@ class TicketController extends Controller
     public function destroy(string $id)
     {
         $ticket = Ticket::findOrFail($id);
-        $ticket->delete_flag = 1; // Soft delete
+        $ticket->delete_flag = 1;
         $ticket->save();
         return redirect()->route('user.tickets.index')->with([
             'status' => 1,
