@@ -7,6 +7,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -56,9 +57,6 @@ Route::get('/email/verify', [AuthController::class, 'sendVerificationEmail'])
     ->middleware('auth')
     ->name('verification.send');
 
-// Route::middleware(['auth', 'role:user'])->prefix('user')->group(function () {
-//     Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');
-// });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');

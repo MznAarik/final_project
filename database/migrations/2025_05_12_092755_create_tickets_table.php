@@ -25,8 +25,13 @@ return new class extends Migration {
                 ->on('events')
                 ->onDelete('set null');
 
+            $table->unsignedBigInteger('ticket_category_id')->nullable();
+            $table->foreign('ticket_category_id')
+                ->references('id')
+                ->on('ticket_categories')
+                ->onDelete('set null');
+
             $table->string('status', 20)->nullable()->default('pending');
-            $table->decimal('price', 10, 2)->nullable();
             $table->unsignedBigInteger('quantity')->nullable()->default(1);
             $table->decimal('total_price', 10, 2)->nullable();
             $table->dateTime('deadline')->nullable();
