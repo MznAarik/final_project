@@ -28,7 +28,7 @@ class EventController extends Controller
             ->sortByDesc('created_at');
 
         $ticket_category = Event::select('ticket_category')->first();
-        return view('admin.events.index', compact('events,ticket_category'));
+        return view('admin.events.index', compact('events', 'ticket_category'));
     }
 
     /**
