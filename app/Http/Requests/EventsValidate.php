@@ -38,8 +38,8 @@ class EventsValidate extends FormRequest
             'organizer' => 'required|string|max:255',
             'tickets_sold' => 'nullable|integer|min:0',
 
-            'ticket_category' => 'required|array|min:1',
-            'ticket_category.*' => 'required|string|max:50',
+            'ticket_category' => 'required|string|max:25|min:1',
+            // 'ticket_category.*' => 'required|string|max:50',
 
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:20480'
         ];
@@ -57,7 +57,7 @@ class EventsValidate extends FormRequest
             'contact_info.required' => 'Contact information is required and must not exceed 255 characters.',
             'start_date.required' => 'Start date is required and must be today or later.',
             'end_date.required' => 'End date is required and must be after the start date.',
-            'category.required' => 'Category is required and must be one of the predefined options.',
+            // 'category.required' => 'Category is required and must be one of the predefined options.',
             'status.required' => 'Status is required and must be one of the predefined options.',
             'organizer.required' => 'Organizer information is required and must not exceed 255 characters.',
         ];

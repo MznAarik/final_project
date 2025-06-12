@@ -72,7 +72,6 @@ class TicketController extends Controller
     public function store(Request $request)
     {
         try {
-
             $request->validate([
                 'event_id' => 'required|exists:events,id',
                 'quantity' => 'required|integer|min:1',
@@ -82,7 +81,7 @@ class TicketController extends Controller
             $totalCapacity = $event->capacity;
             $ticketsSold = $event->tickets()->where('status', '!=', 'cancelled')->sum('quantity');
             $availableTickets = $totalCapacity - $ticketsSold;
-            $ticketPrice = $event->ticket_price;
+            $ticketPrice = $event->ticket_pricing ? json_decode($event->ticket_pricing, true)[0]['price'] : 0;
             if ($ticketPrice == 0) {
                 return redirect()->back()->with([
                     'status' => 0,
@@ -90,6 +89,7 @@ class TicketController extends Controller
                 ]);
             }
 
+            dd($ticketPrice);
             if ($request->quantity <= $availableTickets) {
                 $ticket = new Ticket();
                 $ticket->user_id = Auth::user()->id;
@@ -103,6 +103,7 @@ class TicketController extends Controller
                 $ticket->created_by = Auth::user()->id;
                 $ticket->updated_by = Auth::user()->id;
                 $ticket->qr_code = $this->generateQrCode(Auth::user()->name, $ticket->id, $ticket->event_id);
+                dd($ticket->qr_code);
                 $ticket->save();
 
                 return view('user.tickets.qr-code', [
