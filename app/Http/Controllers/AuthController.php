@@ -190,7 +190,7 @@ class AuthController extends Controller
 
         if (!$user->hasVerifiedEmail()) {
             $user->markEmailAsVerified();
-            event(new Verified($user));
+            event(new Verified($user->email));
             Log::info('Email verified for user: ' . $user->email);
         }
 

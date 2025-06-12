@@ -16,13 +16,11 @@ return new class extends Migration {
             $table->string('location');
             $table->string('venue', 100);
             $table->integer('capacity');
-            $table->json('ticket_pricing')->after('ticket_price')->nullable();
             $table->text('description')->nullable();
             $table->string('contact_info', 100)->nullable();
             $table->timestamp('start_date')->nullable(false);
             $table->timestamp('end_date')->nullable();
-            $table->string('category', 50);
-            $table->string('status', 50)->default('Upcoming');
+            $table->string('status', 50)->default('upcoming');
             $table->string('organizer', 100);
             $table->string('img_path', 255)->nullable();
             $table->integer('tickets_sold')->nullable()->default(0);
