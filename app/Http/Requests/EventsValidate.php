@@ -53,7 +53,7 @@ class EventsValidate extends FormRequest
             'contact_info.required' => 'Contact information is required and must not exceed 255 characters.',
             'start_date.required' => 'Start date is required and must be today or later.',
             'end_date.required' => 'End date is required and must be after the start date.',
-            'status.in' => 'Status must be one of the following: upcoming, ongoing, completed, or cancelled.',
+            'status.in' => 'Status must be one of the following: upcoming, active, completed, or cancelled.',
             'ticket_category_price.required' => 'Ticket category and price information is required.',
             'organizer.required' => 'Organizer information is required and must not exceed 255 characters.',
         ];
