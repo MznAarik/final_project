@@ -19,16 +19,20 @@ class EventController extends Controller
      */
     public function index()
     {
-        $events = Event::all()->where('delete_flag', 0)
-            ->where('status', '!=', 'cancelled')
-            ->sortByDesc('created_at');
+        $events = Event::where('delete_flag', 0)
+            ->where(function ($query) {
+                $query->where('status', 'upcoming')
+                    ->orWhere('status', 'active');
+            })
+            ->orderByDesc('created_at')
+            ->get();
 
-        $ticket_category = TicketCategory::all()->where('delete_flag', 0)
-            ->where('status', '!=', 'cancelled')
-            ->sortByDesc('created_at');
+        $events->transform(function ($event) {
+            $event->ticket_category_price = !empty($event->ticket_category_price) ? json_decode($event->ticket_category_price, true) : [];
+            return $event;
+        });
 
-        $ticket_category = Event::select('ticket_category')->first();
-        return view('admin.events.index', compact('events', 'ticket_category'));
+        return view('admin.events.index', compact('events'));
     }
 
     /**
@@ -42,7 +46,7 @@ class EventController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(EventsValidate $request)
     {
         DB::beginTransaction();
 
@@ -61,15 +65,17 @@ class EventController extends Controller
             $events->name = strtolower($request['name']);
             $events->venue = strtolower($request['venue']);
             $events->location = strtolower($request['location']);
-            $events->district_id = $district->id;  // Should be district_id if FK
-            $events->province_id = $province->id;  // Same note
-            $events->country_id = $country->id;    // Same note
+            $events->event_category = strtolower($request['event_category']);
+            $events->ticket_category_price = json_encode($request['ticket_category_price']);
+            $events->district_id = $district->id;
+            $events->province_id = $province->id;
+            $events->country_id = $country->id;
             $events->capacity = $request['capacity'];
             $events->description = $request['description'];
             $events->contact_info = $request['contact_info'];
             $events->start_date = $request['start_date'];
             $events->end_date = $request['end_date'];
-            $events->status = $request['status'];
+            $events->status = $request['status'] ?? 'upcoming';
             $events->organizer = $request['organizer'];
             $events->tickets_sold = $request['tickets_sold'];
             $events->currency = $request['currency'];
@@ -83,22 +89,6 @@ class EventController extends Controller
                 $events->img_path = $img_path;
             }
             $events->save();
-
-            $ticket_category = TicketCategory::firstOrCreate(
-                [
-                    'event_id' => $events->id,
-                    'ticket_id' => $request->input('ticket_id'),
-                    'category' => strtolower($request->input('ticket_category')),
-                    'price' => $request->input('ticket_price'),
-                ],
-                [
-                    'description' => $request->input('ticket_category_description'),
-                    'created_by' => Auth::id(),
-                    'updated_by' => Auth::id(),
-                    'delete_flag' => false,
-                ]
-            );
-            $ticket_category->save();
 
             DB::commit();
 
