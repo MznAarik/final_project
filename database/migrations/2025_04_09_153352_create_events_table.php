@@ -12,10 +12,12 @@ return new class extends Migration {
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 50);
+            $table->string('name', 50)->unique();
             $table->string('location');
             $table->string('venue', 100);
             $table->integer('capacity');
+            $table->string('event_category', 50)->nullable();
+            $table->json('ticket_category_price');
             $table->text('description')->nullable();
             $table->string('contact_info', 100)->nullable();
             $table->timestamp('start_date')->nullable(false);
@@ -29,9 +31,9 @@ return new class extends Migration {
             $table->foreignId('province_id')->nullable()->constrained('provinces')->onDelete('set null');
             $table->foreignId('country_id')->nullable()->constrained('countries')->onDelete('set null');
             $table->index(['district_id', 'province_id', 'country_id'], 'events_location_index');
-            $table->timestamps();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
+            $table->timestamps();
             $table->boolean('delete_flag')->default(false);
         });
     }

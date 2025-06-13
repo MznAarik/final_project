@@ -15,23 +15,20 @@ class Event extends Model
         'district_id',
         'province_id',
         'country_id',
+        'event_category',
+        'ticket_category_price',
         'capacity',
-        'ticket_pricing',
         'description',
         'contact_info',
         'start_date',
         'end_date',
-        'category',
         'status',
         'organizer',
         'image_url',
         'tickets_sold',
         'currency',
-        'created_by'
-    ];
-
-    protected $casts = [
-        'ticket_pricing' => 'json',
+        'created_by',
+        'updated_by'
     ];
 
     public function user()

@@ -25,22 +25,18 @@ class EventsValidate extends FormRequest
             'name' => 'required|string|max:255',
             'venue' => 'required|string|max:255',
             'location' => 'required|string|max:255',
-            // 'district' => 'required|string|max:255',
-            // 'province' => 'required|string|max:255',
-            // 'country' => 'required|string|max:255',
+            'status' => 'nullable|string|in:upcoming,active,completed,cancelled',
             'capacity' => 'required|integer|min:1',
             'description' => 'required|string',
             'contact_info' => 'required|email',
             'start_date' => 'required|date|before_or_equal:end_date',
             'end_date' => 'required|date|after_or_equal:start_date',
-            'category' => 'required|string',
-            'status' => 'required|in:active,inactive,cancelled',
             'organizer' => 'required|string|max:255',
             'tickets_sold' => 'nullable|integer|min:0',
-
-            'ticket_category' => 'required|string|max:25|min:1',
-            // 'ticket_category.*' => 'required|string|max:50',
-
+            'event_category' => 'nullable|string|max:50',
+            'ticket_category_price' => 'required|array',
+            'ticket_category_price.*.category' => 'required|string|max:50',
+            'ticket_category_price.*.price' => 'required|numeric|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:20480'
         ];
     }
@@ -57,8 +53,8 @@ class EventsValidate extends FormRequest
             'contact_info.required' => 'Contact information is required and must not exceed 255 characters.',
             'start_date.required' => 'Start date is required and must be today or later.',
             'end_date.required' => 'End date is required and must be after the start date.',
-            // 'category.required' => 'Category is required and must be one of the predefined options.',
-            'status.required' => 'Status is required and must be one of the predefined options.',
+            'status.in' => 'Status must be one of the following: upcoming, ongoing, completed, or cancelled.',
+            'ticket_category_price.required' => 'Ticket category and price information is required.',
             'organizer.required' => 'Organizer information is required and must not exceed 255 characters.',
         ];
     }
