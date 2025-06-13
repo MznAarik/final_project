@@ -28,7 +28,7 @@ class EventController extends Controller
             ->get();
 
         $events->transform(function ($event) {
-            $event->ticket_category_price = json_decode($event->ticket_category_price, true);
+            $event->ticket_category_price = !empty($event->ticket_category_price) ? json_decode($event->ticket_category_price, true) : [];
             return $event;
         });
 
