@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\AesHelper;
 use App\Models\Event;
 use App\Models\Ticket;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
@@ -42,7 +43,7 @@ class TicketController extends Controller
             ]);
 
             $event = Event::findOrFail($request->event_id);
-            $deadline = $event->start_date;
+            $deadline = Carbon::parse($event->start_date)->subHours(24);
             $categoryData = json_decode($event->ticket_category_price, true);
 
             $ticketDetails = [];
