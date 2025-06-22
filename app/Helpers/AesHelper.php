@@ -14,7 +14,7 @@ class AesHelper
     {
         if (self::$key === null) {
             self::$key = env('AES_KEY', 'e8c23aed79a443415e42f90cc6db4a0a');
-            if (strlen(self::$key) !== 32) {
+            if (mb_strlen(self::$key, '8bit') !== 32) {
                 throw new \RuntimeException('AES_KEY must be a 32-byte (256-bit) key');
             }
         }
