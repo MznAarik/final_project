@@ -24,7 +24,6 @@ class TicketController extends Controller
             ->where('status', '!=', 'cancelled')->get();
         $totalPrice = Auth::user()->tickets()->sum('total_price');
         $ticketStatus = Auth::user()->tickets()->pluck('status')->all();
-        // $totalPrice is available for the view if needed
         return view('user.tickets.index', compact('tickets'));
     }
 
@@ -43,6 +42,7 @@ class TicketController extends Controller
             ]);
 
             $event = Event::findOrFail($request->event_id);
+            $deadline = $event->start_date;
             $categoryData = json_decode($event->ticket_category_price, true);
 
             $ticketDetails = [];
@@ -88,6 +88,7 @@ class TicketController extends Controller
                 'ticket_details' => json_encode($ticketDetails), // Ensure this is saved
                 'total_price' => $totalPrice,
                 'status' => 'pending',
+                'deadline' => $deadline,
                 'created_by' => Auth::user()->id,
                 'updated_by' => Auth::user()->id,
             ]);
