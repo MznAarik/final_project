@@ -43,7 +43,7 @@ class TicketController extends Controller
             ]);
 
             $event = Event::findOrFail($request->event_id);
-            $deadline = Carbon::parse($event->start_date)->subHours(24);
+            $deadline = $event->start_date ? Carbon::parse($event->start_date)->subHours(24) : null;
             $categoryData = json_decode($event->ticket_category_price, true);
 
             $ticketDetails = [];
