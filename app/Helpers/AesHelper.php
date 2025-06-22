@@ -4,9 +4,22 @@ namespace App\Helpers;
 
 class AesHelper
 {
-    // 256-bit key (32 bytes) - Use a secure key from .env in production
-    private static $key = "1234567890abcdef1234567890abcdef1234567890abcdef12";
+    private static $key = null;
     private static $ivLength = 16; // AES block size for CBC mode
+
+    /**
+     * Get the encryption key from .env, with a fallback for development
+     */
+    private static function getKey()
+    {
+        if (self::$key === null) {
+            self::$key = env('AES_KEY', 'e8c23aed79a443415e42f90cc6db4a0a');
+            if (mb_strlen(self::$key, '8bit') !== 32) {
+                throw new \RuntimeException('AES_KEY must be a 32-byte (256-bit) key');
+            }
+        }
+        return self::$key;
+    }
 
     /**
      * Encrypt JSON data using AES-256-CBC
@@ -18,12 +31,13 @@ class AesHelper
             throw new \InvalidArgumentException('Failed to encode JSON data');
         }
 
+        $key = self::getKey();
         $iv = openssl_random_pseudo_bytes(self::$ivLength);
 
         $encrypted = openssl_encrypt(
             $plainText,
             'aes-256-cbc',
-            self::$key,
+            $key,
             0,
             $iv
         );
@@ -32,7 +46,6 @@ class AesHelper
             throw new \RuntimeException('Encryption failed');
         }
 
-        // Combine IV and encrypted data, then encode
         return base64_encode($iv . $encrypted);
     }
 
@@ -46,13 +59,14 @@ class AesHelper
             throw new \InvalidArgumentException('Invalid encrypted data');
         }
 
+        $key = self::getKey();
         $iv = substr($data, 0, self::$ivLength);
         $encrypted = substr($data, self::$ivLength);
 
         $decrypted = openssl_decrypt(
             $encrypted,
             'aes-256-cbc',
-            self::$key,
+            $key,
             0,
             $iv
         );
