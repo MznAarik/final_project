@@ -66,7 +66,14 @@ class EventController extends Controller
             $events->venue = strtolower($request['venue']);
             $events->location = strtolower($request['location']);
             $events->event_category = strtolower($request['event_category']);
-            $events->ticket_category_price = json_encode($request['ticket_category_price']);
+            $ticketCategoryPrice = $request['ticket_category_price'];
+
+            foreach ($ticketCategoryPrice as &$category) {
+                if (isset($category['category'])) {
+                    $category['category'] = strtolower($category['category']);
+                }
+            }
+            $events->ticket_category_price = json_encode($ticketCategoryPrice);
             $events->district_id = $district->id;
             $events->province_id = $province->id;
             $events->country_id = $country->id;
