@@ -24,7 +24,7 @@ class TicketController extends Controller
             ->where('status', '!=', 'cancelled')->get();
         $totalPrice = Auth::user()->tickets()->sum('total_price');
         $ticketStatus = Auth::user()->tickets()->pluck('status')->all();
-        dd("index_page " . $totalPrice);
+        // $totalPrice is available for the view if needed
         return view('user.tickets.index', compact('tickets'));
     }
 
