@@ -16,7 +16,7 @@ class Ticket extends Model
         'batch_code',
         'quantity',
         'description',
-        'ticket_category_price',
+        'ticket_details',
         'total_price',
         'deadline',
         'cancellation_reason',

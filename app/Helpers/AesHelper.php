@@ -4,67 +4,68 @@ namespace App\Helpers;
 
 class AesHelper
 {
-    // Fixed 128-bit key (16 bytes) for AES-128
-    private static $key = "1234567890abcdef";
+    // 256-bit key (32 bytes) - Use a secure key from .env in production
+    private static $key = "1234567890abcdef1234567890abcdef1234567890abcdef12";
+    private static $ivLength = 16; // AES block size for CBC mode
 
-    private static $sBox = [
-        0x63,
-        0x7c,
-        0x77,
-        0x7b,
-        0xf2,
-        0x6b,
-        0x6f,
-        0xc5,
-        0x30,
-        0x01,
-        0x67,
-        0x2b,
-        0xfe,
-        0xd7,
-        0xab,
-        0x76,
-    ];
-
-    public static function encrypt($plainText)
+    /**
+     * Encrypt JSON data using AES-256-CBC
+     */
+    public static function encrypt($jsonData)
     {
-        $plainText = str_pad($plainText, 16, "\0");
-        $key = self::$key;
-
-        $state = array_values(unpack('C*', $plainText));
-        $keyBytes = array_values(unpack('C*', $key));
-
-        for ($i = 0; $i < 16; $i++) {
-            $state[$i] ^= $keyBytes[$i];
+        $plainText = json_encode($jsonData);
+        if ($plainText === false) {
+            throw new \InvalidArgumentException('Failed to encode JSON data');
         }
 
-        for ($i = 0; $i < 16; $i++) {
-            $state[$i] = self::$sBox[$state[$i] % count(self::$sBox)];
+        $iv = openssl_random_pseudo_bytes(self::$ivLength);
+
+        $encrypted = openssl_encrypt(
+            $plainText,
+            'aes-256-cbc',
+            self::$key,
+            0,
+            $iv
+        );
+
+        if ($encrypted === false) {
+            throw new \RuntimeException('Encryption failed');
         }
 
-        $cipherText = implode(array_map("chr", $state));
-        return base64_encode($cipherText); // Encode for QR readability
+        // Combine IV and encrypted data, then encode
+        return base64_encode($iv . $encrypted);
     }
 
-    public static function decrypt($cipherText)
+    /**
+     * Decrypt data to JSON using AES-256-CBC
+     */
+    public static function decrypt($base64Data)
     {
-        $cipherText = base64_decode($cipherText);
-        $key = self::$key;
-
-        $state = array_values(unpack('C*', $cipherText));
-        $keyBytes = array_values(unpack('C*', $key));
-
-        // Reverse substitute bytes (inverse S-box needed, simplified here)
-        for ($i = 0; $i < 16; $i++) {
-            $state[$i] = array_search($state[$i], self::$sBox) ?: $state[$i]; // Rough inverse
+        $data = base64_decode($base64Data, true);
+        if ($data === false || strlen($data) <= self::$ivLength) {
+            throw new \InvalidArgumentException('Invalid encrypted data');
         }
 
-        // Reverse add round key
-        for ($i = 0; $i < 16; $i++) {
-            $state[$i] ^= $keyBytes[$i];
+        $iv = substr($data, 0, self::$ivLength);
+        $encrypted = substr($data, self::$ivLength);
+
+        $decrypted = openssl_decrypt(
+            $encrypted,
+            'aes-256-cbc',
+            self::$key,
+            0,
+            $iv
+        );
+
+        if ($decrypted === false) {
+            throw new \RuntimeException('Decryption failed');
         }
 
-        $plainText = implode(array_map("chr", $state));
-        return rtrim($plainText, "\0"); // Remove padding
+        $jsonData = json_decode($decrypted, true);
+        if ($jsonData === null && json_last_error() !== JSON_ERROR_NONE) {
+            throw new \InvalidArgumentException('Failed to decode JSON data: ' . json_last_error_msg());
+        }
+
+        return $jsonData;
     }
 }
