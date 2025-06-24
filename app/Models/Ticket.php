@@ -27,7 +27,7 @@ class Ticket extends Model
     ];
 
     protected $casts = [
-        'ticket_category_price' => 'json',
+        'ticket_details' => 'json',
     ];
 
     public function user()
