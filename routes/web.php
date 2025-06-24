@@ -82,7 +82,7 @@ Route::middleware(['auth', 'role:user'])->prefix('user')->group(function () {
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
-    // Route::get('/tickets', [AdminTicketController::class, 'index'])->name('admin.tickets.index');
+    Route::get('/tickets', [AdminTicketController::class, 'index'])->name('admin.tickets.index');
     // Route::get('/tickets/create', [AdminTicketController::class, 'create'])->name('admin.tickets.create');
     Route::post('/tickets', [AdminTicketController::class, 'store'])->name('admin.tickets.store');
     // Route::put('/tickets/{ticket}', [AdminTicketController::class, 'update'])->name('admin.tickets.update');

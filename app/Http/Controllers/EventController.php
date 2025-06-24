@@ -84,7 +84,7 @@ class EventController extends Controller
             $events->end_date = $request['end_date'];
             $events->status = $request['status'] ?? 'upcoming';
             $events->organizer = $request['organizer'];
-            $events->tickets_sold = $request['tickets_sold'];
+            $events->tickets_sold = 0;
             $events->currency = $request['currency'];
             $events->created_by = Auth::id();
             $events->updated_by = Auth::id();

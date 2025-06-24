@@ -17,6 +17,7 @@ class Event extends Model
         'country_id',
         'event_category',
         'ticket_category_price',
+        'tickets_sold',
         'capacity',
         'description',
         'contact_info',
@@ -25,7 +26,6 @@ class Event extends Model
         'status',
         'organizer',
         'image_url',
-        'tickets_sold',
         'currency',
         'created_by',
         'updated_by'

@@ -18,6 +18,7 @@ class CreateTicketsTable extends Migration
             $table->string('qr_code')->nullable();
             $table->json('ticket_details')->nullable();
             $table->decimal('total_price', 10, 2)->nullable();
+            $table->unsignedInteger('total_quantity')->nullable()->after('ticket_details');
             $table->string('status')->default('pending');
             $table->dateTime('deadline')->nullable();
             $table->string('cancellation_reason')->nullable();

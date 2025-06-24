@@ -37,7 +37,7 @@ class TicketController extends Controller
         try {
             $request->validate([
                 'event_id' => 'required|exists:events,id',
-                'ticket_details' => 'required|array|min:1',
+                'ticket_details' => 'required|array',
                 'ticket_details.*.category' => 'required|string',
                 'ticket_details.*.quantity' => 'required|integer',
             ]);
@@ -45,9 +45,13 @@ class TicketController extends Controller
             $event = Event::findOrFail($request->event_id);
             $deadline = $event->start_date ? Carbon::parse($event->start_date)->subHours(24) : null;
             $categoryData = json_decode($event->ticket_category_price, true);
+            $ticketsSold = $event->tickets_sold;
+            $eventCapacity = $event->capacity ?? 0;
 
             $ticketDetails = [];
             $totalPrice = 0;
+            $totalQuantity = 0;
+
             foreach ($request->ticket_details as $categoryInput) {
                 $category = strtolower($categoryInput['category']);
                 $quantity = $categoryInput['quantity'];
@@ -62,12 +66,21 @@ class TicketController extends Controller
                         'quantity' => $quantity,
                         'price' => $price
                     ];
+                    $totalQuantity += $quantity;
                 }
                 $totalPrice += $price * $quantity;
             }
+
             if (empty($ticketDetails)) {
-                return redirect()->back()->with(['status' => false, 'message' => 'Please select atleast one category.'], 400);
+                return redirect()->back()->with(['status' => false, 'message' => 'Please select at least one category with a positive quantity.'], 400);
             }
+
+            $newTicketsSold = $ticketsSold + $totalQuantity;
+            if ($newTicketsSold > $eventCapacity) {
+                return redirect()->back()->with(['status' => false, 'message' => 'Sorry! The tickets are sold.'], 400);
+            }
+            $event = Event::where('id', $event->id)->firstOrFail();
+            $event->update(['tickets_sold' => $newTicketsSold]);
 
             $batchCode = uniqid('batch_') . '-' . $request->event_id;
             $sensitiveData = [
@@ -77,21 +90,26 @@ class TicketController extends Controller
                 'ticket_details' => $ticketDetails,
                 'total_price' => $totalPrice
             ];
+
+            $userId = Auth::user()->id;
+
             $encryptedData = AesHelper::encrypt($sensitiveData);
             $qrCodeSvg = QrCode::size(200)->generate(url('/') . '?ticket=' . urlencode($encryptedData));
             $fileName = 'qrcodes/' . time() . '_' . $batchCode . '.svg';
             Storage::disk('public')->put($fileName, $qrCodeSvg);
+
             Ticket::create([
-                'user_id' => Auth::user()->id,
+                'user_id' => $userId,
                 'event_id' => $request->event_id,
                 'batch_code' => $batchCode,
                 'qr_code' => $fileName,
-                'ticket_details' => json_encode($ticketDetails), // Ensure this is saved
+                'ticket_details' => json_encode($ticketDetails),
+                'total_quantity' => $totalQuantity,
                 'total_price' => $totalPrice,
                 'status' => 'pending',
                 'deadline' => $deadline,
-                'created_by' => Auth::user()->id,
-                'updated_by' => Auth::user()->id,
+                'created_by' => $userId,
+                'updated_by' => $userId,
             ]);
 
             return redirect()->back()->with(['status' => true, 'message' => 'Tickets created successfully.']);
@@ -138,16 +156,19 @@ class TicketController extends Controller
             ]);
 
             $event = Event::findOrFail($request->event_id);
+            $deadline = $event->start_date ? Carbon::parse($event->start_date)->subHours(24) : null;
             $categoryData = json_decode($event->ticket_category_price, true);
+            $ticketsSold = $event->tickets_sold ?? 0;
+            $eventCapacity = $event->capacity ?? 0;
 
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                Log::error('Invalid ticket_category_price JSON: ' . json_last_error_msg());
-                return redirect()->back()->withErrors(['message' => 'Invalid ticket_category_price data in event.']);
-            }
             $ticket = Ticket::where('batch_code', $batch_code)->firstOrFail();
+            $previousTicketDetails = json_decode($ticket->ticket_details, true) ?? [];
+            $previousTotalQuantity = $ticket->total_quantity ?? array_sum(array_column($previousTicketDetails, 'quantity'));
 
             $ticketDetails = [];
             $totalPrice = 0;
+            $totalQuantity = 0;
+
             foreach ($request->ticket_details as $categoryInput) {
                 $category = strtolower($categoryInput['category']);
                 $quantity = $categoryInput['quantity'];
@@ -162,44 +183,53 @@ class TicketController extends Controller
                         'quantity' => $quantity,
                         'price' => $price
                     ];
+                    $totalQuantity += $quantity;
                 }
                 $totalPrice += $price * $quantity;
             }
+
             if (empty($ticketDetails)) {
-                return redirect()->back()->with(['status' => false, 'message' => 'Please select atleast one category.'], 400);
+                return redirect()->back()->with(['status' => false, 'message' => 'Please select at least one category with a positive quantity.'], 400);
             }
 
+            $quantityChange = $totalQuantity - $previousTotalQuantity;
+            $newTicketsSold = $ticketsSold + $quantityChange;
+            if ($newTicketsSold > $eventCapacity) {
+                return redirect()->back()->with(['status' => false, 'message' => 'Sorry! The tickets are sold.'], 400);
+            }
+
+            $event->update(['tickets_sold' => $newTicketsSold]);
+
+            $batchCode = $batch_code;
             $sensitiveData = [
                 'user_id' => Auth::user()->id,
                 'event_id' => $request->event_id,
-                'batch_code' => $batch_code,
+                'batch_code' => $batchCode,
                 'ticket_details' => $ticketDetails,
                 'total_price' => $totalPrice
             ];
+            $userId = Auth::user()->id;
+
             $encryptedData = AesHelper::encrypt($sensitiveData);
-
-            // Delete the old QR code if it exists
-            if ($ticket->qr_code && Storage::disk('public')->exists($ticket->qr_code)) {
-                Storage::disk('public')->delete($ticket->qr_code);
-            }
-
-            // Generate new QR code
             $qrCodeSvg = QrCode::size(200)->generate(url('/') . '?ticket=' . urlencode($encryptedData));
             $fileName = 'qrcodes/' . time() . '_' . $batch_code . '.svg';
             Storage::disk('public')->put($fileName, $qrCodeSvg);
 
-            // Update the ticket record
             $ticket->update([
+                'user_id' => $userId,
                 'event_id' => $request->event_id,
+                'batch_code' => $batchCode,
                 'qr_code' => $fileName,
                 'ticket_details' => json_encode($ticketDetails),
+                'total_quantity' => $totalQuantity,
                 'total_price' => $totalPrice,
                 'status' => 'pending',
-                'updated_by' => Auth::user()->id,
+                'deadline' => $deadline,
+                'updated_by' => $userId,
                 'updated_at' => now(),
             ]);
 
-            return redirect()->back()->with(['status' => true, 'message' => 'Ticket updated successfully.']);
+            return redirect()->back()->with(['status' => true, 'message' => 'Tickets updated successfully.']);
         } catch (\Exception $e) {
             Log::error('Error updating ticket: ' . $e->getMessage());
             return redirect()->back()->with(['status' => 0, 'message' => 'Error updating ticket: ' . $e->getMessage()]);
