@@ -17,6 +17,7 @@ class Ticket extends Model
         'quantity',
         'description',
         'ticket_details',
+        'total_quantity',
         'total_price',
         'deadline',
         'cancellation_reason',

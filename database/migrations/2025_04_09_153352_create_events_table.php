@@ -25,7 +25,7 @@ return new class extends Migration {
             $table->string('status', 50)->default('upcoming');
             $table->string('organizer', 100);
             $table->string('img_path', 255)->nullable();
-            $table->integer('tickets_sold')->nullable()->default(0);
+            $table->integer('tickets_sold')->nullable();
             $table->string('currency', 5)->default('NPR');
             $table->foreignId('district_id')->nullable()->constrained('districts')->onDelete('set null');
             $table->foreignId('province_id')->nullable()->constrained('provinces')->onDelete('set null');

@@ -8,7 +8,7 @@
 </head>
 
 @php
-    $categories = json_decode($ticket->event->ticket_category_price, true);
+    $categories = json_decode($ticket->ticket_details, true);
 @endphp
 
 <body>
@@ -27,17 +27,20 @@
                 <strong>Category:</strong>
                 <t />{{ $item['category'] }} <br>
                 <strong>Price:</strong>
-                <t />{{ $ticket->event['currency']}}{{ number_format($item['price'], 2) }} <br>
+                <t />{{ $ticket->event['currency']}}
+                <t />{{ number_format($item['price'], 2) }} <br>
                 <strong>Quantity:</strong>
-                <t />{{ $ticket->quantity }} <br>
+                <t />{{ $item['quantity'] }} <br>
                 <strong>Subtotal:</strong>
                 <t />
-                {{ $ticket->event['currency']}}{{ number_format($item['price'] * $ticket->quantity, 2) }}
+                {{ $ticket->event['currency']}}
+                <t />{{ number_format($item['price'] * $item['quantity'], 2) }}
             </li>
         @endforeach
     </ul>
     <p><strong>Total Price:</strong>
-        <t />{{ $ticket->event['currency']}}{{ $ticket->total_price }}
+        <t />{{ $ticket->event['currency']}}
+        <t />{{ $ticket->total_price }}
     </p>
     <p><strong>Deadline:</strong>
         <t />{{ $ticket->deadline }}
