@@ -7,6 +7,10 @@
     <title>Show Tickets</title>
 </head>
 
+@php
+    $categories = json_decode($ticket->ticket_details, true);
+@endphp
+
 <body>
     <h1>Ticket Details</h1>
     <p><strong>ID:</strong> {{ $ticket->id }}</p>
@@ -15,11 +19,35 @@
     <p>Event Date: {{ $ticket->event->start_date }}</p>
     <p>Event Location: {{ $ticket->event->location }}</p>
     <p><strong>Status:</strong> {{ $ticket->status }}</p>
-    <label>Price per Ticket: {{ number_format($ticket->event->ticket_price, 2) }}</label><br>
-    <p><strong>Quantity:</strong> {{ $ticket->quantity }}</p>
-    <p><strong>Total Price:</strong> {{ $ticket->total_price }}</p>
-    <p><strong>Deadline:</strong> {{ $ticket->deadline }}</p>
-    <p><strong>Cancellation Reason:</strong> {{ $ticket->cancellation_reason }}</p>
+    <p><strong>Batch Number:</strong> {{ $ticket->batch_code}}</p>
+    <h3>Ticket Categories</h3>
+    <ul>
+        @foreach($categories as $item)
+            <li>
+                <strong>Category:</strong>
+                <t />{{ $item['category'] }} <br>
+                <strong>Price:</strong>
+                <t />{{ $ticket->event['currency']}}
+                <t />{{ number_format($item['price'], 2) }} <br>
+                <strong>Quantity:</strong>
+                <t />{{ $item['quantity'] }} <br>
+                <strong>Subtotal:</strong>
+                <t />
+                {{ $ticket->event['currency']}}
+                <t />{{ number_format($item['price'] * $item['quantity'], 2) }}
+            </li>
+        @endforeach
+    </ul>
+    <p><strong>Total Price:</strong>
+        <t />{{ $ticket->event['currency']}}
+        <t />{{ $ticket->total_price }}
+    </p>
+    <p><strong>Deadline:</strong>
+        <t />{{ $ticket->deadline }}
+    </p>
+    <p><strong>Cancellation Reason:</strong>
+        <t /> {{ $ticket->cancellation_reason }}
+    </p>
 </body>
 
 </html>

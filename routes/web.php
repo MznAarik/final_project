@@ -75,14 +75,14 @@ Route::prefix('events')->middleware('role:admin')->group(function () {
 
 Route::middleware(['auth', 'role:user'])->prefix('user')->group(function () {
     Route::get('/tickets', [TicketController::class, 'index'])->name('user.tickets.index');
-    Route::get('/tickets/{ticket}', [TicketController::class, 'show'])->name('user.tickets.show');
+    Route::get('/tickets/{batch_code}', [TicketController::class, 'show'])->name('user.tickets.show');
     Route::post('/tickets', [TicketController::class, 'store'])->name('user.tickets.store');
-    Route::put('/tickets/{ticket}', [TicketController::class, 'update'])->name('user.tickets.update');
-    Route::delete('/tickets/{ticket}', [TicketController::class, 'destroy'])->name('user.tickets.destroy');
+    Route::put('/tickets/{batch_code}', [TicketController::class, 'update'])->name('user.tickets.update');
+    Route::delete('/tickets/{batch_code}', [TicketController::class, 'destroy'])->name('user.tickets.destroy');
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
-    // Route::get('/tickets', [AdminTicketController::class, 'index'])->name('admin.tickets.index');
+    Route::get('/tickets', [AdminTicketController::class, 'index'])->name('admin.tickets.index');
     // Route::get('/tickets/create', [AdminTicketController::class, 'create'])->name('admin.tickets.create');
     Route::post('/tickets', [AdminTicketController::class, 'store'])->name('admin.tickets.store');
     // Route::put('/tickets/{ticket}', [AdminTicketController::class, 'update'])->name('admin.tickets.update');
