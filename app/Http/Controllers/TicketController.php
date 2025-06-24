@@ -8,7 +8,6 @@ use App\Models\Ticket;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -43,6 +42,10 @@ class TicketController extends Controller
             ]);
 
             $event = Event::findOrFail($request->event_id);
+            if ($event->status == 'cancelled') {
+                return redirect()->back()->with('error', 'Sorry, The event has be cancelled! Please stay tuned for more such events!');
+            }
+
             $deadline = $event->start_date ? Carbon::parse($event->start_date)->subHours(24) : null;
             $categoryData = json_decode($event->ticket_category_price, true);
             $ticketsSold = $event->tickets_sold;
@@ -161,7 +164,8 @@ class TicketController extends Controller
             $ticketsSold = $event->tickets_sold ?? 0;
             $eventCapacity = $event->capacity ?? 0;
 
-            $ticket = Ticket::where('batch_code', $batch_code)->firstOrFail();
+            $ticket = Ticket::where('batch_code', $batch_code)
+                ->where('status', '!=', 'cancelled')->firstOrFail();
             $previousTicketDetails = json_decode($ticket->ticket_details, true) ?? [];
             $previousTotalQuantity = $ticket->total_quantity ?? array_sum(array_column($previousTicketDetails, 'quantity'));
 
@@ -213,6 +217,11 @@ class TicketController extends Controller
             $encryptedData = AesHelper::encrypt($sensitiveData);
             $qrCodeSvg = QrCode::size(200)->generate(url('/') . '?ticket=' . urlencode($encryptedData));
             $fileName = 'qrcodes/' . time() . '_' . $batch_code . '.svg';
+
+            if ($ticket->qr_code != 0 && Storage::disk('public')->exists($ticket->qr_code)) {
+                Storage::disk('public')->delete($ticket->qr_code);
+            }
+
             Storage::disk('public')->put($fileName, $qrCodeSvg);
 
             $ticket->update([
@@ -242,20 +251,36 @@ class TicketController extends Controller
     public function destroy(string $batch_code)
     {
         try {
-            $ticket = Ticket::where('batch_code', $batch_code)->firstOrFail();
-            $ticket->delete();
+            $ticket = Ticket::where('batch_code', $batch_code)
+                ->where('user_id', Auth::user()->id)
+                ->firstOrFail();
+
+            $event = Event::findOrFail($ticket->event_id);
+
+            // Delete QR code if it exists
             if ($ticket->qr_code && Storage::disk('public')->exists($ticket->qr_code)) {
                 Storage::disk('public')->delete($ticket->qr_code);
             }
+
+            $ticket->delete();
+
+            $newTicketSold = Ticket::where('event_id', $event->id)
+                ->where('batch_code', '!=', $batch_code)
+                ->where('status', '!=', 'cancelled') // Adjust based on your logic
+                ->where('delete_flag', 0) // Adjust based on your logic
+                ->sum('total_quantity');
+
+            $event->update(['tickets_sold' => $newTicketSold]);
+
             return redirect()->back()->with([
-                'status' => 1,
-                'message' => 'Ticket deleted successfully.',
+                'status' => true,
+                'message' => 'Ticket deleted successfully.'
             ]);
         } catch (\Exception $e) {
             Log::error('Error deleting ticket: ' . $e->getMessage());
             return redirect()->back()->with([
                 'status' => 0,
-                'message' => 'Error deleting ticket: ',
+                'message' => 'Error deleting ticket: ' . $e->getMessage()
             ]);
         }
     }
