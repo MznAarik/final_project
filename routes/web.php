@@ -15,11 +15,11 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('login', function () {
-    return view('auth.login');
+    return view('home');
 })->name('login');
 
 Route::get('signup', function () {
-    return view('auth.signup');
+    return view('home');
 })->name('signup');
 
 // New added
@@ -48,7 +48,7 @@ Route::middleware('auth')->get('/profile', function () {
 });
 
 Route::post('register', [AuthController::class, 'register'])->name('register.submit');
-Route::post('login', [AuthController::class, 'login'])->name('login.submit');
+Route::middleware('throttle: 5, 1')->post('login', [AuthController::class, 'login'])->name('login.submit');
 Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])
     ->middleware(['signed', 'throttle:6,1'])
@@ -57,11 +57,6 @@ Route::get('/email/verify', [AuthController::class, 'sendVerificationEmail'])
     ->middleware('auth')
     ->name('verification.send');
 
-
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
-    Route::get('/upcomings', [AdminController::class, 'upcoming'])->name('admin.upcoming');
-});
 
 Route::prefix('events')->middleware('role:admin')->group(function () {
     Route::get('/', [EventController::class, 'index'])->name('events.index');
@@ -73,12 +68,12 @@ Route::prefix('events')->middleware('role:admin')->group(function () {
     Route::delete('destroy/{id}', [EventController::class, 'destroy'])->name('events.destroy');
 });
 
-Route::middleware(['auth', 'role:user'])->prefix('user')->group(function () {
-    Route::get('/tickets', [TicketController::class, 'index'])->name('user.tickets.index');
-    Route::get('/tickets/{batch_code}', [TicketController::class, 'show'])->name('user.tickets.show');
-    Route::post('/tickets', [TicketController::class, 'store'])->name('user.tickets.store');
-    Route::put('/tickets/{batch_code}', [TicketController::class, 'update'])->name('user.tickets.update');
-    Route::delete('/tickets/{batch_code}', [TicketController::class, 'destroy'])->name('user.tickets.destroy');
+Route::middleware(['auth', 'role:user'])->prefix('user/')->group(function () {
+    Route::get('tickets', [TicketController::class, 'index'])->name('user.tickets.index');
+    Route::get('tickets/{batch_code}', [TicketController::class, 'show'])->name('user.tickets.show');
+    Route::post('tickets', [TicketController::class, 'store'])->name('user.tickets.store');
+    Route::put('tickets/{batch_code}', [TicketController::class, 'update'])->name('user.tickets.update');
+    Route::delete('tickets/{batch_code}', [TicketController::class, 'destroy'])->name('user.tickets.destroy');
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
@@ -88,3 +83,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     // Route::put('/tickets/{ticket}', [AdminTicketController::class, 'update'])->name('admin.tickets.update');
     // Route::delete('/tickets/{ticket}', [AdminTicketController::class, 'destroy'])->name('admin.tickets.destroy');
 });
+
+Route::middleware(['auth', 'role:admin'])->prefix('admin/')->group(function () {
+    Route::get('dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('scan-qr', [AdminController::class, 'showScanQrPage'])->name('admin.scan-qr');
+    Route::get('verify-ticket', [AdminController::class, 'verifyTicket'])->name('admin.verify-ticket');
+});
+

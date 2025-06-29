@@ -18,22 +18,21 @@ use Illuminate\Auth\Events\Verified;
 class AuthController extends Controller
 {
 
-    public function register(Request $request)
+    public function register(UserValidate $userValidate)
     {
         DB::beginTransaction();
-
         try {
-            $role = $request['role'];
+            $role = $userValidate['role'];
 
             // Check if email is already in use
-            if (User::where('email', $request['email'])->exists()) {
-                if ($request->expectsJson()) {
+            if (User::where('email', $userValidate['email'])->exists()) {
+                if ($userValidate->expectsJson()) {
                     return response()->json([
                         'success' => false,
                         'message' => 'This email is already in use.',
                     ], 409);
                 }
-                return redirect()->route('login')->with([
+                return redirect()->route('home')->with([
                     'status' => 0,
                     'message' => 'This email is already in use.',
                 ]);
@@ -41,26 +40,25 @@ class AuthController extends Controller
 
             // Only allow admins to create admin accounts
             if ($role === 'admin' && (!Auth::check() || Auth::user()->role !== 'admin')) {
-                if ($request->expectsJson()) {
+                if ($userValidate->expectsJson()) {
                     return response()->json([
                         'success' => false,
                         'message' => 'Only admins can create admin accounts.',
                     ], 403);
                 }
-                return redirect()->route('login')->with([
+                return redirect()->route('home')->with([
                     'status' => 0,
                     'message' => 'Only admins can create admin accounts.',
                     'error' => 'Unauthorized role assignment',
                 ]);
             }
-            $country = Country::firstOrCreate(['name' => $request->input(strtolower('country_name'))]);
-
+            $country = Country::firstOrCreate(['name' => strtolower($userValidate->input('country_name'))]);
             $province = Province::firstOrCreate(
-                ['name' => $request->input(strtolower('province_name')), 'country_id' => $country->id]
+                ['name' => strtolower($userValidate->input('province_name')), 'country_id' => $country->id]
             );
 
             $district = District::firstOrCreate(
-                ['name' => $request->input(strtolower('district_name')), 'province_id' => $province->id],
+                ['name' => strtolower($userValidate->input('district_name')), 'province_id' => $province->id],
                 ['country_id' => $country->id]
             );
 
@@ -70,17 +68,17 @@ class AuthController extends Controller
             }
 
             $user = new User();
-            $user->name = $request->input(strtolower('name'));
-            $user->email = $request->input(strtolower('email'));
-            $user->password = Hash::make($request['password']);
-            $user->gender = $request->input(strtolower('gender'));
-            $user->phoneno = $request['phoneno'];
-            $user->address = $request->input(strtolower('address'));
+            $user->name = strtolower($userValidate->input('name'));
+            $user->email = strtolower($userValidate->input('email'));
+            $user->password = Hash::make($userValidate['password']);
+            $user->gender = strtolower($userValidate->input('gender'));
+            $user->phoneno = $userValidate['phoneno'];
+            $user->address = strtolower($userValidate->input('address'));
             $user->district_id = $district->id;
             $user->province_id = $province->id;
             $user->country_id = $country->id;
-            $user->date_of_birth = $request['date_of_birth'];
-            $user->role = $request['role'];
+            $user->date_of_birth = $userValidate['date_of_birth'];
+            $user->role = $userValidate['role'];
             $user->created_by = Auth::check() ? Auth::id() : null; // Set created_by if logged in
             $user->updated_by = Auth::check() ? Auth::id() : null; // Set updated_by if logged in
             $user->save();
@@ -90,7 +88,7 @@ class AuthController extends Controller
             Log::info('Verification email sent to: ' . $user->email);
             DB::commit();
 
-            if ($request->expectsJson()) {
+            if ($userValidate->expectsJson()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'Registration successful. Please verify your email.',
@@ -106,7 +104,7 @@ class AuthController extends Controller
             DB::rollback();
             Log::error('Registration failed: ' . $e->getMessage());
 
-            if ($request->expectsJson()) {
+            if ($userValidate->expectsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Registration failed. Please try again.',
@@ -126,7 +124,6 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         if ($request->expectsJson()) {
-            // Validate credentials, etc...
 
             if (!User::where('email', $request->email)->where('delete_flag', 0)->exists()) {
                 return response()->json(['success' => false, 'message' => 'User not found. Please register first.'], 404);

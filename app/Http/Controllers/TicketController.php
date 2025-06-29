@@ -3,13 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\AesHelper;
+use App\Mail\SendTicket;
 use App\Models\Event;
 use App\Models\Ticket;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class TicketController extends Controller
@@ -19,11 +22,13 @@ class TicketController extends Controller
      */
     public function index()
     {
+        dd("hi");
         $tickets = Auth::user()->tickets()
             ->where('delete_flag', 0)
             ->where('status', '!=', 'cancelled')->get();
         $totalPrice = Auth::user()->tickets()->sum('total_price');
         $ticketStatus = Auth::user()->tickets()->pluck('status')->all();
+        dd($tickets, $totalPrice, $ticketStatus);
         return view('user.tickets.index', compact('tickets'));
     }
 
@@ -43,7 +48,7 @@ class TicketController extends Controller
 
             $event = Event::findOrFail($request->event_id);
             if ($event->status == 'cancelled') {
-                return redirect()->back()->with('error', 'Sorry, The event has be cancelled! Please stay tuned for more such events!');
+                return redirect()->back()->with('error', 'Sorry, The event has been cancelled! Please stay tuned for more such events!');
             }
 
             $deadline = $event->start_date ? Carbon::parse($event->start_date)->subHours(24) : null;
@@ -86,22 +91,18 @@ class TicketController extends Controller
             $event->update(['tickets_sold' => $newTicketsSold]);
 
             $batchCode = uniqid('batch_') . '-' . $request->event_id;
+            $userId = Auth::user()->id;
             $sensitiveData = [
-                'user_id' => Auth::user()->id,
+                'user_id' => $userId,
                 'event_id' => $request->event_id,
                 'batch_code' => $batchCode,
-                'ticket_details' => $ticketDetails,
-                'total_price' => $totalPrice
             ];
-
-            $userId = Auth::user()->id;
-
             $encryptedData = AesHelper::encrypt($sensitiveData);
-            $qrCodeSvg = QrCode::size(200)->generate(url('/') . '?ticket=' . urlencode($encryptedData));
-            $fileName = 'qrcodes/' . time() . '_' . $batchCode . '.svg';
+            $qrCodeSvg = QrCode::size(200)->generate(url('admin/verify-ticket') . '?data=' . urlencode($encryptedData));
+            $fileName = 'qrcodes/' . time() . '_' . Str::random(8) . '-' . $event->id . '.svg';
             Storage::disk('public')->put($fileName, $qrCodeSvg);
 
-            Ticket::create([
+            $ticket = Ticket::create([
                 'user_id' => $userId,
                 'event_id' => $request->event_id,
                 'batch_code' => $batchCode,
@@ -115,7 +116,8 @@ class TicketController extends Controller
                 'updated_by' => $userId,
             ]);
 
-            return redirect()->back()->with(['status' => true, 'message' => 'Tickets created successfully.']);
+            Mail::to(Auth::user()->email)->send(new SendTicket($ticket));
+            return response()->json(['status' => true, 'message' => 'Tickets created successfully.']);
         } catch (\Exception $e) {
             Log::error('Error purchasing ticket: ' . $e->getMessage());
             return redirect()->back()->with(['status' => 0, 'message' => 'Error purchasing ticket: ' . $e->getMessage()]);
@@ -205,18 +207,16 @@ class TicketController extends Controller
             $event->update(['tickets_sold' => $newTicketsSold]);
 
             $batchCode = $batch_code;
+            $userId = Auth::user()->id;
             $sensitiveData = [
-                'user_id' => Auth::user()->id,
+                'user_id' => $userId,
                 'event_id' => $request->event_id,
                 'batch_code' => $batchCode,
-                'ticket_details' => $ticketDetails,
-                'total_price' => $totalPrice
             ];
-            $userId = Auth::user()->id;
 
             $encryptedData = AesHelper::encrypt($sensitiveData);
-            $qrCodeSvg = QrCode::size(200)->generate(url('/') . '?ticket=' . urlencode($encryptedData));
-            $fileName = 'qrcodes/' . time() . '_' . $batch_code . '.svg';
+            $qrCodeSvg = QrCode::size(200)->generate(url('admin/verify-ticket') . '?data=' . urlencode($encryptedData));
+            $fileName = 'qrcodes/' . time() . '_' . Str::random(8) . '-' . $event->id . '.svg';
 
             if ($ticket->qr_code != 0 && Storage::disk('public')->exists($ticket->qr_code)) {
                 Storage::disk('public')->delete($ticket->qr_code);
@@ -237,6 +237,8 @@ class TicketController extends Controller
                 'updated_by' => $userId,
                 'updated_at' => now(),
             ]);
+
+            Mail::to(Auth::user()->email)->send(new SendTicket($ticket));
 
             return redirect()->back()->with(['status' => true, 'message' => 'Tickets updated successfully.']);
         } catch (\Exception $e) {
