@@ -52,8 +52,14 @@ class SendTicket extends Mailable
      */
     public function attachments(): array
     {
-        return [
-            Attachment::fromPath(Storage::disk('public')->path($this->ticket->qr_code))
-        ];
+        $path = Storage::disk('public')->path($this->ticket->qr_code);
+
+        if (file_exists($path)) {
+            return [
+                Attachment::fromPath($path)
+            ];
+        }
+
+        return [];
     }
 }
