@@ -9,6 +9,7 @@ use App\Models\Ticket;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -43,6 +44,9 @@ class TicketController extends Controller
                 'ticket_details.*.category' => 'required|string',
                 'ticket_details.*.quantity' => 'required|integer',
             ]);
+
+            DB::beginTransaction();
+
             $event = Event::findOrFail($request->event_id);
             if ($event->status == 'cancelled') {
                 return redirect()->back()->with('error', 'Sorry, The event has been cancelled! Please stay tuned for more such events!');
@@ -113,10 +117,14 @@ class TicketController extends Controller
                 'updated_by' => $userId,
             ]);
 
+            DB::commit();
+
             Mail::to(Auth::user()->email)->send(new SendTicket($ticket));
+
             return redirect()->route('user.tickets.show')->with(['status' => true, 'message' => 'Tickets created successfully.']);
         } catch (\Exception $e) {
             Log::error('Error purchasing ticket: ' . $e->getMessage());
+            DB::rollback();
             return redirect()->back()->with(['status' => 0, 'message' => 'Error purchasing ticket: ' . $e->getMessage()]);
         }
     }
@@ -156,6 +164,8 @@ class TicketController extends Controller
                 'ticket_details.*.category' => 'required|string',
                 'ticket_details.*.quantity' => 'required|integer',
             ]);
+
+            DB::beginTransaction();
 
             $event = Event::findOrFail($request->event_id);
             $deadline = $event->start_date ? Carbon::parse($event->start_date)->subHours(24) : null;
@@ -235,11 +245,14 @@ class TicketController extends Controller
                 'updated_at' => now(),
             ]);
 
+            DB::commit();
+
             Mail::to(Auth::user()->email)->send(new SendTicket($ticket));
 
             return redirect()->route('user.tickets.show')->with(['status' => true, 'message' => 'Tickets updated successfully.']);
         } catch (\Exception $e) {
             Log::error('Error updating ticket: ' . $e->getMessage());
+            DB::rollback();
             return redirect()->back()->with(['status' => 0, 'message' => 'Error updating ticket: ' . $e->getMessage()]);
         }
     }
@@ -253,6 +266,8 @@ class TicketController extends Controller
             $ticket = Ticket::where('batch_code', $batch_code)
                 ->where('user_id', Auth::user()->id)
                 ->firstOrFail();
+
+            DB::beginTransaction();
 
             $event = Event::findOrFail($ticket->event_id);
 
@@ -272,12 +287,15 @@ class TicketController extends Controller
 
             $event->update(['tickets_sold' => $newTicketSold]);
 
+            DB::commit();
+
             return redirect()->back()->with([
                 'status' => true,
                 'message' => 'Ticket deleted successfully.'
             ]);
         } catch (\Exception $e) {
             Log::error('Error deleting ticket: ' . $e->getMessage());
+            DB::rollback();
             return redirect()->back()->with([
                 'status' => 0,
                 'message' => 'Error deleting ticket: ' . $e->getMessage()
