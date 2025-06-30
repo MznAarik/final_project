@@ -9,6 +9,7 @@ use App\Models\Ticket;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -36,6 +37,7 @@ class TicketController extends Controller
 
     public function store(Request $request)
     {
+        DB::beginTransaction();
         try {
             $request->validate([
                 'event_id' => 'required|exists:events,id',
@@ -114,9 +116,13 @@ class TicketController extends Controller
             ]);
 
             Mail::to(Auth::user()->email)->send(new SendTicket($ticket));
+
+            DB::commit();
+
             return redirect()->route('user.tickets.show')->with(['status' => true, 'message' => 'Tickets created successfully.']);
         } catch (\Exception $e) {
             Log::error('Error purchasing ticket: ' . $e->getMessage());
+            DB::rollback();
             return redirect()->back()->with(['status' => 0, 'message' => 'Error purchasing ticket: ' . $e->getMessage()]);
         }
     }
@@ -149,6 +155,7 @@ class TicketController extends Controller
      */
     public function update(Request $request, string $batch_code)
     {
+        DB::beginTransaction();
         try {
             $request->validate([
                 'event_id' => 'required|exists:events,id',
@@ -237,9 +244,12 @@ class TicketController extends Controller
 
             Mail::to(Auth::user()->email)->send(new SendTicket($ticket));
 
+            DB::commit();
+
             return redirect()->route('user.tickets.show')->with(['status' => true, 'message' => 'Tickets updated successfully.']);
         } catch (\Exception $e) {
             Log::error('Error updating ticket: ' . $e->getMessage());
+            DB::rollback();
             return redirect()->back()->with(['status' => 0, 'message' => 'Error updating ticket: ' . $e->getMessage()]);
         }
     }
@@ -250,6 +260,7 @@ class TicketController extends Controller
     public function destroy(string $batch_code)
     {
         try {
+            DB::beginTransaction();
             $ticket = Ticket::where('batch_code', $batch_code)
                 ->where('user_id', Auth::user()->id)
                 ->firstOrFail();
@@ -272,12 +283,15 @@ class TicketController extends Controller
 
             $event->update(['tickets_sold' => $newTicketSold]);
 
+            DB::commit();
+
             return redirect()->back()->with([
                 'status' => true,
                 'message' => 'Ticket deleted successfully.'
             ]);
         } catch (\Exception $e) {
             Log::error('Error deleting ticket: ' . $e->getMessage());
+            DB::rollback();
             return redirect()->back()->with([
                 'status' => 0,
                 'message' => 'Error deleting ticket: ' . $e->getMessage()
