@@ -37,7 +37,6 @@ class TicketController extends Controller
 
     public function store(Request $request)
     {
-        DB::beginTransaction();
         try {
             $request->validate([
                 'event_id' => 'required|exists:events,id',
@@ -45,6 +44,9 @@ class TicketController extends Controller
                 'ticket_details.*.category' => 'required|string',
                 'ticket_details.*.quantity' => 'required|integer',
             ]);
+
+            DB::beginTransaction();
+
             $event = Event::findOrFail($request->event_id);
             if ($event->status == 'cancelled') {
                 return redirect()->back()->with('error', 'Sorry, The event has been cancelled! Please stay tuned for more such events!');
@@ -115,9 +117,9 @@ class TicketController extends Controller
                 'updated_by' => $userId,
             ]);
 
-            Mail::to(Auth::user()->email)->send(new SendTicket($ticket));
-
             DB::commit();
+
+            Mail::to(Auth::user()->email)->send(new SendTicket($ticket));
 
             return redirect()->route('user.tickets.show')->with(['status' => true, 'message' => 'Tickets created successfully.']);
         } catch (\Exception $e) {
@@ -155,7 +157,6 @@ class TicketController extends Controller
      */
     public function update(Request $request, string $batch_code)
     {
-        DB::beginTransaction();
         try {
             $request->validate([
                 'event_id' => 'required|exists:events,id',
@@ -163,6 +164,8 @@ class TicketController extends Controller
                 'ticket_details.*.category' => 'required|string',
                 'ticket_details.*.quantity' => 'required|integer',
             ]);
+
+            DB::beginTransaction();
 
             $event = Event::findOrFail($request->event_id);
             $deadline = $event->start_date ? Carbon::parse($event->start_date)->subHours(24) : null;
@@ -242,9 +245,9 @@ class TicketController extends Controller
                 'updated_at' => now(),
             ]);
 
-            Mail::to(Auth::user()->email)->send(new SendTicket($ticket));
-
             DB::commit();
+
+            Mail::to(Auth::user()->email)->send(new SendTicket($ticket));
 
             return redirect()->route('user.tickets.show')->with(['status' => true, 'message' => 'Tickets updated successfully.']);
         } catch (\Exception $e) {
@@ -260,10 +263,11 @@ class TicketController extends Controller
     public function destroy(string $batch_code)
     {
         try {
-            DB::beginTransaction();
             $ticket = Ticket::where('batch_code', $batch_code)
                 ->where('user_id', Auth::user()->id)
                 ->firstOrFail();
+
+            DB::beginTransaction();
 
             $event = Event::findOrFail($ticket->event_id);
 
