@@ -28,7 +28,8 @@ class Event extends Model
         'image_url',
         'currency',
         'created_by',
-        'updated_by'
+        'updated_by',
+        'popularity_score',
     ];
 
     public function user()
@@ -39,5 +40,20 @@ class Event extends Model
     public function tickets()
     {
         return $this->hasMany(Ticket::class, 'event_id');
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class, 'country_id');
+    }
+
+    public function province()
+    {
+        return $this->belongsTo(Province::class, 'province_id');
+    }
+
+    public function district()
+    {
+        return $this->belongsTo(District::class, 'district_id');
     }
 }

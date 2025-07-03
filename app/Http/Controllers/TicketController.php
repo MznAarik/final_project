@@ -44,7 +44,6 @@ class TicketController extends Controller
                 'ticket_details.*.category' => 'required|string',
                 'ticket_details.*.quantity' => 'required|integer',
             ]);
-
             DB::beginTransaction();
 
             $event = Event::findOrFail($request->event_id);
@@ -86,10 +85,17 @@ class TicketController extends Controller
 
             $newTicketsSold = $ticketsSold + $totalQuantity;
             if ($newTicketsSold > $eventCapacity) {
-                return redirect()->back()->with(['status' => false, 'message' => 'Sorry! The tickets are sold.'], 400);
+                return redirect()->back()->with(['status' => false, 'message' => 'Sorry! All the tickets are sold out.'], 400);
             }
+
+
             $event = Event::where('id', $event->id)->firstOrFail();
-            $event->update(['tickets_sold' => $newTicketsSold]);
+            $popularityScore = ($event->tickets_sold * 5) + (10 / (now()->diffInDays($event->created_at) + 1));
+
+            $event->update([
+                'tickets_sold' => $newTicketsSold,
+                'popularity_score' => $popularityScore,
+            ]);
 
             $batchCode = uniqid('batch_') . '-' . $request->event_id;
             $userId = Auth::user()->id;
@@ -211,7 +217,12 @@ class TicketController extends Controller
                 return redirect()->back()->with(['status' => false, 'message' => 'Sorry! The tickets are sold.'], 400);
             }
 
-            $event->update(['tickets_sold' => $newTicketsSold]);
+            $popularityScore = ($event->tickets_sold * 5) + (10 / (now()->diffInDays($event->created_at) + 1));
+
+            $event->update([
+                'tickets_sold' => $newTicketsSold,
+                'popularity_score' => $popularityScore,
+            ]);
 
             $batchCode = $batch_code;
             $userId = Auth::user()->id;
