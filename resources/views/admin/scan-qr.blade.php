@@ -197,14 +197,12 @@
                     lastScanTime = now;
 
                     // Send to backend for validation
-                    debugger;
                     const response = await fetch(`/admin/verify-ticket?data=${encodeURIComponent(encryptedData)}`, {
                         headers: { 'Accept': 'application/json' }
                     });
                     console.log(response);
                     const responseData = await response.json();
                     console.log('Response data:', responseData);
-                    debugger;
                     // Update UI with scan and validation result
                     const scanResult = `
                         <div class="scan-entry">
@@ -221,14 +219,12 @@
                     console.log('Cooldown started for 6 seconds');
                 }
             } catch (err) {
-                debugger;
                 const timestamp = new Date().toLocaleString('en-US', { timeZone: 'Asia/Kathmandu' });
                 const errorMsg = `<p class="error">Error processing QR code: ${err.message} at ${timestamp}</p>`;
                 console.error('Error processing frame: ', err);
                 resultDiv.innerHTML = errorMsg + resultDiv.innerHTML;
                 resultDiv.classList.add('error');
                 lastScanTime = now;
-                debugger;
             }
 
             requestAnimationFrame(scan);
