@@ -61,7 +61,7 @@ class AdminController extends Controller
             Log::warning('Ticket validation failed: No matching ticket or invalid conditions');
             return response()->json([
                 'status' => 'invalid',
-                'message' => 'Invalid! Ticket aready verified',
+                'message' => 'Invalid! Ticket already verified or expired',
             ], 400);
         } catch (\Exception $e) {
             Log::error('QR validation error:', [
