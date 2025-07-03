@@ -16,7 +16,7 @@ class CheckRole
     {
         // If the user is not authenticated
         if (!Auth::check()) {
-            return redirect()->route('admin.dashboard')->with('error', 'Please login to access this page.');
+            return redirect()->route('home')->with('error', 'Please login to access this page.');
         }
 
         $user = Auth::user();

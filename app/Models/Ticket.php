@@ -24,6 +24,7 @@ class Ticket extends Model
         'qr_code',
         'created_by',
         'updated_by',
+        'delete_flag'
     ];
 
     protected $casts = [

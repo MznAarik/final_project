@@ -3,13 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\AesHelper;
+use App\Mail\SendTicket;
 use App\Models\Event;
 use App\Models\Ticket;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class TicketController extends Controller
@@ -40,10 +44,11 @@ class TicketController extends Controller
                 'ticket_details.*.category' => 'required|string',
                 'ticket_details.*.quantity' => 'required|integer',
             ]);
+            DB::beginTransaction();
 
             $event = Event::findOrFail($request->event_id);
             if ($event->status == 'cancelled') {
-                return redirect()->back()->with('error', 'Sorry, The event has be cancelled! Please stay tuned for more such events!');
+                return redirect()->back()->with('error', 'Sorry, The event has been cancelled! Please stay tuned for more such events!');
             }
 
             $deadline = $event->start_date ? Carbon::parse($event->start_date)->subHours(24) : null;
@@ -80,28 +85,31 @@ class TicketController extends Controller
 
             $newTicketsSold = $ticketsSold + $totalQuantity;
             if ($newTicketsSold > $eventCapacity) {
-                return redirect()->back()->with(['status' => false, 'message' => 'Sorry! The tickets are sold.'], 400);
+                return redirect()->back()->with(['status' => false, 'message' => 'Sorry! All the tickets are sold out.'], 400);
             }
+
+
             $event = Event::where('id', $event->id)->firstOrFail();
-            $event->update(['tickets_sold' => $newTicketsSold]);
+            $popularityScore = ($event->tickets_sold * 5) + (10 / (now()->diffInDays($event->created_at) + 1));
+
+            $event->update([
+                'tickets_sold' => $newTicketsSold,
+                'popularity_score' => $popularityScore,
+            ]);
 
             $batchCode = uniqid('batch_') . '-' . $request->event_id;
+            $userId = Auth::user()->id;
             $sensitiveData = [
-                'user_id' => Auth::user()->id,
+                'user_id' => $userId,
                 'event_id' => $request->event_id,
                 'batch_code' => $batchCode,
-                'ticket_details' => $ticketDetails,
-                'total_price' => $totalPrice
             ];
-
-            $userId = Auth::user()->id;
-
             $encryptedData = AesHelper::encrypt($sensitiveData);
-            $qrCodeSvg = QrCode::size(200)->generate(url('/') . '?ticket=' . urlencode($encryptedData));
-            $fileName = 'qrcodes/' . time() . '_' . $batchCode . '.svg';
+            $qrCodeSvg = QrCode::size(200)->generate(url('admin/verify-ticket') . '?data=' . urlencode($encryptedData));
+            $fileName = 'qrcodes/' . time() . '_' . Str::random(8) . uniqid() . '.svg';
             Storage::disk('public')->put($fileName, $qrCodeSvg);
 
-            Ticket::create([
+            $ticket = Ticket::create([
                 'user_id' => $userId,
                 'event_id' => $request->event_id,
                 'batch_code' => $batchCode,
@@ -115,9 +123,14 @@ class TicketController extends Controller
                 'updated_by' => $userId,
             ]);
 
-            return redirect()->back()->with(['status' => true, 'message' => 'Tickets created successfully.']);
+            DB::commit();
+
+            Mail::to(Auth::user()->email)->send(new SendTicket($ticket));
+
+            return redirect()->route('user.tickets.show')->with(['status' => true, 'message' => 'Tickets created successfully.']);
         } catch (\Exception $e) {
             Log::error('Error purchasing ticket: ' . $e->getMessage());
+            DB::rollback();
             return redirect()->back()->with(['status' => 0, 'message' => 'Error purchasing ticket: ' . $e->getMessage()]);
         }
     }
@@ -158,14 +171,16 @@ class TicketController extends Controller
                 'ticket_details.*.quantity' => 'required|integer',
             ]);
 
+            DB::beginTransaction();
+
             $event = Event::findOrFail($request->event_id);
             $deadline = $event->start_date ? Carbon::parse($event->start_date)->subHours(24) : null;
             $categoryData = json_decode($event->ticket_category_price, true);
             $ticketsSold = $event->tickets_sold ?? 0;
             $eventCapacity = $event->capacity ?? 0;
-
             $ticket = Ticket::where('batch_code', $batch_code)
-                ->where('status', '!=', 'cancelled')->firstOrFail();
+                ->where('status', '!=', 'cancelled')
+                ->where('delete_flag', 0)->firstOrFail();
             $previousTicketDetails = json_decode($ticket->ticket_details, true) ?? [];
             $previousTotalQuantity = $ticket->total_quantity ?? array_sum(array_column($previousTicketDetails, 'quantity'));
 
@@ -202,21 +217,24 @@ class TicketController extends Controller
                 return redirect()->back()->with(['status' => false, 'message' => 'Sorry! The tickets are sold.'], 400);
             }
 
-            $event->update(['tickets_sold' => $newTicketsSold]);
+            $popularityScore = ($event->tickets_sold * 5) + (10 / (now()->diffInDays($event->created_at) + 1));
+
+            $event->update([
+                'tickets_sold' => $newTicketsSold,
+                'popularity_score' => $popularityScore,
+            ]);
 
             $batchCode = $batch_code;
+            $userId = Auth::user()->id;
             $sensitiveData = [
-                'user_id' => Auth::user()->id,
+                'user_id' => $userId,
                 'event_id' => $request->event_id,
                 'batch_code' => $batchCode,
-                'ticket_details' => $ticketDetails,
-                'total_price' => $totalPrice
             ];
-            $userId = Auth::user()->id;
 
             $encryptedData = AesHelper::encrypt($sensitiveData);
-            $qrCodeSvg = QrCode::size(200)->generate(url('/') . '?ticket=' . urlencode($encryptedData));
-            $fileName = 'qrcodes/' . time() . '_' . $batch_code . '.svg';
+            $qrCodeSvg = QrCode::size(200)->generate(url('admin/verify-ticket') . '?data=' . urlencode($encryptedData));
+            $fileName = 'qrcodes/' . time() . '_' . Str::random(8) . uniqid() . '.svg';
 
             if ($ticket->qr_code != 0 && Storage::disk('public')->exists($ticket->qr_code)) {
                 Storage::disk('public')->delete($ticket->qr_code);
@@ -238,9 +256,14 @@ class TicketController extends Controller
                 'updated_at' => now(),
             ]);
 
-            return redirect()->back()->with(['status' => true, 'message' => 'Tickets updated successfully.']);
+            DB::commit();
+
+            Mail::to(Auth::user()->email)->send(new SendTicket($ticket));
+
+            return redirect()->route('user.tickets.show')->with(['status' => true, 'message' => 'Tickets updated successfully.']);
         } catch (\Exception $e) {
             Log::error('Error updating ticket: ' . $e->getMessage());
+            DB::rollback();
             return redirect()->back()->with(['status' => 0, 'message' => 'Error updating ticket: ' . $e->getMessage()]);
         }
     }
@@ -255,6 +278,8 @@ class TicketController extends Controller
                 ->where('user_id', Auth::user()->id)
                 ->firstOrFail();
 
+            DB::beginTransaction();
+
             $event = Event::findOrFail($ticket->event_id);
 
             // Delete QR code if it exists
@@ -264,13 +289,16 @@ class TicketController extends Controller
 
             $ticket->delete();
 
+            // to update the total tickets sold required for the event
             $newTicketSold = Ticket::where('event_id', $event->id)
                 ->where('batch_code', '!=', $batch_code)
-                ->where('status', '!=', 'cancelled') // Adjust based on your logic
-                ->where('delete_flag', 0) // Adjust based on your logic
+                ->where('status', '!=', 'cancelled')
+                ->where('delete_flag', 0)
                 ->sum('total_quantity');
 
             $event->update(['tickets_sold' => $newTicketSold]);
+
+            DB::commit();
 
             return redirect()->back()->with([
                 'status' => true,
@@ -278,6 +306,7 @@ class TicketController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Error deleting ticket: ' . $e->getMessage());
+            DB::rollback();
             return redirect()->back()->with([
                 'status' => 0,
                 'message' => 'Error deleting ticket: ' . $e->getMessage()

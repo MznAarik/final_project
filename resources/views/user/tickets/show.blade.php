@@ -1,53 +1,52 @@
+@php
+    $categories = json_decode($ticket->ticket_details, true);
+@endphp
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Show Tickets</title>
+    <title>Your Ticket</title>
 </head>
 
-@php
-    $categories = json_decode($ticket->ticket_details, true);
-@endphp
+<body style="font-family: Arial, sans-serif; margin: 0; padding: 0; text-transform:capitalize;">
+    <div style="width:100%; padding:40px 0; text-align:center;">
+        <div
+            style="max-width: 400px; margin: auto; border:1px solid #ccc; border-radius:5px; background-color:#f9f9f9; padding:15px;">
+            <h2>Your Ticket</h2>
 
-<body>
-    <h1>Ticket Details</h1>
-    <p><strong>ID:</strong> {{ $ticket->id }}</p>
-    <p>User Name: {{ $ticket->user->name }}</p>
-    <p>Event Name: {{ $ticket->event->name }}</p>
-    <p>Event Date: {{ $ticket->event->start_date }}</p>
-    <p>Event Location: {{ $ticket->event->location }}</p>
-    <p><strong>Status:</strong> {{ $ticket->status }}</p>
-    <p><strong>Batch Number:</strong> {{ $ticket->batch_code}}</p>
-    <h3>Ticket Categories</h3>
-    <ul>
-        @foreach($categories as $item)
-            <li>
-                <strong>Category:</strong>
-                <t />{{ $item['category'] }} <br>
-                <strong>Price:</strong>
-                <t />{{ $ticket->event['currency']}}
-                <t />{{ number_format($item['price'], 2) }} <br>
-                <strong>Quantity:</strong>
-                <t />{{ $item['quantity'] }} <br>
-                <strong>Subtotal:</strong>
-                <t />
-                {{ $ticket->event['currency']}}
-                <t />{{ number_format($item['price'] * $item['quantity'], 2) }}
-            </li>
-        @endforeach
-    </ul>
-    <p><strong>Total Price:</strong>
-        <t />{{ $ticket->event['currency']}}
-        <t />{{ $ticket->total_price }}
-    </p>
-    <p><strong>Deadline:</strong>
-        <t />{{ $ticket->deadline }}
-    </p>
-    <p><strong>Cancellation Reason:</strong>
-        <t /> {{ $ticket->cancellation_reason }}
-    </p>
+            @if ($ticket->qr_code)
+                <img src="{{ Storage::url($ticket->qr_code) }}" alt="Ticket QR Code"
+                    style="width:200px; height:200px; border:1px solid #ccc;">
+            @else
+                <p style="color:red;">No QR code available for this ticket.</p>
+            @endif
+
+            <p><strong>Event Name:</strong> {{ $ticket->event->name }}</p>
+
+            <div style="margin:0 80px;">
+                <ul style="padding: 0; list-style: none; text-align: left;">
+                    @foreach($categories as $item)
+                        <li style="margin-bottom: 10px;">
+                            <strong>Seat Category:</strong> {{ $item['category'] }}<br>
+                            <strong>Quantity:</strong> {{ $item['quantity'] }}<br>
+                            <strong>Subtotal:</strong> {{ $ticket->event['currency'] }}
+                            {{ number_format($item['price'] * $item['quantity'], 2) }}
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+
+            <p><strong>Total Price: <u>{{ $ticket->event['currency'] }} {{ $ticket->total_price }}</u></strong></p>
+            <p><strong>Deadline:</strong> {{ $ticket->deadline }}</p>
+            <p><strong>Cancellation Reason:</strong> {{ $ticket->cancellation_reason }}</p>
+        </div>
+
+        <p style="font-size:14px; color:#555; margin-top:15px;">
+            To use your ticket, show this QR code at the event.
+        </p>
+    </div>
 </body>
 
 </html>
