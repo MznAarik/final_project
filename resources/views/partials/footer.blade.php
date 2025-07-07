@@ -28,19 +28,19 @@
     <div class="footer-section">
       <h4>Follow Us</h4>
       <div class="social-icons">
-  <a href="#" aria-label="Facebook">
-    <i class="fab fa-facebook-f"></i> Facebook
-  </a>
-  <a href="#" aria-label="Twitter">
-    <i class="fab fa-twitter"></i> Twitter
-  </a>
-  <a href="#" aria-label="Instagram">
-    <i class="fab fa-instagram"></i> Instagram
-  </a>
-  <a href="#" aria-label="YouTube">
-    <i class="fab fa-youtube"></i> YouTube
-  </a>
-</div>
+        <a href="#" aria-label="Facebook">
+          <i class="fab fa-facebook-f"></i> Facebook
+        </a>
+        <a href="#" aria-label="Twitter">
+          <i class="fab fa-twitter"></i> Twitter
+        </a>
+        <a href="#" aria-label="Instagram">
+          <i class="fab fa-instagram"></i> Instagram
+        </a>
+        <a href="#" aria-label="YouTube">
+          <i class="fab fa-youtube"></i> YouTube
+        </a>
+      </div>
 
     </div>
   </div>

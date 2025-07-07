@@ -14,18 +14,24 @@
     <li><a href="{{ url('buy_tickets') }}"><i class="fa fa-ticket-alt"></i> Buy Tickets</a></li>
     <li><a href="{{ url('upcoming') }}"><i class="fa fa-calendar-alt"></i> Upcoming</a></li>
     <li><a href="{{ url('popular') }}"><i class="fa fa-fire"></i> Popular</a></li>
-    <li><a href="{{ url('cart') }}"><i class="fa fa-shopping-cart"></i> Cart</a></li>
-    <li><a href="{{ url('my-tickets') }}"><i class="fa fa-clipboard-list"></i> My Tickets</a></li>
 
     <li class="user-dropdown">
       @if(Auth::check())
       <a href="#" onclick="toggleDropdown(event)"><i class="fa fa-user-check"></i></a>
       <div class="dropdown-menu">
-      <a href="{{ url('profile') }}" class="dropdown-button"><i class="fa fa-user"></i> Profile</a>
+
+      <a href="{{ url('profile') }}" class="dropdown-button block py-1"><i
+        class="fa fa-user mr-2"></i>{{ Auth::user()->name }}</a>
+
+      <a href="{{ url('cart') }}" class="dropdown-button block py-1"><i class="fa fa-shopping-cart mr-2"></i>My
+        Cart</a>
+      <a href="{{ url('my-tickets') }}" class="dropdown-button block py-1"><i class="fa fa-clipboard-list mr-2"></i>My
+        Tickets</a>
+
       <form action="{{ route('logout') }}" id="logout-form" style="display: none;">@csrf</form>
-      <a href="#" class="dropdown-button"
+      <a href="#" class="dropdown-button block py-1"
         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-        <i class="fa fa-sign-out-alt"></i> Logout
+        <i class="fa fa-sign-out-alt mr-2"></i>Logout
       </a>
       </div>
     @else
@@ -53,11 +59,11 @@
       <li><a href="{{ url('buy_tickets') }}"><i class="fa fa-ticket-alt"></i> Buy Tickets</a></li>
       <li><a href="{{ url('upcoming') }}"><i class="fa fa-calendar-alt"></i> Upcoming</a></li>
       <li><a href="{{ url('popular') }}"><i class="fa fa-fire"></i> Popular</a></li>
-      <li><a href="{{ url('cart') }}"><i class="fa fa-shopping-cart"></i> Cart</a></li>
+      <li><a href="{{ url('cart') }}"><i class="fa fa-shopping-cart"></i> My Cart</a></li>
       <li><a href="{{ url('my-tickets') }}"><i class="fa fa-clipboard-list"></i> My Tickets</a></li>
 
       @if(Auth::check())
-      <li><a href="{{ url('profile') }}"><i class="fa fa-user"></i> Profile</a></li>
+      <li><a href="{{ url('profile') }}"><i class="fa fa-user"></i> Welcome, {{ Auth::user()->name }}</a></li>
       <li>
       <form action="{{ route('logout') }}" id="mobile-logout-form" style="display: none;">@csrf</form>
       <a href="#" onclick="event.preventDefault(); document.getElementById('mobile-logout-form').submit();">

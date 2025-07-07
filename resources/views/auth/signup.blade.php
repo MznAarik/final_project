@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sign Up</title>
   <style>
+    @tailwind utilities;
+
     /* Modal Background */
 
     #signupModalUnique {
@@ -47,9 +49,12 @@
 
     /* Modal Title */
     #signupTitleUnique {
+      font-size: 3.5rem;
       text-align: center;
-      color: #860303;
-      margin-bottom: 1.5rem;
+      color: #ff3300;
+      font-weight: 700;
+      font-family: 'Rakkas';
+
     }
 
     /* Close Button */
@@ -155,15 +160,15 @@
     }
 
     .alreadyLoginUnique a {
-      color: #860303;
-      text-decoration: underline;
+      color: #ff3300;
       font-weight: bold;
       transition: all 0.3s ease;
     }
 
     .alreadyLoginUnique a:hover {
       text-decoration: none;
-      color: #ff3300;
+      color: #cc001f;
+      text-decoration: underline;
     }
 
     /* Global Alert Styles */
@@ -476,17 +481,27 @@
             title="Please write correct country." />
         </div>
 
-        <div class="rightColumnUnique">
+        <div class="rightColumnUnique ">
           <label for="emailUnique">Email</label>
           <input type="email" name="email" id="emailUnique" placeholder="Enter your email" value="{{ old('email') }}"
-            required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address." />
+            required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address."
+            style="text-transform: none" />
 
           <label for="passwordUnique">Password</label>
-          <input type="password" name="password" id="passwordUnique" placeholder="Password" required>
+          <input style="text-transform: none;" type="password" name="password" id="passwordUnique"
+            placeholder="Enter password">
+          <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+            onclick="togglePasswordVisibility()" style="position: relative; bottom: 30px; left: 370px; ">
+            <i id="eye-icon" class="fas fa-eye"></i>
+          </span>
 
           <label for="passwordConfirmationUnique">Confirm Password</label>
-          <input type="password" name="password_confirmation" id="passwordConfirmationUnique"
-            placeholder="Confirm Password" required />
+          <input style="text-transform: none" type="password" name="password_confirmation"
+            id="passwordConfirmationUnique" placeholder="Confirm Password" required />
+          <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+            onclick="confirmTogglePasswordVisibility()" style="position: relative; bottom: 30px; left: 370px;">
+            <i id="eye-icon" class="fas fa-eye"></i>
+          </span>
 
           <script>
             const password = document.getElementById('passwordUnique');
@@ -499,6 +514,33 @@
                 confirmPassword.setCustomValidity("");
               }
             });
+
+            function togglePasswordVisibility(e) {
+              const passwordInput = document.getElementById('passwordUnique');
+              const eyeIcon = document.getElementById('eye-icon');
+              if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+              } else {
+                passwordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+              }
+            }
+            function confirmTogglePasswordVisibility(e) {
+              const confirmPasswordInput = document.getElementById('passwordConfirmationUnique');
+              const eyeIcon = document.getElementById('eye-icon');
+              if (confirmPasswordInput.type === 'password') {
+                confirmPasswordInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+              } else {
+                confirmPasswordInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+              }
+            }
           </script>
 
 
