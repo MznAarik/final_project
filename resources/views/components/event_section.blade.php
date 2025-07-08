@@ -7,11 +7,11 @@
 @endphp
 
 <section class="event-section">
-    <h2 class="text-2xl font-bold mb-6 capitalize">Our Events!</h2>
+    <h2 class="text-2xl font-bold mb-6 capitalize">{{ $title }}</h2>
     @foreach ($prioritizedStatuses as $status)
         @if ($groupedEvents->has($status) && $groupedEvents[$status]->isNotEmpty())
 
-            <div class="event-cards mb-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center">
+            <div class="event-cards">
                 @foreach ($groupedEvents[$status] as $event)
                     @php
                         $ticketData = is_array($event->ticket_category_price)
@@ -23,7 +23,6 @@
                         $maxPrice = $prices->max();
                         $priceRange = $prices->isEmpty() ? 'N/A' : ($minPrice == $maxPrice ? $minPrice : "$minPrice - $maxPrice");
                     @endphp
-
                     <div class="event-card">
                         <x-event-card :image="url('storage/' . $event->img_path)" :name="$event->name" :location="$event->location"
                             :price="$priceRange" :status="$event->status" :date="$event->start_date" button="Book Now" />

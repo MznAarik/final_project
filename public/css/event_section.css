@@ -187,12 +187,12 @@
 
 /* Optional: color coding by status */
 .ribbon.upcoming {
-    background-color: #38c172;
+    background-color: #e3342f;
     /* green */
 }
 
 .ribbon.active {
-    background-color: #3490dc;
+    background-color: #38c172;
     /* blue */
 }
 

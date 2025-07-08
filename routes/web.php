@@ -47,7 +47,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
 });
 
 Route::prefix('events')->middleware('role:admin')->group(function () {
-    Route::get('/', [EventController::class, 'index'])->name('events.index');
     Route::get('create', [EventController::class, 'create'])->name('events.create');
     Route::post('store', [EventController::class, 'store'])->name('events.store');
     Route::get('show/{id}', [EventController::class, 'show'])->name('events.show');
