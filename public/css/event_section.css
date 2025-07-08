@@ -6,41 +6,45 @@
 
 .event-section h2 {
     font-size: 2.2rem;
-    margin-bottom: 1.5rem;
+    margin: 3rem 0 1.5rem 0;
     color: #ff0000;
     text-align: center;
 }
 
-/* Swiper Container */
 .swiper-container {
     width: 100%;
-    overflow: hidden; /* Prevent overflow */
+    overflow: hidden;
 }
 
 /* Swiper Wrapper */
 .swiper-wrapper {
-    display: flex; /* Ensure horizontal layout */
+    display: flex;
+    /* Ensure horizontal layout */
 }
 
 /* Event Cards */
-.event-cards {
-    display: flex; /* Maintain the flex layout for cards */
-    flex-direction: row; /* force horizontal */
-    flex-wrap: nowrap; /* Prevent wrapping */
+/* .event-cards {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
     justify-content: center;
-    gap: 2rem; /* Maintain existing gap */
-}
+    gap: 2rem;
+} */
 
 /* Swiper Slide */
 .swiper-slide {
-    display: flex; /* Ensure slide behavior */
-    justify-content: center; /* Center content */
-    align-items: center; /* Center align vertically */
+    display: flex;
+    /* Ensure slide behavior */
+    justify-content: center;
+    /* Center content */
+    align-items: center;
+    /* Center align vertically */
 }
 
 /* Event Card */
 .event-card {
-    width: 350px; /* Maintain card width */
+    width: 350px;
+    /* Maintain card width */
     background: white;
     overflow: hidden;
     display: flex;
@@ -92,8 +96,10 @@
 }
 
 .event-card .event-price {
-    font-size: 1.1rem; /* Slightly larger font for emphasis */
-    color: #cc0000; /* Emphasized color */
+    font-size: 1.1rem;
+    /* Slightly larger font for emphasis */
+    color: #cc0000;
+    /* Emphasized color */
     margin: 0.2rem 0;
 }
 
@@ -121,7 +127,6 @@
 
 .event-card p {
     font-size: 0.9rem;
-    color: #333;
     margin: 0.2rem 0;
 }
 
@@ -153,7 +158,8 @@
 /* Card Content */
 .card-content {
     padding: 0.25rem;
-    text-align: left; /* Align all inner content left */
+    text-align: left;
+    /* Align all inner content left */
 }
 
 .event-card .event-location {
@@ -164,12 +170,53 @@
     width: 100%;
 }
 
+.ribbon {
+    position: fixed;
+    top: 1.75rem;
+    left: -45px;
+    background-color: #e3342f;
+    color: white;
+    padding: 0.25rem 3rem;
+    font-size: 0.75rem;
+    font-weight: bold;
+    transform: rotate(-46deg);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    width: max-content;
+}
+
+/* Optional: color coding by status */
+.ribbon.upcoming {
+    background-color: #e3342f;
+    /* green */
+}
+
+.ribbon.active {
+    background-color: #38c172;
+    /* blue */
+}
+
+.ribbon.completed {
+    background-color: #6c757d;
+    /* gray */
+}
+
+.ribbon.cancelled {
+    background-color: #f6993f;
+    /* orange */
+}
+
+
 .fas {
-    margin-right: 8px; /* Space between the icon and text */
-    font-size: 1.2em;  /* Adjust size */
-    vertical-align: text-top; /* Moves the icon up */
+    margin-right: 8px;
+    /* Space between the icon and text */
+    font-size: 1.2em;
+    /* Adjust size */
+    vertical-align: text-top;
+    /* Moves the icon up */
     position: relative;
-    top: -2px; /* Moves it up by 2px */
+    top: -2px;
+    /* Moves it up by 2px */
     transform: scale(0.8);
 }
 
@@ -179,31 +226,34 @@
     justify-content: space-between;
     align-items: center;
     margin-top: -0.3rem;
-    width: 100%; /* ensure button aligns right */
+    width: 100%;
+    /* ensure button aligns right */
 }
 
 .event-card .event-price {
     font-size: 1.1rem;
     color: #cc0000;
-    margin: 0; /* FIX: remove any extra spacing */
+    margin: 0;
+    /* FIX: remove any extra spacing */
 }
+
 .see-more-container {
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 1rem;
-  padding-right: 2rem;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+    padding-right: 2rem;
 }
 
 .see-more-link {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #cc0000;
-  text-decoration: none;
-  transition: color 0.3s ease;
-  
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #cc0000;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    margin-right: -50px;
 }
 
 .see-more-link:hover {
-  color: #ff3300;
+    color: #ff3300;
 }

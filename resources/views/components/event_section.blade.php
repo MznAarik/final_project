@@ -1,22 +1,34 @@
+@php
+    if (collect($recommendedEvents)->isEmpty()) {
+        return;
+    }
+    $groupedEvents = $recommendedEvents->groupBy('status');
+    $prioritizedStatuses = ['upcoming', 'active', 'completed', 'cancelled'];
+@endphp
 
-<section class="event-section"> 
-    <h2>{{ $title }}</h2>    
-    <div class="event-cards">
-        @foreach ([1, 2, 3, 4] as $id)
-            <div class="event-card">
-                <x-event-card 
-                    :image="asset('images/event1.jpg')" 
-                    :name="$title . ' ' . $id" 
-                    location="Kathmandu City Hall" 
-                    :price="300 + ($id * 50)" 
-                    button="Book Now" 
-                />
+<section class="event-section">
+    <h2 class="text-2xl font-bold mb-6 capitalize">{{ $title }}</h2>
+    @foreach ($prioritizedStatuses as $status)
+        @if ($groupedEvents->has($status) && $groupedEvents[$status]->isNotEmpty())
+
+            <div class="event-cards">
+                @foreach ($groupedEvents[$status] as $event)
+                    @php
+                        $ticketData = is_array($event->ticket_category_price)
+                            ? $event->ticket_category_price
+                            : json_decode($event->ticket_category_price, true);
+
+                        $prices = collect($ticketData)->pluck('price')->filter();
+                        $minPrice = $prices->min();
+                        $maxPrice = $prices->max();
+                        $priceRange = $prices->isEmpty() ? 'N/A' : ($minPrice == $maxPrice ? $minPrice : "$minPrice - $maxPrice");
+                    @endphp
+                    <div class="event-card">
+                        <x-event-card :image="url('storage/' . $event->img_path)" :name="$event->name" :location="$event->location"
+                            :price="$priceRange" :status="$event->status" :date="$event->start_date" button="Book Now" />
+                    </div>
+                @endforeach
             </div>
-        @endforeach
-    </div>
-       @if (!empty($seeMoreLink))
-        <div class="see-more-container">
-            <a href="{{ $seeMoreLink }}" class="see-more-link">See More →</a>
-        </div>
-    @endif
+        @endif
+    @endforeach
 </section>

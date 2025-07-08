@@ -5,35 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\EventsValidate;
 use App\Models\Country;
 use App\Models\Event;
-use App\Models\Province;
-use App\Models\TicketCategory;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class EventController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $events = Event::where('delete_flag', 0)
-            ->where(function ($query) {
-                $query->where('status', 'upcoming')
-                    ->orWhere('status', 'active');
-            })
-            ->orderByDesc('created_at')
-            ->get();
-
-        $events->transform(function ($event) {
-            $event->ticket_category_price = !empty($event->ticket_category_price) ? json_decode($event->ticket_category_price, true) : [];
-            return $event;
-        });
-
-        return view('admin.events.index', compact('events'));
-    }
 
     /**
      * Show the form for creating a new resource.
@@ -67,7 +44,6 @@ class EventController extends Controller
             $events->location = strtolower($request['location']);
             $events->event_category = strtolower($request['event_category']);
             $ticketCategoryPrice = $request['ticket_category_price'];
-
             foreach ($ticketCategoryPrice as &$category) {
                 if (isset($category['category'])) {
                     $category['category'] = strtolower($category['category']);
@@ -85,7 +61,7 @@ class EventController extends Controller
             $events->status = $request['status'] ?? 'upcoming';
             $events->organizer = $request['organizer'];
             $events->tickets_sold = 0;
-            $events->currency = $request['currency'];
+            $events->currency = strtolower($request['currency']);
             $events->created_by = Auth::id();
             $events->updated_by = Auth::id();
 
@@ -99,7 +75,7 @@ class EventController extends Controller
 
             DB::commit();
 
-            return redirect()->route('events.index')->with([
+            return redirect()->route('home')->with([
                 'status' => 1,
                 'message' => 'Event created successfully',
             ]);
@@ -109,7 +85,7 @@ class EventController extends Controller
             DB::rollBack();
             Log::error('Event creation failed: ' . $e->getMessage());
 
-            return redirect()->route('events.index')->with([
+            return redirect()->route('home')->with([
                 'status' => 0,
                 'message' => 'Error Occured! Please try again',
                 'error' => $e->getMessage(),
@@ -126,7 +102,7 @@ class EventController extends Controller
             ->where('status', '!=', 'cancelled')
             ->firstOrFail();
         if (!$event) {
-            return redirect()->route('events.index')->with([
+            return redirect()->route('home')->with([
                 'status' => 0,
                 'message' => 'Event not found or has been cancelled.',
             ]);
@@ -152,14 +128,14 @@ class EventController extends Controller
             $event = Event::findOrFail($id);
             $event->update($request->validated());
 
-            return redirect()->route('events.index')->with([
+            return redirect()->route('home')->with([
                 'status' => 1,
                 'message' => 'Event updated successfully',
             ]);
         } catch (\Exception $e) {
             Log::error('Event update failed: ' . $e->getMessage());
 
-            return redirect()->route('events.index')->with([
+            return redirect()->route('home')->with([
                 'status' => 0,
                 'message' => 'Error Occured! Please try again',
                 'error' => $e->getMessage(),
@@ -176,13 +152,13 @@ class EventController extends Controller
             $event = Event::findOrFail($id);
             // $event->delete();
             $event->update(['delete_flag' => 1]);
-            return redirect()->route('events.index')->with([
+            return redirect()->route('home')->with([
                 'status' => 1,
                 'message' => 'Event deleted successfully',
             ]);
         } catch (\Exception $e) {
             Log::error('Event deletion failed: ' . $e->getMessage());
-            return redirect()->route('events.index')->with([
+            return redirect()->route('home')->with([
                 'status' => 0,
                 'message' => 'Error Occured! Please try again',
                 'error' => $e->getMessage(),

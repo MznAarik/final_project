@@ -1,14 +1,12 @@
 @extends('layouts.app')
 
 
-@section('title', 'Home')
+@section('title', $title ?? 'EvenTickets')
 
 @section('content')
 
     @include('components.hero')
 
-    @include('components.event_section', ['title' => 'Latest Events', 'seeMoreLink' => '/buy_tickets'])
-    @include('components.event_section', ['title' => 'Most Popular', 'seeMoreLink' => '/popular'])
-    @include('components.event_section', ['title' => 'Upcoming Events', 'seeMoreLink' => '/upcoming'])
+    @include('components.event_section', ['seeMoreLink' => '/buy_tickets'])
 
 @endsection

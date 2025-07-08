@@ -13,8 +13,8 @@
                 @csrf
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input class="form-control" type="email" name="email" id="email" placeholder="example@gmail.com"
-                        value="{{ old('email') }}" required>
+                    <input class="lowercase form-control" type="email" name="email" id="email"
+                        placeholder="example@gmail.com" value="{{ old('email') }}" required>
                 </div>
 
                 <div class="form-group position-relative">

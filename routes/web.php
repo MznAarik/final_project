@@ -4,36 +4,19 @@
 use App\Http\Controllers\AdminTicketController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('home');
-})->name('home');
-
-Route::get('login', function () {
-    return view('home');
-})->name('login');
-
-Route::get('signup', function () {
-    return view('home');
-})->name('signup');
-
-// New added
-Route::get('/buy_tickets', function () {
-    return view('buy_tickets');
-});
-
-Route::get('/upcoming', function () {
-    return view('upcoming');
-});
-
-Route::get('/popular', function () {
-    return view('popular');
-});
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('login', [HomeController::class, 'index'])->name('login');
+Route::get('signup', [HomeController::class, 'index'])->name('signup');
+Route::get('buy_tickets', [HomeController::class, 'showAllEvents'])->name('buy_tickets');
+Route::get('upcoming', [HomeController::class, 'showUpcomingEvents'])->name('upcoming');
+Route::get('popular', [HomeController::class, 'showPopularEvents'])->name('popular');
 
 Route::get('/cart', function () {
     return view('cart');
@@ -57,9 +40,13 @@ Route::get('/email/verify', [AuthController::class, 'sendVerificationEmail'])
     ->middleware('auth')
     ->name('verification.send');
 
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+    Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('scan-qr', [AdminController::class, 'showScanQrPage'])->name('admin.scan-qr');
+    Route::get('verify-ticket', [AdminController::class, 'verifyTicket'])->name('admin.verify-ticket');
+});
 
 Route::prefix('events')->middleware('role:admin')->group(function () {
-    Route::get('/', [EventController::class, 'index'])->name('events.index');
     Route::get('create', [EventController::class, 'create'])->name('events.create');
     Route::post('store', [EventController::class, 'store'])->name('events.store');
     Route::get('show/{id}', [EventController::class, 'show'])->name('events.show');
@@ -84,9 +71,4 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
     // Route::delete('/tickets/{ticket}', [AdminTicketController::class, 'destroy'])->name('admin.tickets.destroy');
 });
 
-Route::middleware(['auth', 'role:admin'])->prefix('admin/')->group(function () {
-    Route::get('dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
-    Route::get('scan-qr', [AdminController::class, 'showScanQrPage'])->name('admin.scan-qr');
-    Route::get('verify-ticket', [AdminController::class, 'verifyTicket'])->name('admin.verify-ticket');
-});
 
