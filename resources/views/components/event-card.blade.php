@@ -1,5 +1,6 @@
 <div class="event-card">
-    <p class="ribbon"><i class="fas fa-info-circle"></i> {{ $status ?? 'Status not specified' }}</p>
+    <p class="ribbon {{ strtolower($status ?? '') }}"><i class="fas fa-info-circle"></i>
+        {{ ucfirst($status ?? 'Status not specified') }}</p>
     <img src="{{ $image }}" alt="{{ $name }}" class="open-previewmodal-trigger">
     <div class="card-content">
         <h3>{{ $name }}</h3>
