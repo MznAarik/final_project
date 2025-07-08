@@ -10,7 +10,7 @@
 <header id="hero" class="hero" data-images='@json($heroImages)'>
     <h1>Experience the Hype</h1>
     <p>Book tickets to the hottest concerts, festivals & more</p>
-    <button class="cta-button">Explore Events</button>
+    <a href={{ route('buy_tickets') }} class="cta-button">Explore Events</a>
     <div class="slider-dots" id="slider-dots"></div>
 </header>
 

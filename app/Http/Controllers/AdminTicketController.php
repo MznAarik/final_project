@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class AdminTicketController extends Controller
@@ -14,7 +15,13 @@ class AdminTicketController extends Controller
      */
     public function index()
     {
-
+        try {
+            $ticket = Ticket::where('delete_flag', 0);
+            dd($ticket->get());
+        } catch (\Exception $e) {
+            Log::error('Failed to fetch ticket: ' . $e->getMessage());
+            return redirect()->back()->withErrors(['error' => 'Failed to fetch ticket: ' . $e->getMessage()]);
+        }
     }
 
     /**
@@ -22,7 +29,7 @@ class AdminTicketController extends Controller
      */
     public function create()
     {
-        return view('admin.tickets.create');
+        return view('admin.ticket.create');
     }
 
     /**
@@ -30,30 +37,27 @@ class AdminTicketController extends Controller
      */
     public function store(Request $request)
     {
-
+        DB::beginTransaction();
         try {
-            $request->validate([
-                'event_id' => 'required|exists:events,id',
-                'quantity' => 'required|integer|min:1',
-            ]);
-
-            $tickets = new Ticket();
-            $tickets->event_id = $request->event_id;
-            $tickets = new User();
-            dd($tickets->toArray());
-            $tickets->user_id = $request->user_id;
-            $tickets->quantity = $request->quantity;
-            $tickets->total_price = $request->total_price;
-            $tickets->status = 'pending'; // Default status
-            $tickets->delete_flag = 0; // Default delete flag
-            dd($tickets);
-            $tickets->save();
+            $ticket = new Ticket();
+            $ticket->event_id = $request->event_id;
+            $ticket->name = $request->name;
+            $ticket->category = $request->category;
+            dd($ticket->toArray());
+            $ticket = new User();
+            $ticket->user_id = $request->user_id;
+            $ticket->quantity = $request->quantity;
+            $ticket->total_price = $request->total_price;
+            $ticket->status = 'pending'; // Default status
+            $ticket->delete_flag = 0; // Default delete flag
+            dd($ticket);
+            $ticket->save();
 
         } catch (\Exception $e) {
             Log::error('Failed to create ticket: ' . $e->getMessage());
             return redirect()->back()->withErrors(['error' => 'Failed to create ticket: ' . $e->getMessage()]);
         }
-        return redirect()->route('admin.tickets.index')->with('success', 'Ticket created successfully.');
+        return redirect()->route('admin.ticket.index')->with('success', 'Ticket created successfully.');
     }
 
     /**
@@ -86,5 +90,10 @@ class AdminTicketController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function OpenDecryptQrCode(Request $request)
+    {
+
     }
 }

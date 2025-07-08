@@ -40,7 +40,11 @@ class HomeController extends Controller
                     ->take(4)
                     ->get();
             }
-            return view('home', compact('recommendedEvents'));
+            return view('home', [
+                'recommendedEvents' => $recommendedEvents,
+                'title' => 'Welcome to EvenTickets - Discover What’s Happening Near You',
+                'sectionType' => 'recommended'
+            ]);
 
         } catch (\Exception $e) {
             Log::error('Error fetching recommended events: ' . $e->getMessage());
@@ -90,7 +94,11 @@ class HomeController extends Controller
                 ->where('status', '!=', 'cancelled')
                 ->orderByDesc('created_at')
                 ->paginate(10);
-            return view('home', compact('recommendedEvents'));
+            return view('home', [
+                'recommendedEvents' => $events,
+                'sectionType' => 'all',
+                'title' => 'All Events - Discover What’s Happening'
+            ]);
 
         } catch (\Exception $e) {
             Log::error('Error fetching events: ' . $e->getMessage());
@@ -123,7 +131,11 @@ class HomeController extends Controller
             $popularEvents = Event::where('status', '!=', 'cancelled')
                 ->orderBy('popularity_score', 'desc')
                 ->paginate(10);
-            return view('home', [('recommendedEvents') => $popularEvents]);
+            return view('home', [
+                'recommendedEvents' => $popularEvents,
+                'sectionType' => 'popular',
+                'title' => 'Popular Events - Join the Crowd'
+            ]);
 
         } catch (\Exception $e) {
             Log::error('Error fetching popular events: ' . $e->getMessage());
