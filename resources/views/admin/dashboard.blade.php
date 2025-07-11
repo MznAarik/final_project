@@ -1,15 +1,10 @@
-<!DOCTYPE html>
-<html>
+@extends('admin.layouts.app')
 
-<head>
-    <title>Admin Dashboard</title>
-</head>
-
-<body>
-    <div class="container">
+@section('content')
+    <div class="container text-center grid align-center justify-items-center font-bold underline">
         <h2>Admin Dashboard</h2>
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
+        @if(session('success'))
+            <p>Session success exists: {{ session('success') }}</p>
         @endif
         @if (isset($message))
             <p>{{ $message }}</p>
@@ -17,6 +12,4 @@
         <p>Welcome, {{ Auth::user()->name }}!</p>
 
     </div>
-</body>
-
-</html>
+@endsection
