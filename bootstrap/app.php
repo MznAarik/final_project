@@ -19,7 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'authenticate_session' => \Laravel\Sanctum\Http\Middleware\AuthenticateSession::class,
             'encrypt_cookies' => \Illuminate\Cookie\Middleware\EncryptCookies::class,
             'validate_csrf_token' => \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
-            'role' => \App\Http\Middleware\CheckRole::class,
+            'Role' => \App\Http\Middleware\CheckRole::class,
         ]);
 
         $middleware->group('web', [

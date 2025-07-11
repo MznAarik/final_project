@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <title>@yield('title', 'EvenTickets')</title>
 
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
@@ -42,8 +44,7 @@
         @include('auth.signup')
         @include('components.preview') {{-- modal markup here --}}
 
-
-
+        @include('admin.components.alert')
 
         <div id="main-content">
             <main>
