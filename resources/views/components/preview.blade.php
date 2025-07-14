@@ -8,7 +8,7 @@
         <!-- Image box with image and footer -->
         <div class="image-box">
           <div class="image-box-floating floating">
-            <img id="previewImage" alt="{{ $name }}">
+            <img id="previewImage" alt="">
             <div class="image-footer">
               <div class="controls">
                 <div class="share-wrapper">
@@ -32,18 +32,18 @@
 
         <!-- Event details -->
         <div class="preview-details">
-          <h2 id="previewTitle">{{ $name }}</h2>
+          <h2 id="previewTitle">Name</h2>
           <p id="previewLocation">
-            Location: <span class="location-value">{{ $location ?? '' }}</span>
+            Location: <span class="location-value">location</span>
           </p>
-          <p id="previewPrice"><strong>Rs. {{ $ticketData['price'] ?? 0 }}</strong></p>
+          <p id="previewPrice"><strong>Rs.0</strong></p>
           <form action="{{ route('cart.addToCart') }}" method="POST">
             @csrf
-            <input type="hidden" name="d" value="{{ $id }}">
+            <input type="hidden" name="id">
             <button class="preview-action-btn" type="submit">Book Now</button>
           </form>
           <div class="fade-bottom">
-            <p id="previewDescription">{{ $description ?? '' }}</p>
+            <p id="previewDescription">Description</p>
           </div>
         </div>
       </div>
