@@ -24,8 +24,9 @@
                         $priceRange = $prices->isEmpty() ? 'N/A' : ($minPrice == $maxPrice ? $minPrice : "$minPrice - $maxPrice");
                     @endphp
                     <div class="event-card">
-                        <x-event-card :image="url('storage/' . $event->img_path)" :name="$event->name" :location="$event->location"
-                            :price="$priceRange" :status="$event->status" :date="$event->start_date" button="Book Now" />
+                        <x-event-card :id="$event->id" :image="url('storage/' . $event->img_path)" :name="$event->name"
+                            :location="$event->location" :price="$priceRange" :status="$event->status" :date="$event->start_date"
+                            button="Book Now" />
                     </div>
                 @endforeach
             </div>

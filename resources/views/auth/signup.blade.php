@@ -82,7 +82,6 @@
 
     /* Form styles */
     #signupFormUnique {
-      margin-top: 50px;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1rem;
@@ -356,8 +355,8 @@
 
       #signupModalUniqueContent form.signup-form .leftColumnUnique,
       #signupModalUniqueContent form.signup-form .rightColumnUnique {
-        width: 100% !important;
-        max-width: 100% !important;
+        width: 100%;
+        max-width: 100%;
       }
     }
 

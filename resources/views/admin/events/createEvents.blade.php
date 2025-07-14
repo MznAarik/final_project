@@ -1,15 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('admin.layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Event</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-
-<body class="bg-gray-100 py-10">
-    <div class="max-w-3xl mx-auto bg-white p-8 shadow-lg rounded-lg">
+@section('content')
+<div class="bg-gray-100 flex flex-col items-center justify-center">
+    <div class="w-3xl mx-auto bg-white p-8 shadow-lg rounded-lg" style="position: relative; z-index: 1;">
         <h1 class="text-2xl font-bold mb-6 text-center">Add Event</h1>
         <!-- Inside your Blade view -->
         <form action="{{ route('events.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
@@ -19,7 +12,7 @@
             <div>
                 <label for="name" class="block font-semibold mb-1">Event Title</label>
                 <input type="text" id="name" name="name" value="{{ old('name') }}" required maxlength="255"
-                    class="w-full border @error('name') border-red-500 @else border-gray-300 @enderror rounded px-4 py-2">
+                    class="w-full border @error('name') border-red-500 @else border-gray-300 @enderror rounded px-4 py-4">
                 @error('name')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
@@ -48,7 +41,8 @@
                 </div>
 
                 <!-- Status -->
-                <div class="w-1/2"> <label for="status" class="block font-semibold mb-1">Status</label>
+                <div class="w-1/2">
+                    <label for="status" class="block font-semibold mb-1">Status</label>
                     <select id="status" name="status"
                         class="w-full border @error('status') border-red-500 @else border-gray-300 @enderror rounded px-4 py-2">
                         <option value="">-- Select Status --</option>
@@ -81,6 +75,7 @@
                     @enderror
                 </div>
             </div>
+
             <!-- Description -->
             <div>
                 <label for="description" class="block font-semibold mb-1">Description</label>
@@ -132,10 +127,10 @@
                 @enderror
             </div>
 
-            <!-- Tickets Sold -->
+            <!-- Country, Province, District -->
             <div class="flex gap-4 mb-2">
                 <div class="w-1/3">
-                    <label for="country_name" class="block font-semibold mb-1">Country </label>
+                    <label for="country_name" class="block font-semibold mb-1">Country</label>
                     <input type="text" id="country_name" name="country_name" value="{{ old('country_name') }}" required
                         class="w-full border @error('country_name') border-red-500 @else border-gray-300 @enderror rounded px-4 py-2">
                     @error('country_name')
@@ -143,7 +138,7 @@
                     @enderror
                 </div>
                 <div class="w-1/3">
-                    <label for="province_name" class="block font-semibold mb-1">Province </label>
+                    <label for="province_name" class="block font-semibold mb-1">Province</label>
                     <input type="text" id="province_name" name="province_name" value="{{ old('province_name') }}"
                         required
                         class="w-full border @error('province_name') border-red-500 @else border-gray-300 @enderror rounded px-4 py-2">
@@ -152,7 +147,7 @@
                     @enderror
                 </div>
                 <div class="w-1/3">
-                    <label for="district_name" class="block font-semibold mb-1">District </label>
+                    <label for="district_name" class="block font-semibold mb-1">District</label>
                     <input type="text" id="district_name" name="district_name" value="{{ old('district_name') }}"
                         required
                         class="w-full border @error('district_name') border-red-500 @else border-gray-300 @enderror rounded px-4 py-2">
@@ -160,10 +155,9 @@
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
-
             </div>
 
-            <!-- Event Category -->
+            <!-- Currency and Event Category -->
             <div class="flex gap-4 mb-2">
                 <div class="w-1/2">
                     <label for="currency" class="block font-semibold mb-1">Currency</label>
@@ -205,8 +199,7 @@
                 <div class="w-1/2">
                     <!-- Add Category Button -->
                     <button type="button" onclick="addCategory()"
-                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 ">Add
-                        Category</button>
+                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add Category</button>
                 </div>
                 <div class="w-1/2">
                     <!-- Submit -->
@@ -217,25 +210,23 @@
                 </div>
             </div>
         </form>
-
     </div>
+</div>
 
-    <script>
-        let categoryIndex = 1;
-        function addCategory() {
-            const container = document.getElementById('ticket-categories');
-            const div = document.createElement('div');
-            div.classList.add('flex', 'gap-4', 'mb-2');
-            div.innerHTML = `
-                <input type="text" name="ticket_category_price[${categoryIndex}][category]" placeholder="Category" required maxlength="50"
-                    class="flex-1 border border-gray-300 rounded px-4 py-2">
-                <input type="number" name="ticket_category_price[${categoryIndex}][price]" placeholder="Price" required min="0" step="1"
-                    class="flex-1 border border-gray-300 rounded px-4 py-2">
-            `;
-            container.appendChild(div);
-            categoryIndex++;
-        }
-    </script>
-</body>
-
-</html>
+<script>
+    let categoryIndex = 1;
+    function addCategory() {
+        const container = document.getElementById('ticket-categories');
+        const div = document.createElement('div');
+        div.classList.add('flex', 'gap-4', 'mb-2');
+        div.innerHTML = `
+            <input type="text" name="ticket_category_price[${categoryIndex}][category]" placeholder="Category" required maxlength="50"
+                class="flex-1 border border-gray-300 rounded px-4 py-2">
+            <input type="number" name="ticket_category_price[${categoryIndex}][price]" placeholder="Price" required min="0" step="0.01"
+                class="flex-1 border border-gray-300 rounded px-4 py-2">
+        `;
+        container.appendChild(div);
+        categoryIndex++;
+    }
+</script>
+@endsection

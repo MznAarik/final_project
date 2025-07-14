@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TicketController;
@@ -14,9 +15,7 @@ Route::get('buy_tickets', [HomeController::class, 'showAllEvents'])->name('buy_t
 Route::get('upcoming', [HomeController::class, 'showUpcomingEvents'])->name('upcoming');
 Route::get('popular', [HomeController::class, 'showPopularEvents'])->name('popular');
 
-Route::get('/cart', function () {
-    return view('cart');
-});
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 
 Route::get('/my-tickets', function () {
     return view('my_tickets');
@@ -36,13 +35,14 @@ Route::get('/email/verify', [AuthController::class, 'sendVerificationEmail'])
     ->middleware('auth')
     ->name('verification.send');
 
-Route::middleware(['auth', 'Role:admin'])->prefix('admin')->group(function () {
-    Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
+Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->group(function () {
+    Route::get('dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('scan-qr', [AdminController::class, 'showScanQrPage'])->name('admin.scanQr');
     Route::get('verify-ticket', [AdminController::class, 'verifyTicket'])->name('admin.verify-ticket');
 });
 
-Route::prefix('events')->middleware('Role:admin')->group(function () {
+Route::prefix('events')->middleware('checkRole:admin')->group(function () {
+    Route::get('/', [EventController::class, 'index'])->name('events.index');
     Route::get('create', [EventController::class, 'create'])->name('events.create');
     Route::post('store', [EventController::class, 'store'])->name('events.store');
     Route::get('show/{id}', [EventController::class, 'show'])->name('events.show');
@@ -51,7 +51,7 @@ Route::prefix('events')->middleware('Role:admin')->group(function () {
     Route::delete('destroy/{id}', [EventController::class, 'destroy'])->name('events.destroy');
 });
 
-Route::middleware(['auth', 'Role:user'])->prefix('user/')->group(function () {
+Route::middleware(['auth', 'checkRole:user'])->prefix('user/')->group(function () {
     Route::get('tickets', [TicketController::class, 'index'])->name('user.tickets.index');
     Route::get('tickets/{batch_code}', [TicketController::class, 'show'])->name('user.tickets.show');
     Route::post('tickets', [TicketController::class, 'store'])->name('user.tickets.store');
@@ -59,10 +59,24 @@ Route::middleware(['auth', 'Role:user'])->prefix('user/')->group(function () {
     Route::delete('tickets/{batch_code}', [TicketController::class, 'destroy'])->name('user.tickets.destroy');
 });
 
-// Route::middleware(['auth', 'Role:admin'])->prefix('admin')->group(function () {
+Route::middleware(['auth', 'checkRole:admin, user'])->prefix('user/cart')->group(function () {
+    Route::get('/', [CartController::class, 'index'])->name('cart.index');
+    Route::post('addCart', [CartController::class, 'addToCart'])->name('cart.addToCart');
+    Route::put('update', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+});
+
+// Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->group(function () {
 //     Route::get('/tickets', [AdminTicketController::class, 'index'])->name('admin.tickets.index');
 //     // Route::get('/tickets/create', [AdminTicketController::class, 'create'])->name('admin.tickets.create');
 //     Route::post('/tickets', [AdminTicketController::class, 'store'])->name('admin.tickets.store');
 //     // Route::put('/tickets/{ticket}', [AdminTicketController::class, 'update'])->name('admin.tickets.update');
 //     // Route::delete('/tickets/{ticket}', [AdminTicketController::class, 'destroy'])->name('admin.tickets.destroy');
 // })
+
+Route::get('/test-alert', function () {
+    return redirect()->route('home')->with([
+        'status' => 1,
+        'message' => 'This is a test alert from route.'
+    ]);
+});

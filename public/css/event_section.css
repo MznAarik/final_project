@@ -81,6 +81,7 @@
     color: #cc0000;
     margin: 0.5rem 0;
     text-align: center;
+    font-weight: 700;
 }
 
 .event-card .event-location {

@@ -3,7 +3,8 @@
         {{ ucfirst($status ?? 'Status not specified') }}</p>
     <img src="{{ $image }}" alt="{{ $name }}" class="open-previewmodal-trigger">
     <div class="card-content">
-        <h3>{{ $name }}</h3>
+        <label for="id" name="id" hidden>{{$id}}</label>
+        <h3 class="bold">{{ $name }}</h3>
         <p class="event-date"><i class="fas fa-calendar-alt"></i> {{ $date ?? 'Date not specified' }}</p>
         <p class="event-location"><i class="fas fa-map-marker-alt"></i> {{ $location }}</p>
         <div class="price-button-container">
