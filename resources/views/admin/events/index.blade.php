@@ -1,38 +1,68 @@
-<!-- resources/views/events/index.blade.php -->
-<!DOCTYPE html>
-<html lang="en">
+@extends('admin.layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <title>All Events</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
+<style>
+    .add-event {
+        margin: 2rem;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: end;
+    }
 
-<body class="bg-gray-100 min-h-screen p-6">
-    <div class="max-w-7xl mx-auto">
-        <h1 class="text-3xl font-bold mb-6 text-center">All events</h1>
+    #add-event {
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        background-color: red;
+        color: white;
+        border: none;
+        transition: all 200ms ease-in-out;
+        font-size: 1.2rem;
+        font-weight: 600;
+        border-radius: 4px;
+    }
 
-        @if($events->isEmpty())
-            <p class="text-center text-gray-600">No events found.</p>
-        @else
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach($events as $event)
-                    <div class="bg-white p-4 rounded shadow hover:shadow-md transition">
-                        <h2 class="text-xl font-semibold mb-2">{{ $event->name }}</h2>
-                        <p><strong>Holder:</strong> {{ $event->user->name }}</p>
-                        <p><strong>Status:</strong> {{ $event->status }}</p>
-                        <p><strong>Deadline:</strong> {{ $event->deadline }}</p>
+    #add-event:hover {
+        transform: scale(1.05);
+    }
+</style>
 
-                        @if($event->img_path)
-                            <img src="{{ Storage::url($event->img_path) }}" alt="Event Image" class="mt-4 w-32 h-32 mx-auto border">
-                        @else
-                            <p class="text-red-600 text-sm mt-2">No event image available</p>
-                        @endif
+@php
+    if (collect($events)->isEmpty()) {
+        return;
+    }
+    $groupedEvents = $events->groupBy('status');
+    $prioritizedStatuses = ['upcoming', 'active', 'completed', 'cancelled'];
+@endphp
+
+@section('content')
+    <div class="add-event">
+        <a id="add-event" href="{{ route('events.create') }}">
+            <i class="fa-solid fa-square-plus"></i> Add Event
+        </a>
+    </div>
+
+    @foreach ($prioritizedStatuses as $status)
+        @if ($groupedEvents->has($status) && $groupedEvents[$status]->isNotEmpty())
+
+            <div class="event-cards">
+                @foreach ($groupedEvents[$status] as $event)
+                    @php
+                        $ticketData = is_array($event->ticket_category_price)
+                            ? $event->ticket_category_price
+                            : json_decode($event->ticket_category_price, true);
+
+                        $prices = collect($ticketData)->pluck('price')->filter();
+                        $minPrice = $prices->min();
+                        $maxPrice = $prices->max();
+                        $priceRange = $prices->isEmpty() ? 'N/A' : ($minPrice == $maxPrice ? $minPrice : "$minPrice - $maxPrice");
+                    @endphp
+                    <div class="event-card">
+                        <x-event-card :id="$event->id" :image="url('storage/' . $event->img_path)" :name="$event->name"
+                            :location="$event->location" :price="$priceRange" :status="$event->status" :date="$event->start_date"
+                            button="Edit Event" />
                     </div>
                 @endforeach
             </div>
         @endif
-    </div>
-</body>
-
-</html>
+    @endforeach
+@endsection

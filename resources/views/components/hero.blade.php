@@ -5,6 +5,7 @@
         asset('images/hero2.jpg'),
         asset('images/hero3.jpg'),
     ];
+
 @endphp
 
 <header id="hero" class="hero" data-images='@json($heroImages)'>

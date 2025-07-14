@@ -22,6 +22,14 @@ body {
 
 }
 
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 100px);
+}
+
 .app-container {
   min-height: 100vh;
   width: 100%;
@@ -94,11 +102,9 @@ body {
 }
 
 .search-bar {
-  width: 30vw;
-  /* Adjust this value as needed */
+  width: 20vw;
   max-width: 400px;
-  /* Set a max width for better responsiveness */
-  padding: 1rem;
+  padding: 0.75rem;
   border: 1px solid #cc0000;
   border-radius: 8px;
   font-size: 1.1rem;
@@ -540,9 +546,8 @@ body {
   /* Center the text */
   color: #ccc;
   font-size: 0.9rem;
-  padding: 1rem 0;
+  padding-top: 4rem;
   width: 100%;
-  margin-top: 60px;
 }
 
 .footer-bottom p {
@@ -769,6 +774,18 @@ body.modal-open {
   background-color: #f8d7da;
   color: #721c24;
   border: 1px solid #f5c6cb;
+}
+
+.alert-info {
+  background-color: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+.alert-warning {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
 }
 
 @keyframes fadeSlideIn {
