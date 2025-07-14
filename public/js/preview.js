@@ -14,25 +14,25 @@ document.addEventListener('DOMContentLoaded', () => {
       const card = e.target.closest('.event-card');
       if (!card) return;
 
-      // Extract data from card
-      const img = card.querySelector('img')?.getAttribute('src') || '';
-      const title = card.querySelector('h3')?.innerText || 'Event';
-      const location = card.querySelector('.event-location')?.innerText || 'Location';
-      const price = card.querySelector('.event-price')?.innerText || 'Price';
+      // // Extract data from card
+      // const img = card.querySelector('img')?.getAttribute('src') || '';
+      // const title = card.querySelector('h3')?.innerText || 'Event';
+      // const location = card.querySelector('.event-location')?.innerText || 'Location';
+      // const price = card.querySelector('.event-price')?.innerText || 'Price';
 
-      // Set data into modal
-      previewImage.src = img;
-      previewTitle.textContent = title;
-      previewLocation.textContent = location;
-      previewPrice.innerHTML = price;
-      previewDesc.innerHTML = `<p>Experience "${title}" at ${location}. Join now and enjoy an unforgettable moment!Experience "${title}" at ${location}. 
-      Join now and enjoy an unforgettable moment!</p>
-      <p>Experience "${title}" at ${location}. Join now and enjoy an unforgettable moment!</p><p>Experience "${title}" at ${location}. Join now and enjoy an unforgettable moment!Experience "${title}" at ${location}. 
-      Join now and enjoy an unforgettable moment!</p>
-      <p>Experience "${title}" at ${location}. Join now and enjoy an unforgettable moment!</p><p>Experience "${title}" at ${location}. Join now and enjoy an unforgettable moment!Experience "${title}" at ${location}. 
-      Join now and enjoy an unforgettable moment!</p>
-      <p>Experience "${title}" at ${location}. Join now and enjoy an unforgettable moment!</p>
-      `;
+      // // Set data into modal
+      // previewImage.src = img;
+      // previewTitle.textContent = title;
+      // previewLocation.textContent = location;
+      // previewPrice.innerHTML = price;
+      // previewDesc.innerHTML = `<p>Experience "${title}" at ${location}. Join now and enjoy an unforgettable moment!Experience "${title}" at ${location}. 
+      // Join now and enjoy an unforgettable moment!</p>
+      // <p>Experience "${title}" at ${location}. Join now and enjoy an unforgettable moment!</p><p>Experience "${title}" at ${location}. Join now and enjoy an unforgettable moment!Experience "${title}" at ${location}. 
+      // Join now and enjoy an unforgettable moment!</p>
+      // <p>Experience "${title}" at ${location}. Join now and enjoy an unforgettable moment!</p><p>Experience "${title}" at ${location}. Join now and enjoy an unforgettable moment!Experience "${title}" at ${location}. 
+      // Join now and enjoy an unforgettable moment!</p>
+      // <p>Experience "${title}" at ${location}. Join now and enjoy an unforgettable moment!</p>
+      // `;
 
       // Show modal
       modal.style.display = 'flex';
