@@ -146,7 +146,7 @@
                     </p>
                     <div class="price-button-container">
                         <p class="event-price"><strong>Rs. {{ $priceRange }}</strong></p>
-                        <button class="small-button open-previewmodal-trigger">{{ $button ?? 'Edit Events' }}</button>
+                        <a href="{{ route('events.edit', $event->id) }}" class="small-button">Edit Event</a>
                     </div>
                 </div>
             </div>
