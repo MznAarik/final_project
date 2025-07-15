@@ -1,0 +1,544 @@
+/* Modal backdrop */
+#previewModal.preview-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(6px);
+    z-index: 1040;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+
+/* Modal content */
+.preview-modal-content {
+    border-radius: 4px;
+    margin-left: 10rem;
+    background: white;
+    padding: 1.5rem 2rem;
+    width: 90%;
+    max-width: 800px;
+    min-height: 650px;
+    overflow-y: auto;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    animation: slideFadeIn 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: visible;
+}
+
+
+/* Close button */
+.preview-close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    border: none;
+    background: transparent;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #888;
+    margin-top: auto;
+}
+
+.preview-close-btn:hover {
+    color: #000;
+}
+
+/* Animation */
+@keyframes slideFadeIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Layout wrapper */
+.preview-body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    width: 100%;
+    padding-left: 280px;
+    padding-top: 30px;
+}
+
+/* Image inside box */
+.image-box img {
+    width: 100%;
+    height: auto;
+    display: block;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+
+/* Footer below image */
+.image-footer {
+    padding-top: 0.75rem;
+    text-align: center;
+    font-size: 0.95rem;
+    color: #333;
+
+}
+
+/* Event details */
+.preview-details {
+    flex: 1 1 300px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.preview-details h2 {
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+.preview-details p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #444;
+}
+
+.preview-action-btn {
+    background-color: #d22;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 1rem;
+    max-width: 150px;
+    display: inline-block;
+
+}
+
+
+.preview-action-btn:hover {
+    background-color: #b00;
+}
+
+.image-box-floating {
+    position: absolute;
+    top: 3rem;
+    left: -190px;
+    width: 500px;
+    background: white;
+    padding-bottom: 1rem;
+    z-index: 10;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    /* 🔧 Initial shadow */
+    box-shadow:
+        0 10px 20px rgba(0, 0, 0, 0.2),
+        0 14px 40px rgba(0, 0, 0, 0.2),
+        0 24px 60px rgba(0, 0, 0, 0.15);
+
+    /* 🛡️ Stability tricks */
+    will-change: transform, box-shadow;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    overflow: visible;
+}
+
+.image-box {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    overflow: hidden;
+    /* Clips image to border radius */
+}
+
+.image-box img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.image-box-floating:hover,
+.image-box-floating.share-active {
+    transform: translateY(-8px);
+    /* Float up slightly */
+    box-shadow:
+        0 14px 28px rgba(0, 0, 0, 0.25),
+        0 24px 50px rgba(0, 0, 0, 0.2);
+}
+
+.image-box-floating img {
+    width: 100%;
+    height: auto;
+    display: block;
+
+}
+
+.image-footer {
+    position: relative;
+    /* Needed for absolute .controls */
+    width: 100%;
+    /* Fill the container width */
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    /* Remove text-align center */
+    text-align: left;
+    font-size: 0.95rem;
+    color: #333;
+}
+
+.controls {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.8em 1rem;
+    color: #000;
+    background: rgba(255, 255, 255, 0.8);
+    box-sizing: border-box;
+    z-index: 10;
+    align-items: center;
+}
+
+.controls i {
+    cursor: pointer;
+    font-size: 24px;
+    /* adjust icon size */
+    user-select: none;
+}
+
+.material-icons#favoriteIcon {
+    color: transparent;
+    /* no fill */
+    text-shadow:
+        -0.3px 0 black,
+        0 0.3px black,
+        0.3px 0 black,
+        0 -0.3px black;
+    /* simulate thin black border */
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.material-icons#favoriteIcon.fav-active {
+    color: #cc0000;
+    /* fill with red */
+    text-shadow:
+        -0.3px 0 black,
+        0 0.3px black,
+        0.3px 0 black,
+        0 -0.3px black;
+    /* keep black border */
+}
+
+
+
+#previewTitle {
+    font-size: 1.8rem;
+    margin-bottom: 0.8rem;
+    color: #cc0000;
+    text-align: left;
+}
+
+#previewLocation {
+    font-size: 0.95rem;
+    color: #444;
+    margin: 0.3rem 0;
+    display: flex;
+    align-items: center;
+}
+
+#previewLocation i {
+    margin-right: 8px;
+    font-size: 1rem;
+    color: #cc0000;
+    vertical-align: middle;
+}
+
+#previewPrice {
+    font-size: 1.1rem;
+    color: #cc0000;
+    font-weight: bold;
+    margin: 0.5rem 0;
+}
+
+#previewDescription {
+    font-size: 0.92rem;
+    color: #333;
+    line-height: 1.5;
+    margin-top: 0.7rem;
+    max-height: 200px;
+    /* or whatever height fits your design */
+    overflow-y: auto;
+    padding-right: 8px;
+    /* space for custom scrollbar */
+    position: relative;
+}
+
+#previewDescription::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 4px;
+    height: 100%;
+    pointer-events: none;
+}
+
+.fade-bottom {
+    position: relative;
+}
+
+.fade-bottom::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    /* adjust based on how much fade you want */
+    background: linear-gradient(to top, #fff, rgba(255, 255, 255, 0));
+    pointer-events: none;
+}
+
+#previewDescription::-webkit-scrollbar {
+    width: 5px;
+}
+
+#previewDescription::-webkit-scrollbar-thumb {
+    background-color: rgba(204, 0, 0, 0.5);
+    border-radius: 3px;
+}
+
+#previewDescription::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+
+.share-container {
+    position: relative;
+    display: inline-block;
+    z-index: 2;
+
+}
+
+.share-icon {
+    cursor: pointer;
+    font-size: 24px;
+    position: relative;
+    z-index: 2;
+}
+
+.share-options {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 160px;
+    height: 160px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    pointer-events: auto;
+    text-decoration: none;
+
+}
+
+.share-options.active {
+    pointer-events: auto;
+    /* enable when active */
+    opacity: 1;
+}
+
+/* Invisible expanded hover area */
+.share-container::before {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    left: -40px;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    z-index: 1;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.share-btn {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #333;
+    color: white;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: scale(0);
+    opacity: 0;
+    /* Start hidden behind share icon: at origin, scale 0 */
+    transform: translate(0, 0) scale(0) rotate(0deg);
+    opacity: 0;
+    transform-origin: center center;
+
+    /* Smooth transitions */
+    transition:
+        transform 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.4s ease;
+    top: 120px;
+    left: -10px;
+    cursor: pointer;
+
+}
+
+.share-btn i {
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+    font-size: 20px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+}
+
+.share-btn {
+    cursor: pointer !important;
+}
+
+.share-container::before {
+    pointer-events: none !important;
+}
+
+
+/* Show buttons when expanded */
+.share-container.expanded .share-btn {
+    pointer-events: auto;
+    /* enable interaction */
+    transform: scale(1);
+    opacity: 1;
+}
+
+.share-container.expanded .share-btn:nth-child(1) {
+    transform: translate(-50px, -50px) scale(1);
+    opacity: 1;
+    transition-delay: 0.05s;
+}
+
+.share-container.expanded .share-btn:nth-child(2) {
+    transform: translate(-80px, -15px) scale(1);
+    opacity: 1;
+    transition-delay: 0.15s;
+}
+
+.share-container.expanded .share-btn:nth-child(3) {
+    transform: translate(-85px, 30px) scale(1);
+    opacity: 1;
+    transition-delay: 0.25s;
+}
+
+.share-container.expanded .share-btn:nth-child(4) {
+    transform: translate(-60px, 65px) scale(1);
+    opacity: 1;
+    transition-delay: 0.35s;
+}
+
+.share-container.expanded .share-btn:nth-child(5) {
+    transform: translate(-17px, 85px) scale(1);
+    opacity: 1;
+    transition-delay: 0.45s;
+}
+
+/* Expanded hover bubble to make mouse movement easier */
+.share-container.expanded::before {
+    content: '';
+    position: absolute;
+    bottom: -100px;
+    left: -100px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    z-index: 1;
+    opacity: 0;
+    /* invisible bubble */
+    pointer-events: auto;
+    /* allow hover */
+}
+
+.share-container,
+.share-wrapper,
+.controls {
+    pointer-events: auto !important;
+    /* enable pointer events on parents */
+}
+
+/* Facebook: Blue background, white icon */
+.share-btn.fb {
+    background-color: #1877F2;
+    color: white;
+}
+
+/* Instagram: Gradient background, white icon */
+.share-btn.ig {
+    background: radial-gradient(circle at 30% 107%,
+            #fdf497 0%, #fdf497 5%,
+            #fd5949 45%,
+            #d6249f 60%,
+            #285AEB 90%);
+    color: white;
+}
+
+/* WhatsApp: Green background, white icon */
+.share-btn.wa {
+    background-color: #25D366;
+    color: white;
+}
+
+/* Twitter: Blue background, white icon */
+.share-btn.tw {
+    background-color: #1DA1F2;
+    color: white;
+}
+
+/* Link: Grey background, white icon */
+.share-btn.link {
+    background-color: #6c757d;
+    color: white;
+}
+
+
+/* Turn blue on hover */
+.share-icon:hover {
+    color: #0258b4;
+    /* or your preferred blue */
+}
+
+/* Turn blue when active (when parent has .expanded) */
+.share-container.expanded .share-icon {
+    color: #0258b4;
+}
+
+.share-options a {
+    text-decoration: none
+}

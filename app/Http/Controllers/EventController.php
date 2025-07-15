@@ -12,6 +12,13 @@ use Illuminate\Support\Facades\Log;
 class EventController extends Controller
 {
 
+    public function index()
+    {
+        $events = Event::where('delete_flag', 0)
+            ->where('status', '!=', 'cancelled')
+            ->latest()->get();
+        return view('admin.events.index', compact('events'));
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -75,7 +82,7 @@ class EventController extends Controller
 
             DB::commit();
 
-            return redirect()->route('home')->with([
+            return redirect()->route('events.index')->with([
                 'status' => 1,
                 'message' => 'Event created successfully',
             ]);
