@@ -16,7 +16,7 @@ class EventController extends Controller
     {
         $events = Event::where('delete_flag', 0)
             ->where('status', '!=', 'cancelled')
-            ->get();
+            ->latest()->get();
         return view('admin.events.index', compact('events'));
     }
     /**
@@ -82,7 +82,7 @@ class EventController extends Controller
 
             DB::commit();
 
-            return redirect()->route('home')->with([
+            return redirect()->route('events.index')->with([
                 'status' => 1,
                 'message' => 'Event created successfully',
             ]);
