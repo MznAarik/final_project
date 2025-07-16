@@ -133,7 +133,7 @@
                     <i class="fas fa-info-circle"></i> {{ ucfirst($event->status ?? 'Status not specified') }}
                 </p>
                 <img src="{{ asset('storage/' . $event->img_path) }}" alt="{{ $event->name }}" class="open-previewmodal-trigger"
-                    style="width: 100%; height: 180px; object-fit: cover;">
+                    style="width: 100%; height: 280px; object-fit: cover;">
                 <div class="card-content">
                     <input type="hidden" name="id" value="{{ $event->id }}">
                     <h3 class="bold">{{ $event->name }}</h3>
