@@ -35,7 +35,7 @@ Route::get('/email/verify', [AuthController::class, 'sendVerificationEmail'])
     ->middleware('auth')
     ->name('verification.send');
 
-Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->group(function () {
+Route::middleware(['checkRole:admin'])->prefix('admin')->group(function () {
     Route::get('dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('scan-qr', [AdminController::class, 'showScanQrPage'])->name('admin.scanQr');
     Route::get('verify-ticket', [AdminController::class, 'verifyTicket'])->name('admin.verify-ticket');
@@ -51,7 +51,7 @@ Route::prefix('events')->middleware('checkRole:admin')->group(function () {
     Route::delete('destroy/{id}', [EventController::class, 'destroy'])->name('events.destroy');
 });
 
-Route::middleware(['auth', 'checkRole:user'])->prefix('user/')->group(function () {
+Route::middleware(['checkRole:user'])->prefix('user/')->group(function () {
     Route::get('tickets', [TicketController::class, 'index'])->name('user.tickets.index');
     Route::get('tickets/{batch_code}', [TicketController::class, 'show'])->name('user.tickets.show');
     Route::post('tickets', [TicketController::class, 'store'])->name('user.tickets.store');
@@ -59,14 +59,14 @@ Route::middleware(['auth', 'checkRole:user'])->prefix('user/')->group(function (
     Route::delete('tickets/{batch_code}', [TicketController::class, 'destroy'])->name('user.tickets.destroy');
 });
 
-Route::middleware(['auth', 'checkRole:admin, user'])->prefix('user/cart')->group(function () {
+Route::middleware(['checkRole:admin, user'])->prefix('user/cart')->group(function () {
     Route::get('/', [CartController::class, 'index'])->name('cart.index');
     Route::post('addCart', [CartController::class, 'addToCart'])->name('cart.addToCart');
     Route::put('update', [CartController::class, 'update'])->name('cart.update');
     Route::delete('remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 });
 
-// Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->group(function () {
+// Route::middleware(['checkRole:admin'])->prefix('admin')->group(function () {
 //     Route::get('/tickets', [AdminTicketController::class, 'index'])->name('admin.tickets.index');
 //     // Route::get('/tickets/create', [AdminTicketController::class, 'create'])->name('admin.tickets.create');
 //     Route::post('/tickets', [AdminTicketController::class, 'store'])->name('admin.tickets.store');
@@ -76,7 +76,7 @@ Route::middleware(['auth', 'checkRole:admin, user'])->prefix('user/cart')->group
 
 Route::get('/test-alert', function () {
     return redirect()->route('home')->with([
-        'status' => 1,
-        'message' => 'This is a test alert from route.'
+        'status' => 2,
+        'message' => 'Welcome to the Admin Dashboard'
     ]);
 });
