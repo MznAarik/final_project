@@ -20,7 +20,7 @@ class CheckRole
 
         $user = Auth::user();
 
-        if ($user->role !== 'admin') {
+        if ($user->role !== $role) {
             return redirect()->route('home')->with(['status' => 3, 'message' => 'Unauthorized access!!!']);
         }
 
