@@ -3,11 +3,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeBtn = modal.querySelector('.preview-close-btn');
 
   // Target elements inside modal
-  const previewImage = modal.querySelector('#previewImage');
-  const previewTitle = modal.querySelector('#previewTitle');
-  const previewLocation = modal.querySelector('#previewLocation .location-value');
-  const previewPrice = modal.querySelector('#previewPrice');
-  const previewDesc = modal.querySelector('#previewDescription');
+  // const previewImage = modal.querySelector('#previewImage');
+  // const previewTitle = modal.querySelector('#previewTitle');
+  // const previewLocation = modal.querySelector('#previewLocation .location-value');
+  // const previewPrice = modal.querySelector('#previewPrice');
+  // const previewDesc = modal.querySelector('#previewDescription');
 
   document.querySelectorAll('.open-previewmodal-trigger').forEach(trigger => {
     trigger.addEventListener('click', (e) => {
