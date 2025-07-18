@@ -10,9 +10,9 @@
     @tailwind utilities;
 
     /* Modal Background */
-
     #signupModalUnique {
-      display: flex;
+      display: none;
+      /* Hidden by default */
       position: fixed;
       top: 0;
       left: 0;
@@ -27,9 +27,9 @@
       box-sizing: border-box;
     }
 
-    /* Modal hidden by default */
-    #signupModalUnique:not(.show) {
-      display: none;
+    /* Modal shown when .show is present */
+    #signupModalUnique.show {
+      display: flex;
     }
 
     /* Modal Content Box */
@@ -55,7 +55,6 @@
       color: #ff3300;
       font-weight: 700;
       font-family: 'Rakkas';
-
     }
 
     /* Close Button */
@@ -85,9 +84,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1rem;
-      /* Adjusted gap for better spacing */
       align-items: flex-start;
-      /* Align items to the start to reduce vertical space */
     }
 
     /* Control styling */
@@ -100,14 +97,6 @@
       font-size: 1rem;
       box-sizing: border-box;
       width: 100%;
-      background-color: white !important;
-      /* force white background */
-    }
-
-    /* Remove or override these if you don't want green highlight for valid fields */
-    input:valid,
-    select:valid,
-    textarea:valid {
       background-color: white !important;
     }
 
@@ -124,17 +113,11 @@
 
     .alreadyLoginUnique {
       grid-column: 2 / 3;
-      /* Align it to the right column */
       margin-top: 1rem;
-      /* Add some space above */
       font-size: 0.95rem;
       text-align: center;
-      /* Align text to the right */
       color: #333;
-      /* Change color to a desired shade */
     }
-
-    .alreadyLoginUnique {}
 
     button#signupSubmitButtonUnique {
       padding: 0.6rem;
@@ -147,18 +130,10 @@
       cursor: pointer;
       width: 100%;
       margin-top: 1rem;
-      /* Ensures space above the button */
     }
 
     button#signupSubmitButtonUnique:hover {
       background-color: #cc001f;
-    }
-
-    .alreadyLoginUnique {
-      color: #000;
-      /* Black text */
-      font-size: 0.95rem;
-      text-align: center;
     }
 
     .alreadyLoginUnique a {
@@ -176,33 +151,6 @@
     /* Global Alert Styles */
     #globalAlert {
       display: none;
-      /* Hidden by default */
-      position: fixed;
-      top: 10px;
-      /* Position from the top */
-      left: 45%;
-      /* Center horizontally */
-      transform: translateX(-50%) translateY(-20px);
-      /* Center it and start slightly above */
-      padding: 1rem 1.5rem;
-      /* Padding for the alert */
-      border-radius: 8px;
-      /* Rounded corners */
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      /* Shadow for depth */
-      z-index: 9999;
-      /* Ensure it appears above other elements */
-      font-weight: bold;
-      /* Bold text for visibility */
-      transition: opacity 0.5s ease, transform 0.5s ease;
-      /* Smooth fade and slide effect */
-      opacity: 0;
-      /* Start as invisible */
-    }
-
-    /* Show alert */
-    #globalAlert {
-      display: none;
       position: fixed;
       top: 10px;
       left: 42%;
@@ -218,8 +166,6 @@
       min-width: 280px;
       box-sizing: border-box;
       text-align: center;
-
-      /* Flex to align icon and text horizontally */
       display: flex;
       align-items: center;
       gap: 0.75rem;
@@ -243,17 +189,19 @@
       font-size: 1.3rem;
     }
 
-    /* Example alert types */
-
     .alert-success {
-      background-color: #e6f4ea;
-      color: #2f6f3f;
-      border: 1.5px solid #a3d3a1;
+      background-color: #d4edda !important;
+      color: #155724 !important;
+      border: 2px solid #28a745 !important;
+      font-weight: bold;
+      font-size: 1.1rem;
+      text-align: center;
+      top: 50px;
     }
 
     .alert-danger {
-      background-color: #fdecea;
-      color: #8b1a1a;
+      background-color: #f8d7da;
+      color: #721c24;
       border: 1.5px solid #f5a5a3;
     }
 
@@ -261,19 +209,6 @@
       background-color: #e7f4fb;
       color: #1a4a5b;
       border: 1.5px solid #a6d0eb;
-    }
-
-    .alert-success {
-      background-color: #d4edda !important;
-      /* your green background */
-      color: #155724 !important;
-      /* your green text */
-      border: 2px solid #28a745 !important;
-      font-weight: bold;
-      font-size: 1.1rem;
-      text-align: center;
-      top: 50px;
-
     }
 
     @keyframes fadeIn {
@@ -306,7 +241,6 @@
       margin: 0;
     }
 
-
     @keyframes slideFadeIn {
       from {
         transform: translateY(-20px);
@@ -332,7 +266,6 @@
       min-width: 110px;
       font-weight: normal;
       color: #000;
-
     }
 
     .horizontal-date-field input {
@@ -347,10 +280,8 @@
 
       #signupModalUniqueContent {
         max-height: 90vh;
-        /* or any height you want */
         overflow-y: auto;
         padding-bottom: 2rem;
-        /* optional, spacing at bottom */
       }
 
       #signupModalUniqueContent form.signup-form .leftColumnUnique,
@@ -362,7 +293,6 @@
 
     #signupFormUnique label {
       color: white;
-      /* Make the labels white */
     }
 
     @media (max-width: 600px) {
@@ -382,16 +312,11 @@
 </head>
 
 <body>
-
   <!-- Modal -->
-  @php
-  $shouldShowSignup = session('message') || $errors->any();
-@endphp
-  <div id="signupModalUnique" class="signup-modal {{ $shouldShowSignup ? 'show' : '' }}" aria-hidden="true"
-    role="dialog" aria-modal="true" aria-labelledby="signupTitleUnique">
-
+  <div id="signupModalUnique" class="signup-modal" aria-hidden="true" role="dialog" aria-modal="true"
+    aria-labelledby="signupTitleUnique">
     <div id="signupModalUniqueContent" class="signup-modal-content" style="position:relative;">
-      <button id="signupCloseButtonUnique" class="signup-close" aria-label="close">&times;</button>
+      <button id="signupCloseButtonUnique" class="signup-close" aria-label="close">×</button>
       <h2 id="signupTitleUnique">Sign Up</h2>
 
       @if (session('message'))
@@ -433,7 +358,7 @@
             oninput="this.value = this.value.replace(/[^0-9]/g, '')" required />
 
           <label for="addressUnique">Address</label>
-          <input type="text" name="address" id="addressUnique" minlength="10" placeholder="Address" required
+          <input type="text" name="address" id="addressUnique" placeholder="Address" required
             value="{{ old('address') }}" />
           <span id="addressError" style="color:red; display:none;overflow:hidden;"></span>
 
@@ -442,7 +367,7 @@
             const error = document.getElementById('addressError');
 
             address.addEventListener('input', () => {
-              if (address.value.length <= 5) {
+              if (address.value.length <= 3) {
                 error.style.display = 'block';
                 address.setCustomValidity("Please write the complete address.");
               } else {
@@ -454,7 +379,7 @@
 
           @php
       $maxDate = \Carbon\Carbon::now()->subYears(16)->format('Y-m-d');
-    @endphp
+      @endphp
 
           <div class="horizontal-date-field">
             <label for="dateOfBirthUnique" style="color: black;">Date of Birth</label>
@@ -486,7 +411,7 @@
           </script>
           <label for="districtIdUnique">District Name</label>
           <input type="text" name="district_name" id="districtIdUnique" placeholder="District Name"
-            value="{{ old('district_name') }}" required title=" Please write correct district." />
+            value="{{ old('district_name') }}" required title="Please write correct district." />
 
           <label for="provinceIdUnique">Province Name</label>
           <input type="text" name="province_name" id="provinceIdUnique" placeholder="Province Name"
@@ -497,7 +422,7 @@
             title="Please write correct country." />
         </div>
 
-        <div class="rightColumnUnique ">
+        <div class="rightColumnUnique">
           <label for="emailUnique">Email</label>
           <input type="email" name="email" id="emailUnique" placeholder="Enter your email" value="{{ old('email') }}"
             required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" title="Please enter a valid email address."
@@ -507,7 +432,7 @@
           <input style="text-transform: none;" type="password" name="password" id="passwordUnique"
             placeholder="Enter password">
           <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
-            onclick="togglePasswordVisibility()" style="position: relative; bottom: 30px; left: 370px; ">
+            onclick="togglePasswordVisibility()" style="position: relative; bottom: 30px; left: 370px;">
             <i id="eye-icon" class="fas fa-eye-slash"></i>
           </span>
 
@@ -559,7 +484,6 @@
             }
           </script>
 
-
           <button type="submit" id="signupSubmitButtonUnique">Sign Up</button>
 
           <div class="alreadyLoginUnique">
@@ -578,10 +502,15 @@
     const modal = document.getElementById('signupModalUnique');
     const alertBox = document.getElementById('globalAlert');
 
+    // Ensure modal is hidden on page load
+    if (modal) {
+      modal.classList.remove('show');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
     form.addEventListener('submit', async function (e) {
       e.preventDefault();
 
-      // Disable submit button and show loading text immediately
       const submitBtn = document.getElementById('signupSubmitButtonUnique');
       submitBtn.disabled = true;
       submitBtn.textContent = 'Signing up...';
@@ -602,7 +531,6 @@
         if (data.success) {
           modal.classList.remove('show');
           showAlert('Please check your email for verification');
-          // Optional: redirect or reset form
         } else if (data.errors) {
           let msg = '';
           Object.values(data.errors).forEach(err => {
@@ -620,14 +548,12 @@
       }
     });
 
-
     function showAlert(message, type = 'success') {
       alertBox.innerHTML = message;
-      alertBox.className = ''; // Clear existing classes
+      alertBox.className = '';
       alertBox.classList.add('alert-' + type);
-      alertBox.classList.add('show'); // Add show class for visibility
+      alertBox.classList.add('show');
 
-      // Set the background color based on the alert type
       if (type === 'success') {
         alertBox.style.background = '#d4edda';
         alertBox.style.color = '#155724';
@@ -639,26 +565,25 @@
         alertBox.style.color = '#0c5460';
       }
 
-      // Show the alert with animation
-      alertBox.style.display = 'block'; // Show the alert
-      alertBox.style.opacity = '0'; // Start invisible
-      alertBox.style.transform = 'translateY(-20px)'; // Start slightly above
-
-      // Trigger the fade-in effect
-      setTimeout(() => {
-        alertBox.style.opacity = '1'; // Fade in
-        alertBox.style.transform = 'translateY(0)'; // Move to position
-      }, 10); // Small timeout to trigger the animation
+      alertBox.style.display = 'block';
+      alertBox.style.opacity = '0';
+      alertBox.style.transform = 'translateY(-20px)';
 
       setTimeout(() => {
-        alertBox.style.opacity = '0'; // Fade out
-        alertBox.style.transform = 'translateY(-20px)'; // Move up
+        alertBox.style.opacity = '1';
+        alertBox.style.transform = 'translateY(0)';
+      }, 10);
+
+      setTimeout(() => {
+        alertBox.style.opacity = '0';
+        alertBox.style.transform = 'translateY(-20px)';
         setTimeout(() => {
-          alertBox.style.display = 'none'; // Hide after animation
-          alertBox.classList.remove('show'); // Remove show class
-        }, 500); // Match this with the fade-out duration
-      }, 4000); // Display duration before fading out
+          alertBox.style.display = 'none';
+          alertBox.classList.remove('show');
+        }, 500);
+      }, 4000);
     }
+
     function clearSignupForm() {
       const form = document.getElementById('signupFormUnique');
       form.reset();
@@ -668,12 +593,10 @@
 
     document.getElementById('signupCloseButtonUnique').addEventListener('click', () => {
       const modal = document.getElementById('signupModalUnique');
-      modal.classList.remove('show'); // Hide modal
-      clearSignupForm(); // Clear inputs and errors
+      modal.classList.remove('show');
+      clearSignupForm();
     });
-
   </script>
-
 </body>
 
 </html>

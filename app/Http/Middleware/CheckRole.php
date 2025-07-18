@@ -15,13 +15,13 @@ class CheckRole
     public function handle(Request $request, Closure $next, $role): Response
     {
         if (!Auth::check()) {
-            return redirect()->route('home')->with(['status' => 3, 'message' => 'Please login to access this page.']);
+            return redirect()->route('home')->with(['status' => 3, 'message' => 'Please login to continue!']);
         }
 
         $user = Auth::user();
 
         if ($user->role !== $role) {
-            return redirect()->route('home')->with(['status' => 3, 'message' => 'Unauthorized access.']);
+            return redirect()->route('home')->with(['status' => 3, 'message' => 'Unauthorized access!!!']);
         }
 
         return $next($request);

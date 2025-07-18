@@ -114,7 +114,7 @@ class EventController extends Controller
                 'message' => 'Event not found or has been cancelled.',
             ]);
         }
-        return view('admin.events.showEvents', compact('event'));
+        return view('components.preview', compact('event'));
     }
 
     /**

@@ -15,11 +15,9 @@ Route::get('buy_tickets', [HomeController::class, 'showAllEvents'])->name('buy_t
 Route::get('upcoming', [HomeController::class, 'showUpcomingEvents'])->name('upcoming');
 Route::get('popular', [HomeController::class, 'showPopularEvents'])->name('popular');
 
-Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-
 Route::get('/my-tickets', function () {
     return view('my_tickets');
-});
+})->name('my_tickets');
 
 Route::middleware('auth')->get('/profile', function () {
     return view('profile');
@@ -35,7 +33,7 @@ Route::get('/email/verify', [AuthController::class, 'sendVerificationEmail'])
     ->middleware('auth')
     ->name('verification.send');
 
-Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->group(function () {
+Route::middleware(['checkRole:admin'])->prefix('admin')->group(function () {
     Route::get('dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('scan-qr', [AdminController::class, 'showScanQrPage'])->name('admin.scanQr');
     Route::get('verify-ticket', [AdminController::class, 'verifyTicket'])->name('admin.verify-ticket');
@@ -51,7 +49,7 @@ Route::prefix('events')->middleware('checkRole:admin')->group(function () {
     Route::delete('destroy/{id}', [EventController::class, 'destroy'])->name('events.destroy');
 });
 
-Route::middleware(['auth', 'checkRole:user'])->prefix('user/')->group(function () {
+Route::middleware(['checkRole:user'])->prefix('user/')->group(function () {
     Route::get('tickets', [TicketController::class, 'index'])->name('user.tickets.index');
     Route::get('tickets/{batch_code}', [TicketController::class, 'show'])->name('user.tickets.show');
     Route::post('tickets', [TicketController::class, 'store'])->name('user.tickets.store');
@@ -59,24 +57,23 @@ Route::middleware(['auth', 'checkRole:user'])->prefix('user/')->group(function (
     Route::delete('tickets/{batch_code}', [TicketController::class, 'destroy'])->name('user.tickets.destroy');
 });
 
-Route::middleware(['auth', 'checkRole:admin, user'])->prefix('user/cart')->group(function () {
+Route::middleware(['checkRole:admin'])->prefix('cart')->group(function () {
     Route::get('/', [CartController::class, 'index'])->name('cart.index');
-    Route::post('addCart', [CartController::class, 'addToCart'])->name('cart.addToCart');
-    Route::put('update', [CartController::class, 'update'])->name('cart.update');
-    Route::delete('remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/add', [CartController::class, 'addCart'])->name('cart.add');
+    Route::put('/update', [CartController::class, 'updateCart'])->name('cart.update');
+    // Route::delete('/remove/{eventId}', [CartController::class, 'removeCart'])->name('cart.remove');
+    Route::delete('/removeSingle/{eventId}/{index}', [CartController::class, 'removeCart'])->name('cart.removeSingle');
+    Route::post('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
 });
 
-// Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->group(function () {
+// Route::middleware([ 'checkRole:admin'])->prefix('admin')->group(function () {
 //     Route::get('/tickets', [AdminTicketController::class, 'index'])->name('admin.tickets.index');
 //     // Route::get('/tickets/create', [AdminTicketController::class, 'create'])->name('admin.tickets.create');
 //     Route::post('/tickets', [AdminTicketController::class, 'store'])->name('admin.tickets.store');
-//     // Route::put('/tickets/{ticket}', [AdminTicketController::class, 'update'])->name('admin.tickets.update');
-//     // Route::delete('/tickets/{ticket}', [AdminTicketController::class, 'destroy'])->name('admin.tickets.destroy');
-// })
 
 Route::get('/test-alert', function () {
     return redirect()->route('home')->with([
-        'status' => 1,
-        'message' => 'This is a test alert from route.'
+        'status' => 2,
+        'message' => 'Welcome to the Admin Dashboard'
     ]);
 });

@@ -29,7 +29,10 @@
     <!-- Your local JS file (make sure it exists in public/js/app.js) -->
     <script src="{{ asset('js/app.js') }}" defer></script>
 
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
 </head>
+
 
 <body>
     <div class="app-container">
@@ -42,7 +45,6 @@
 
         {{-- Include signup modal only on signup page --}}
         @include('auth.signup')
-        @include('components.preview') {{-- modal markup here --}}
 
         @include('admin.components.alert')
 

@@ -256,6 +256,7 @@
 
 #previewTitle {
     font-size: 1.8rem;
+    font-weight: bold;
     margin-bottom: 0.8rem;
     color: #cc0000;
     text-align: left;
@@ -279,7 +280,6 @@
 #previewPrice {
     font-size: 1.1rem;
     color: #cc0000;
-    font-weight: bold;
     margin: 0.5rem 0;
 }
 
@@ -317,8 +317,6 @@
     left: 0;
     width: 100%;
     height: 40px;
-    /* adjust based on how much fade you want */
-    background: linear-gradient(to top, #fff, rgba(255, 255, 255, 0));
     pointer-events: none;
 }
 
@@ -541,4 +539,65 @@
 
 .share-options a {
     text-decoration: none
+}
+
+@media screen and (max-width: 768px) {
+    .preview-modal-content {
+        margin-left: 0 !important;
+        padding: 1rem;
+        width: 100%;
+        min-height: auto;
+        max-height: 90vh;
+        border-radius: 8px;
+        overflow-y: auto;
+    }
+
+    .preview-body {
+        flex-direction: column;
+        padding: 0;
+        gap: 1rem;
+    }
+
+    .image-box-floating {
+        position: static;
+        width: 100%;
+        box-shadow: none;
+        padding-bottom: 1rem;
+        border-radius: 8px;
+    }
+
+    .image-box img {
+        width: 100%;
+        height: auto;
+    }
+
+    .preview-details {
+        padding: 0 0.5rem;
+        flex: none;
+        overflow-y: visible;
+    }
+
+    .controls {
+        position: static;
+        padding: 0.5rem;
+        background: none;
+        justify-content: center;
+        align-items: baseline;
+        gap: 1.2rem;
+    }
+
+    .share-container {
+        margin-bottom: 1rem;
+    }
+
+    .preview-action-btn {
+        width: 100%;
+        max-width: 100%;
+        padding: 0.8rem;
+        font-size: 1rem;
+    }
+
+    .event-section h2 {
+        font-size: 1.3rem;
+    }
 }
