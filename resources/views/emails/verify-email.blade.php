@@ -109,8 +109,8 @@
             <tr>
                 <td>
                     <div class="hero">
-                        <div class="email-img">
-                            <img src="{{ $data['imageUrl'] }}" alt="Mail Image">
+                        <div style="text-align: center;">
+                            <img src="{{ $data['imageUrl'] }}" alt="Mail Image" style="max-width: 50%; height: auto;">
                         </div>
                         <div class="contents">
                             <h2>Verify Your Email to Finish Signing Up!</h2>
