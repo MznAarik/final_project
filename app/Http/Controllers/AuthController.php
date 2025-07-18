@@ -23,7 +23,6 @@ class AuthController extends Controller
         DB::beginTransaction();
         try {
             $role = $userValidate['role'];
-
             // Check if email is already in use
             if (User::where('email', $userValidate['email'])->exists()) {
                 if ($userValidate->expectsJson()) {
@@ -33,7 +32,7 @@ class AuthController extends Controller
                     ], 409);
                 }
                 return redirect()->route('home')->with([
-                    'status' => 0,
+                    'status' => 2,
                     'message' => 'This email is already in use.',
                 ]);
             }
@@ -47,7 +46,7 @@ class AuthController extends Controller
                     ], 403);
                 }
                 return redirect()->route('home')->with([
-                    'status' => 0,
+                    'status' => 2,
                     'message' => 'Only admins can create admin accounts.',
                     'error' => 'Unauthorized role assignment',
                 ]);
@@ -113,7 +112,7 @@ class AuthController extends Controller
             }
 
             return redirect()->route('home')->with([
-                'status' => 0,
+                'status' => 2,
                 'message' => 'Registration failed. Please try again.',
                 'error' => $e->getMessage(),
             ]);
@@ -155,7 +154,7 @@ class AuthController extends Controller
 
         // Fallback for non-AJAX:
         return redirect()->route('home')->with([
-            'status' => 0,
+            'status' => 2,
             'message' => 'Invalid credentials',
         ]);
     }
@@ -180,7 +179,7 @@ class AuthController extends Controller
 
         if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
             return redirect()->route('home')->with([
-                'status' => 0,
+                'status' => 2,
                 'message' => 'Invalid verification link.',
             ]);
         }
@@ -209,13 +208,13 @@ class AuthController extends Controller
                 ]);
             }
             return redirect()->route('home')->with([
-                'status' => 0,
+                'status' => 2,
                 'message' => 'Already verified or not logged in',
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to resend verification email: ' . $e->getMessage());
             return redirect()->route('home')->with([
-                'status' => 0,
+                'status' => 2,
                 'message' => 'Failed to resend verification email.',
                 'error' => $e->getMessage(),
             ]);
