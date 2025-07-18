@@ -30,7 +30,7 @@ class CustomVerifyEmail extends Notification
             'name' => $notifiable->name,
             'email' => $notifiable->email,
             'verificationUrl' => $verificationUrl,
-            'imageUrl' => 'https://res.cloudinary.com/dzglpqsfi/image/upload/v1747669702/dancin-monkey_fe5hy2.gif',
+            'imageUrl' => 'https://res.cloudinary.com/dzglpqsfi/image/upload/v1752737105/modern-insurance-icon_1004538-7372_jxkpzh.png',
         ];
 
         Log::info('Sending email with data: ', $data); // Debug log

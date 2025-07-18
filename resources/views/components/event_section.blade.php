@@ -95,7 +95,7 @@
                 <div id="previewTicketCategories" style="display:flex; gap:10px; margin: 7px 10px 0; flex-wrap: wrap;">
                 </div>
 
-                <form id="bookForm" action="{{ route('cart.addToCart') }}" method="POST">
+                <form id="bookForm" action="{{ route('cart.add') }}" method="POST">
                     @csrf
                     <input type="hidden" id="previewEventId" name="id">
                     <input type="hidden" id="ticketQuantities" name="ticketQuantities">
@@ -138,6 +138,8 @@
         const previewDate = document.getElementById('previewDate');
         const previewDesc = document.getElementById('previewDescription');
 
+        let ticketData = []; // Moved to global scope within the event listener
+
         document.querySelectorAll('.open-previewmodal-trigger').forEach(trigger => {
             trigger.addEventListener('click', (e) => {
                 const card = e.target.closest('.event-card');
@@ -160,10 +162,10 @@
                 previewDesc.textContent = card.dataset.description || 'No description';
                 previewEventId.value = card.dataset.id || '';
 
-                let ticketData = [];
+                // Parse and store ticket data
                 try {
                     ticketData = JSON.parse(card.dataset.ticketdata || '[]');
-                } catch {
+                } catch (error) {
                     ticketData = [];
                 }
 
@@ -178,13 +180,13 @@
                     div.style.borderRadius = '4px';
                     div.style.minWidth = '100px';
                     div.innerHTML = `
-                        <strong>${ticket.category.toUpperCase()}</strong><br>Rs. ${ticket.price}
-                        <div class="quantity flex mt-2" data-index="${index}">
-                            <button class="sub-btn m-2 text-2xl" type="button">-</button>
-                            <input type="text" class="text-quantity" oninput="this.value = this.value.replace(/[^0-9]/g, '')" min="0" value="0" style="width: 40px; text-align: center;">
-                            <button class="add-btn m-2 text-2xl" type="button">+</button>
-                        </div>
-                    `;
+                    <strong>${ticket.category.toUpperCase()}</strong><br>Rs. ${ticket.price}
+                    <div class="quantity flex mt-2" data-index="${index}">
+                        <button class="sub-btn m-2 text-2xl" type="button">-</button>
+                        <input type="text" class="text-quantity" oninput="this.value = this.value.replace(/[^0-9]/g, '')" min="0" value="0" style="width: 40px; text-align: center;">
+                        <button class="add-btn m-2 text-2xl" type="button">+</button>
+                    </div>
+                `;
                     previewTicketCategories.appendChild(div);
                 });
 
@@ -222,12 +224,17 @@
                 return;
             }
 
-            const ticketQuantities = {};
+            const selectedTickets = [];
             previewTicketCategories.querySelectorAll('.quantity').forEach((div, index) => {
-                const input = div.querySelector('.text-quantity');
-                ticketQuantities[index] = parseInt(input.value) || 0;
+                const quantity = parseInt(div.querySelector('.text-quantity').value) || 0;
+                if (quantity > 0 && ticketData[index]) {
+                    selectedTickets.push({
+                        category: ticketData[index].category,
+                        quantity: quantity
+                    });
+                }
             });
-            ticketQuantitiesInput.value = JSON.stringify(ticketQuantities);
+            ticketQuantitiesInput.value = JSON.stringify(selectedTickets);
         });
 
         // Close modal
