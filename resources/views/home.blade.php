@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 
-@section('title', $title ?? 'EvenTickets')
+@section('title', $title ?? 'BooKets')
 
 @section('content')
 

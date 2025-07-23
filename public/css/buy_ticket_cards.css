@@ -22,7 +22,9 @@
     flex-direction: column;
     padding: 0;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
 }
 
 .ticket-card:hover {
@@ -94,7 +96,9 @@
     cursor: pointer;
     font-weight: bold;
     font-size: 0.8rem;
-    transition: background 0.3s ease, transform 0.3s ease;
+    transition:
+        background 0.3s ease,
+        transform 0.3s ease;
     position: relative;
     top: -3px;
     right: 3px;

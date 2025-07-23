@@ -6,7 +6,10 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use function App\Helpers\svg_to_png;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('login', [HomeController::class, 'index'])->name('login');
@@ -15,9 +18,9 @@ Route::get('buy_tickets', [HomeController::class, 'showAllEvents'])->name('buy_t
 Route::get('upcoming', [HomeController::class, 'showUpcomingEvents'])->name('upcoming');
 Route::get('popular', [HomeController::class, 'showPopularEvents'])->name('popular');
 
-Route::get('/my-tickets', function () {
-    return view('my_tickets');
-})->name('my_tickets');
+// Route::get('/my-tickets', function () {
+//     return view('my_tickets');
+// })->name('my_tickets');
 
 Route::middleware('auth')->get('/profile', function () {
     return view('profile');
@@ -55,15 +58,20 @@ Route::middleware(['checkRole:user'])->prefix('user/')->group(function () {
     Route::post('tickets', [TicketController::class, 'store'])->name('user.tickets.store');
     Route::put('tickets/{batch_code}', [TicketController::class, 'update'])->name('user.tickets.update');
     Route::delete('tickets/{batch_code}', [TicketController::class, 'destroy'])->name('user.tickets.destroy');
+
 });
 
-Route::middleware(['checkRole:admin'])->prefix('cart')->group(function () {
+Route::middleware(['checkRole:user'])->prefix('cart')->group(function () {
     Route::get('/', [CartController::class, 'index'])->name('cart.index');
     Route::post('/add', [CartController::class, 'addCart'])->name('cart.add');
     Route::put('/update', [CartController::class, 'updateCart'])->name('cart.update');
-    // Route::delete('/remove/{eventId}', [CartController::class, 'removeCart'])->name('cart.remove');
-    Route::delete('/removeSingle/{eventId}/{index}', [CartController::class, 'removeCart'])->name('cart.removeSingle');
-    Route::post('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+    Route::delete('/cart/remove/{eventId}/{index}', [CartController::class, 'removeSingle'])->name('cart.removeSingle');
+
+    Route::get('/checkout', [PaymentController::class, 'showPaymentForm'])->name('cart.checkout');
+    Route::post('/checkout/process', [PaymentController::class, 'processPayment'])->name('cart.checkout.process');
+    Route::get('/checkout/success', [PaymentController::class, 'successCallback'])->name('cart.checkout.success');
+    Route::get('/checkout/failure', [PaymentController::class, 'failureCallback'])->name('cart.checkout.failure');
+    Route::post('/checkout/paypal/notify', [PaymentController::class, 'paypalNotify'])->name('cart.checkout.paypal.notify');
 });
 
 // Route::middleware([ 'checkRole:admin'])->prefix('admin')->group(function () {

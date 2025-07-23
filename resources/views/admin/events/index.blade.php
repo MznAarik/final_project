@@ -116,40 +116,44 @@
     </div>
 
     <div class="event-cards">
-        @foreach ($events as $event)
-            @php
-                $ticketData = is_array($event->ticket_category_price)
-                    ? $event->ticket_category_price
-                    : json_decode($event->ticket_category_price, true);
+        @if ($events->isEmpty())
+            <h1><strong>No Event Found</strong></h1>
+        @else
+            @foreach ($events as $event)
+                @php
+                    $ticketData = is_array($event->ticket_category_price)
+                        ? $event->ticket_category_price
+                        : json_decode($event->ticket_category_price, true);
 
-                $prices = collect($ticketData)->pluck('price')->filter();
-                $minPrice = $prices->min();
-                $maxPrice = $prices->max();
-                $priceRange = $prices->isEmpty() ? 'N/A' : ($minPrice == $maxPrice ? $minPrice : "$minPrice - $maxPrice");
-            @endphp
+                    $prices = collect($ticketData)->pluck('price')->filter();
+                    $minPrice = $prices->min();
+                    $maxPrice = $prices->max();
+                    $priceRange = $prices->isEmpty() ? 'N/A' : ($minPrice == $maxPrice ? $minPrice : "$minPrice - $maxPrice");
+                @endphp
 
-            <div class="event-card">
-                <p class="ribbon {{ strtolower($event->status ?? '') }}">
-                    <i class="fas fa-info-circle"></i> {{ ucfirst($event->status ?? 'Status not specified') }}
-                </p>
-                <img src="{{ asset('storage/' . $event->img_path) }}" alt="{{ $event->name }}" class="open-previewmodal-trigger"
-                    style="width: 100%; height: 280px; object-fit: cover;">
-                <div class="card-content">
-                    <input type="hidden" name="id" value="{{ $event->id }}">
-                    <h3 class="bold">{{ $event->name }}</h3>
-                    <p class="event-date">
-                        <i class="fas fa-calendar-alt"></i> {{ $event->start_date ?? 'Date not specified' }} -
-                        {{ $event->end_date ?? '' }}
+                <div class="event-card">
+                    <p class="ribbon {{ strtolower($event->status ?? '') }}">
+                        <i class="fas fa-info-circle"></i> {{ ucfirst($event->status ?? 'Status not specified') }}
                     </p>
-                    <p class="event-location">
-                        <i class="fas fa-map-marker-alt"></i> {{ $event->location }}
-                    </p>
-                    <div class="price-button-container">
-                        <p class="event-price"><strong>Rs. {{ $priceRange }}</strong></p>
-                        <a href="{{ route('events.edit', $event->id) }}" class="small-button">Edit Event</a>
+                    <img src="{{ asset('storage/' . $event->img_path) }}" alt="{{ $event->name }}" class="open-previewmodal-trigger"
+                        style="width: 100%; height: 280px; object-fit: cover;">
+                    <div class="card-content">
+                        <input type="hidden" name="id" value="{{ $event->id }}">
+                        <h3 class="bold">{{ $event->name }}</h3>
+                        <p class="event-date">
+                            <i class="fas fa-calendar-alt"></i> {{ $event->start_date ?? 'Date not specified' }} -
+                            {{ $event->end_date ?? '' }}
+                        </p>
+                        <p class="event-location">
+                            <i class="fas fa-map-marker-alt"></i> {{ $event->location }}
+                        </p>
+                        <div class="price-button-container">
+                            <p class="event-price"><strong>Rs. {{ $priceRange }}</strong></p>
+                            <a href="{{ route('events.edit', $event->id) }}" class="small-button">Edit Event</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-        @endforeach
+            @endforeach
+        @endif
     </div>
 @endsection

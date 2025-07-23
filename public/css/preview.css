@@ -15,7 +15,6 @@
     box-sizing: border-box;
 }
 
-
 /* Modal content */
 .preview-modal-content {
     border-radius: 4px;
@@ -33,7 +32,6 @@
     position: relative;
     overflow: visible;
 }
-
 
 /* Close button */
 .preview-close-btn {
@@ -86,14 +84,12 @@
     border-top-right-radius: 6px;
 }
 
-
 /* Footer below image */
 .image-footer {
     padding-top: 0.75rem;
     text-align: center;
     font-size: 0.95rem;
     color: #333;
-
 }
 
 /* Event details */
@@ -127,9 +123,7 @@
     margin-top: 1rem;
     max-width: 150px;
     display: inline-block;
-
 }
-
 
 .preview-action-btn:hover {
     background-color: #b00;
@@ -158,7 +152,9 @@
     will-change: transform, box-shadow;
     transform: translateZ(0);
     backface-visibility: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
     overflow: visible;
@@ -190,7 +186,6 @@
     width: 100%;
     height: auto;
     display: block;
-
 }
 
 .image-footer {
@@ -251,8 +246,6 @@
         0 -0.3px black;
     /* keep black border */
 }
-
-
 
 #previewTitle {
     font-size: 1.8rem;
@@ -333,12 +326,10 @@
     background: transparent;
 }
 
-
 .share-container {
     position: relative;
     display: inline-block;
     z-index: 2;
-
 }
 
 .share-icon {
@@ -354,10 +345,11 @@
     left: 0;
     width: 160px;
     height: 160px;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    transition:
+        transform 0.3s ease,
+        opacity 0.3s ease;
     pointer-events: auto;
     text-decoration: none;
-
 }
 
 .share-options.active {
@@ -368,7 +360,7 @@
 
 /* Invisible expanded hover area */
 .share-container::before {
-    content: '';
+    content: "";
     position: absolute;
     bottom: -40px;
     left: -40px;
@@ -405,7 +397,6 @@
     top: 120px;
     left: -10px;
     cursor: pointer;
-
 }
 
 .share-btn i {
@@ -428,7 +419,6 @@
 .share-container::before {
     pointer-events: none !important;
 }
-
 
 /* Show buttons when expanded */
 .share-container.expanded .share-btn {
@@ -470,7 +460,7 @@
 
 /* Expanded hover bubble to make mouse movement easier */
 .share-container.expanded::before {
-    content: '';
+    content: "";
     position: absolute;
     bottom: -100px;
     left: -100px;
@@ -493,29 +483,30 @@
 
 /* Facebook: Blue background, white icon */
 .share-btn.fb {
-    background-color: #1877F2;
+    background-color: #1877f2;
     color: white;
 }
 
 /* Instagram: Gradient background, white icon */
 .share-btn.ig {
     background: radial-gradient(circle at 30% 107%,
-            #fdf497 0%, #fdf497 5%,
+            #fdf497 0%,
+            #fdf497 5%,
             #fd5949 45%,
             #d6249f 60%,
-            #285AEB 90%);
+            #285aeb 90%);
     color: white;
 }
 
 /* WhatsApp: Green background, white icon */
 .share-btn.wa {
-    background-color: #25D366;
+    background-color: #25d366;
     color: white;
 }
 
 /* Twitter: Blue background, white icon */
 .share-btn.tw {
-    background-color: #1DA1F2;
+    background-color: #1da1f2;
     color: white;
 }
 
@@ -524,7 +515,6 @@
     background-color: #6c757d;
     color: white;
 }
-
 
 /* Turn blue on hover */
 .share-icon:hover {
@@ -538,7 +528,7 @@
 }
 
 .share-options a {
-    text-decoration: none
+    text-decoration: none;
 }
 
 @media screen and (max-width: 768px) {

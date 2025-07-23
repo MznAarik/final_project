@@ -1,7 +1,7 @@
 <footer class="site-footer">
   <div class="footer-top">
     <div class="footer-section">
-      <h4>EvenTickets</h4>
+      <h4>🎟️BooKets</h4>
       <p>Your one-stop destination for concerts, festivals, sports, and more. Book your next event today!</p>
     </div>
 
@@ -46,6 +46,6 @@
   </div>
 
   <div class="footer-bottom">
-    <p>&copy; 2025 EvenTickets. All rights reserved.</p>
+    <p>&copy; 2025 BooKets. All rights reserved.</p>
   </div>
 </footer>

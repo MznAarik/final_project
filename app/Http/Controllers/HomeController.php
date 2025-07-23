@@ -42,7 +42,7 @@ class HomeController extends Controller
             }
             return view('home', [
                 'recommendedEvents' => $recommendedEvents,
-                'title' => 'Welcome to EvenTickets - Discover What’s Happening Near You',
+                'title' => '- Welcome to Ticket Booking System -',
                 'sectionType' => 'recommended'
             ]);
 
