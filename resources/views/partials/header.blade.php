@@ -1,5 +1,5 @@
 <nav class="top-nav">
-  <a href="{{ route('home') }}" class="logo">🎫 EvenTickets</a>
+  <a href="{{ route('home') }}" class="logo">🎟️ BooKets</a>
 
   <!-- Hamburger button for mobile -->
   <button class="hamburger" aria-label="Toggle menu">&#9776;</button>
@@ -24,7 +24,7 @@
       <a href="{{ url('profile') }}" class="dropdown-button block py-1"><i
         class="fa fa-user mr-2"></i>{{ Auth::user()->name }}</a>
 
-      <a href="{{ route('my_tickets') }}" class="dropdown-button block py-1"><i
+      <a href="{{ route('user.tickets.index') }}" class="dropdown-button block py-1"><i
         class="fa fa-clipboard-list mr-2"></i>My
         Tickets</a>
 
@@ -60,7 +60,7 @@
       <li><a href="{{ route('upcoming') }}"><i class="fa fa-calendar-alt"></i> Upcoming</a></li>
       <li><a href="{{ route('popular') }}"><i class="fa fa-fire"></i> Popular</a></li>
       <li><a href="{{ route('cart.index') }}"><i class="fa fa-shopping-cart"></i> My Cart</a></li>
-      <li><a href="{{ route('my_tickets') }}"><i class="fa fa-clipboard-list"></i> My Tickets</a></li>
+      <li><a href="{{ route('user.tickets.index') }}"><i class="fa fa-clipboard-list"></i> My Tickets</a></li>
 
       @if(Auth::check())
       <li><a href="{{ url('profile') }}"><i class="fa fa-user"></i> Welcome, {{ Auth::user()->name }}</a></li>

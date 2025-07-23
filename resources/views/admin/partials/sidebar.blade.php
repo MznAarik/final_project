@@ -3,18 +3,18 @@
     <ul class="space-y-4">
         <li>
             <a href="{{ route('admin.dashboard') }}"
-                class="block px-4 py-2 rounded-md{{ request()->is('admin/dashboard') ? ' bg-red-600 font-semibold' : ' hover:bg-red-500' }} transition"><i
+                class="block px-4 py-2 rounded-md{{ request()->is('admin/dashboard') ? ' bg-red-700 font-semibold' : ' hover:bg-red-600' }} transition"><i
                     class="fa-solid fa-house"></i>Dashboard</a>
         </li>
         <li>
             <a href="{{ route('admin.scanQr') }}"
-                class="block px-3 py-2 rounded-md {{ request()->is('admin/scan-qr') ? 'bg-red-600 font-semibold' : 'hover:bg-red-500' }}">
+                class="block px-3 py-2 rounded-md {{ request()->is('admin/scan-qr') ? 'bg-red-700 font-semibold' : 'hover:bg-red-600' }}">
                 <i class="fa-solid fa-qrcode"></i> Scan QR-Code</a>
         </li>
         <ul class="space-y-2">
             <li>
                 <a href="{{ route('events.index') }}"
-                    class="block px-3 py-2 rounded-md {{ request()->is('events*') ? 'bg-red-600 font-semibold' : 'hover:bg-red-500' }}">
+                    class="block px-3 py-2 rounded-md {{ request()->is('events*') ? 'bg-red-700 font-semibold' : 'hover:bg-red-600' }}">
                     <i class="fa-solid fa-calendar-days"></i> All Events
                 </a>
             </li>

@@ -142,9 +142,11 @@ class AuthController extends Controller
 
                 $request->session()->regenerate();
 
+                $message = $user->role === 'admin' ? 'Welcome, admin!' : 'Welcome back, ' . $user->name . '!';
+
                 return response()->json([
                     'success' => true,
-                    'message' => 'Login successful!',
+                    'message' => $message,
                     'redirect_url' => $user->role === 'admin' ? route('admin.dashboard') : route('home')
                 ]);
             }
