@@ -138,11 +138,16 @@ class PaymentController extends Controller
                 ]);
 
                 $batchCode = uniqid('batch_') . '-' . $eventId;
-                $encryptedData = AesHelper::encrypt(json_encode([
-                    'user_id' => $userId,
-                    'event_id' => $eventId,
-                    'batch_code' => $batchCode,
-                ]));
+                try {
+                    $encryptedData = AesHelper::encrypt(json_encode([
+                        'user_id' => $userId,
+                        'event_id' => $eventId,
+                        'batch_code' => $batchCode,
+                    ]));
+                } catch (\Exception $e) {
+                    Log::error('QR code encryption failed: ' . $e->getMessage());
+                    throw new \Exception('Failed to generate secure ticket data');
+                }
 
                 $qrCodeUrl = route('admin.verify-ticket') . '?data=' . urlencode($encryptedData);
                 Log::info('Generating QR code for URL: ' . $qrCodeUrl);
