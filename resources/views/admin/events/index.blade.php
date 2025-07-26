@@ -1,15 +1,8 @@
 @extends('admin.layouts.app')
 
 <style>
-    .add-event {
-        margin: 2rem;
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: end;
-    }
-
     #add-event {
+        margin: 2rem;
         padding: 0.5rem 1rem;
         cursor: pointer;
         background-color: red;
@@ -29,7 +22,6 @@
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 1.5rem;
-        margin: 2rem;
     }
 
     .event-card {
@@ -109,13 +101,13 @@
 </style>
 
 @section('content')
-    <div class="add-event">
+    <div class="w-full flex justify-end mb-6">
         <a id="add-event" href="{{ route('events.create') }}">
             <i class="fa-solid fa-square-plus"></i> Add Event
         </a>
     </div>
 
-    <div class="event-cards">
+    <div class="event-cards w-full">
         @if ($events->isEmpty())
             <h1><strong>No Event Found</strong></h1>
         @else

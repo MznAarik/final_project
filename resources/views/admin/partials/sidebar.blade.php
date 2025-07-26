@@ -1,20 +1,19 @@
-<div class="sidebar my-24 text-center text-white font-bold text-2l w-60 min-h-screen py-auto leading-12 relative "
-    style="margin-top: 100px; position:fixed;">
+<div class="fixed top-[100px] left-0 w-60 mr-30  font-bold overflow-y-auto leading-12 text-center">
     <ul class="space-y-4">
         <li>
             <a href="{{ route('admin.dashboard') }}"
-                class="block px-4 py-2 rounded-md{{ request()->is('admin/dashboard') ? ' bg-red-700 font-semibold' : ' hover:bg-red-600' }} transition"><i
+                class="block px-4 py-2 rounded-md{{ request()->is('admin/dashboard') ? ' bg-red-600 font-semibold' : ' hover:bg-red-700' }} transition"><i
                     class="fa-solid fa-house"></i>Dashboard</a>
         </li>
         <li>
             <a href="{{ route('admin.scanQr') }}"
-                class="block px-3 py-2 rounded-md {{ request()->is('admin/scan-qr') ? 'bg-red-700 font-semibold' : 'hover:bg-red-600' }}">
+                class="block px-3 py-2 rounded-md {{ request()->is('admin/scan-qr') ? 'bg-red-600 font-semibold' : 'hover:bg-red-700' }}">
                 <i class="fa-solid fa-qrcode"></i> Scan QR-Code</a>
         </li>
         <ul class="space-y-2">
             <li>
                 <a href="{{ route('events.index') }}"
-                    class="block px-3 py-2 rounded-md {{ request()->is('events*') ? 'bg-red-700 font-semibold' : 'hover:bg-red-600' }}">
+                    class="block px-3 py-2 rounded-md {{ request()->is('events*') ? 'bg-red-600 font-semibold' : 'hover:bg-red-700' }}">
                     <i class="fa-solid fa-calendar-days"></i> All Events
                 </a>
             </li>

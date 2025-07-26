@@ -85,7 +85,7 @@
                 <h2 id="previewTitle">Event Name</h2>
 
                 <p><strong>Organizer:</strong> <span id="previewOrganizer">N/A</span></p>
-                <p><strong>Contact:</strong> <span id="previewContact">N/A</span></p>
+                <p><strong>Contact:</strong> <span id="previewContact" class="lowercase">N/A</span></p>
                 <p><strong>Venue:</strong> <span id="previewVenue">N/A</span></p>
                 <p><strong>Status:</strong> <span id="previewStatus">N/A</span></p>
                 <p><strong>Date:</strong> <span id="previewDate">N/A</span></p>

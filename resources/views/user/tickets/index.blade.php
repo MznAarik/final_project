@@ -55,7 +55,7 @@
                                         <div class="flex items-center space-x-2 mb-2">
                                             <span
                                                 class="px-2 py-1 bg-white/20 rounded-md text-xs font-medium text-white backdrop-blur-sm">
-                                                EVENT TICKET
+                                                BooKets
                                             </span>
                                         </div>
                                         <h2 class="text-xl font-bold text-white mb-1 line-clamp-2">
@@ -154,7 +154,7 @@
                                     {{ Str::plural('event', $tickets->pluck('event.name')->unique()->count()) }}
                                 </p>
                             </div>
-                            <div class="text-right">
+                            <div class="border-l border-gray-200 pl-8 text-right">
                                 <div class="text-2xl font-bold text-gray-900">{{ $tickets->sum('total_quantity') }}</div>
                                 <div class="text-sm text-gray-500">Total Tickets</div>
                             </div>
@@ -169,7 +169,6 @@
         <style>
             .line-clamp-2 {
                 display: -webkit-box;
-                -webkit-line-clamp: 2;
                 -webkit-box-orient: vertical;
                 overflow: hidden;
             }

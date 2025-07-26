@@ -164,8 +164,8 @@ class PaymentController extends Controller
 
                 $canvasWidth = 512;
                 $canvasHeight = 512;
-                $qrWidth = 215;
-                $qrHeight = 215;
+                $qrWidth = 217;
+                $qrHeight = 217;
                 $x = intval(($canvasWidth - $qrWidth) / 2); // 81
                 $y = intval(($canvasHeight - $qrHeight) / 2); // 81
 
