@@ -94,7 +94,6 @@ class EventController extends Controller
 
             return redirect()->route('home')->with([
                 'status' => 0,
-                'message' => 'Error Occured! Please try again',
                 'error' => $e->getMessage(),
             ]);
         }
@@ -144,7 +143,6 @@ class EventController extends Controller
 
             return redirect()->route('home')->with([
                 'status' => 0,
-                'message' => 'Error Occured! Please try again',
                 'error' => $e->getMessage(),
             ]);
         }
@@ -167,7 +165,6 @@ class EventController extends Controller
             Log::error('Event deletion failed: ' . $e->getMessage());
             return redirect()->route('home')->with([
                 'status' => 0,
-                'message' => 'Error Occured! Please try again',
                 'error' => $e->getMessage(),
             ]);
         }

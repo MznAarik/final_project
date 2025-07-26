@@ -10,28 +10,108 @@
     <link rel="stylesheet" href="{{ asset('css/event_section.css') }}">
     <link rel="stylesheet" href="{{ asset('css/preview.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/preview.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #e5e7eb;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        /* Sidebar styles */
+        .admin-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 240px;
+            height: 100vh;
+            background-color: #991b1b;
+            color: white;
+            padding: 24px 16px;
+            overflow-y: auto;
+            z-index: 30;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Main content styles */
+        .admin-main {
+            margin-left: 240px;
+            padding-top: 80px;
+            min-height: 100vh;
+        }
+
+        .admin-content {
+            padding: 24px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                width: 200px;
+            }
+
+            .admin-navbar {
+                left: 200px;
+            }
+
+            .admin-main {
+                margin-left: 200px;
+            }
+
+            .admin-content {
+                padding: 16px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .admin-navbar {
+                left: 0;
+            }
+
+            .admin-main {
+                margin-left: 0;
+            }
+
+            .admin-sidebar.show {
+                transform: translateX(0);
+            }
+        }
+    </style>
 </head>
 
-<body class="bg-gray-100 min-h-screen">
+<body>
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+        @include('admin.partials.sidebar')
+    </aside>
 
-    <header class="bg-white shadow px-6 py-4 sticky top-0 z-50 w-full">
+    <!-- Top Navbar -->
+    <header class="admin-navbar">
         @include('admin.partials.navbar')
     </header>
 
-    <div class="grid grid-cols-[15rem_1fr] min-h-[calc(100vh-4rem)]">
-
-        <aside class="bg-red-800 text-white px-4 py-6 h-full overflow-y-auto">
-            @include('admin.partials.sidebar')
-        </aside>
-
-        <main class="p-6 overflow-y-auto" style="margin-top: 100px;">
+    <!-- Main Content -->
+    <main class="admin-main">
+        <div class="admin-content">
             @include('admin.components.alert')
             @yield('content')
-        </main>
-    </div>
+        </div>
+    </main>
 
 </body>
 

@@ -1,7 +1,14 @@
 <footer class="site-footer">
   <div class="footer-top">
     <div class="footer-section">
-      <h4>🎟️BooKets</h4>
+      <h4 class="flex justify-start items-center">
+        <svg class="w-10 h-10 text-white text-3xl mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z">
+          </path>
+        </svg>
+        BooKets
+      </h4>
       <p>Your one-stop destination for concerts, festivals, sports, and more. Book your next event today!</p>
     </div>
 

@@ -13,7 +13,7 @@ class AdminController extends Controller
 {
     public function index()
     {
-        return view('admin.dashboard');
+        return view('admin.dashboard')->with(['status' => 1, 'message' => 'Welcome Admin']);
     }
 
     public function showScanQrPage()

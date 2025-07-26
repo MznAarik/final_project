@@ -1,210 +1,202 @@
 @extends('admin.layouts.app')
 
 @section('content')
-<div class="bg-gray-100 flex flex-col items-center justify-center">
-    <div class="w-3xl mx-auto bg-white p-8 shadow-lg rounded-lg" style="position: relative; z-index: 1;">
-        <h1 class="text-2xl font-bold mb-6 text-center">Add Event</h1>
-        <!-- Inside your Blade view -->
-        <form action="{{ route('events.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+<div style="background-color: #f3f4f6; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 1rem;">
+    <div style="width: 48rem; margin-left: auto; margin-right: auto; background-color: #ffffff; padding: 2rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); border-radius: 0.5rem; position: relative; z-index: 1;">
+        <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; text-align: center; color: #1f2937;">Add Event</h1>
+        <form action="{{ route('events.store') }}" method="POST" enctype="multipart/form-data" style="margin-bottom: 1.5rem;">
             @csrf
 
             <!-- Event Title -->
-            <div>
-                <label for="name" class="block font-semibold mb-1">Event Title</label>
+            <div style="margin-bottom: 1.5rem;">
+                <label for="name" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Event Title</label>
                 <input type="text" id="name" name="name" value="{{ old('name') }}" required maxlength="255"
-                    class="w-full border @error('name') border-red-500 @else border-gray-300 @enderror rounded px-4 py-4">
+                    style="width: 100%; border: 1px solid; @error('name') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                 @error('name')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
                 @enderror
             </div>
 
             <!-- Venue -->
-            <div>
-                <label for="venue" class="block font-semibold mb-1">Venue</label>
+            <div style="margin-bottom: 1.5rem;">
+                <label for="venue" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Venue</label>
                 <input type="text" id="venue" name="venue" value="{{ old('venue') }}" required maxlength="255"
-                    class="w-full border @error('venue') border-red-500 @else border-gray-300 @enderror rounded px-4 py-2">
+                    style="width: 100%; border: 1px solid; @error('venue') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                 @error('venue')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
                 @enderror
             </div>
 
             <!-- Location -->
-            <div class="flex gap-4 mb-2">
-                <div class="w-1/2">
-                    <label for="location" class="block font-semibold mb-1">Location</label>
-                    <input type="text" id="location" name="location" value="{{ old('location') }}" required
-                        maxlength="255"
-                        class="w-full border @error('location') border-red-500 @else border-gray-300 @enderror rounded px-4 py-2">
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <div style="flex: 1;">
+                    <label for="location" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Location</label>
+                    <input type="text" id="location" name="location" value="{{ old('location') }}" required maxlength="255"
+                        style="width: 100%; border: 1px solid; @error('location') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                     @error('location')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <!-- Status -->
-                <div class="w-1/2">
-                    <label for="status" class="block font-semibold mb-1">Status</label>
+                <div style="flex: 1;">
+                    <label for="status" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Status</label>
                     <select id="status" name="status"
-                        class="w-full border @error('status') border-red-500 @else border-gray-300 @enderror rounded px-4 py-2">
+                        style="width: 100%; border: 1px solid; @error('status') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                         <option value="">-- Select Status --</option>
                         @foreach(['upcoming', 'active', 'completed', 'cancelled'] as $status)
                             <option value="{{ $status }}" @selected(old('status') === $status)>{{ ucfirst($status) }}</option>
                         @endforeach
                     </select>
                     @error('status')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
 
             <!-- Capacity -->
-            <div class="flex gap-4 mb-2">
-                <div class="w-1/2">
-                    <label for="capacity" class="block font-semibold mb-1">Capacity</label>
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <div style="flex: 1;">
+                    <label for="capacity" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Capacity</label>
                     <input type="number" id="capacity" name="capacity" value="{{ old('capacity') }}" min="1" required
-                        class="w-full border @error('capacity') border-red-500 @else border-gray-300 @enderror rounded px-4 py-2">
+                        style="width: 100%; border: 1px solid; @error('capacity') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                     @error('capacity')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
                     @enderror
                 </div>
-                <div class="w-1/2">
-                    <label for="image" class="block font-semibold mb-1">Event Image</label>
+                <div style="flex: 1;">
+                    <label for="image" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Event Image</label>
                     <input type="file" id="image" name="image" accept="image/*"
-                        class="w-full border @error('image') border-red-500 @else border-gray-300 @enderror rounded px-4 py-2">
+                        style="width: 100%; border: 1px solid; @error('image') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                     @error('image')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
 
             <!-- Description -->
-            <div>
-                <label for="description" class="block font-semibold mb-1">Description</label>
-                <textarea id="description" name="description" required
-                    class="w-full border @error('description') border-red-500 @else border-gray-300 @enderror rounded px-4 py-2 h-28">{{ old('description') }}</textarea>
+            <div style="margin-bottom: 1.5rem;">
+                <label for="description" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Description</label>
+                <textarea id="description" name="description" rows="10" required
+                    style="width: 100%; border: 1px solid; @error('description') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; height: 5rem; resize: vertical; transition: border-color 0.2s;">{{ old('description') }}</textarea>
                 @error('description')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
                 @enderror
             </div>
 
             <!-- Contact Email -->
-            <div>
-                <label for="contact_info" class="block font-semibold mb-1">Contact Email</label>
+            <div style="margin-bottom: 1.5rem;">
+                <label for="contact_info" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Contact Email</label>
                 <input type="email" id="contact_info" name="contact_info" value="{{ old('contact_info') }}" required
-                    class="w-full border @error('contact_info') border-red-500 @else border-gray-300 @enderror rounded px-4 py-2">
+                    style="width: 100%; border: 1px solid; @error('contact_info') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                 @error('contact_info')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
                 @enderror
             </div>
 
             <!-- Dates -->
-            <div class="flex gap-4">
-                <div class="flex-1">
-                    <label for="start_date" class="block font-semibold mb-1">Start Date</label>
-                    <input type="date" id="start_date" name="start_date" value="{{ old('start_date') }}" required
-                        class="w-full border @error('start_date') border-red-500 @else border-gray-300 @enderror rounded px-4 py-2">
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <div style="flex: 1;">
+                    <label for="start_date" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Start Date & Time</label>
+                    <input type="datetime-local" id="start_date" name="start_date" value="{{ old('start_date') }}" required
+                        style="width: 100%; border: 1px solid; @error('start_date') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                     @error('start_date')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
                     @enderror
                 </div>
-                <div class="flex-1">
-                    <label for="end_date" class="block font-semibold mb-1">End Date</label>
-                    <input type="date" id="end_date" name="end_date" value="{{ old('end_date') }}" required
-                        class="w-full border @error('end_date') border-red-500 @else border-gray-300 @enderror rounded px-4 py-2">
+                <div style="flex: 1;">
+                    <label for="end_date" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">End Date & Time</label>
+                    <input type="datetime-local" id="end_date" name="end_date" value="{{ old('end_date') }}" required
+                        style="width: 100%; border: 1px solid; @error('end_date') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                     @error('end_date')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
 
             <!-- Organizer -->
-            <div>
-                <label for="organizer" class="block font-semibold mb-1">Organizer</label>
-                <input type="text" id="organizer" name="organizer" value="{{ old('organizer') }}" required
-                    maxlength="255"
-                    class="w-full border @error('organizer') border-red-500 @else border-gray-300 @enderror rounded px-4 py-2">
+            <div style="margin-bottom: 1.5rem;">
+                <label for="organizer" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Organizer</label>
+                <input type="text" id="organizer" name="organizer" value="{{ old('organizer') }}" required maxlength="255"
+                    style="width: 100%; border: 1px solid; @error('organizer') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                 @error('organizer')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
                 @enderror
             </div>
 
             <!-- Country, Province, District -->
-            <div class="flex gap-4 mb-2">
-                <div class="w-1/3">
-                    <label for="country_name" class="block font-semibold mb-1">Country</label>
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <div style="flex: 1;">
+                    <label for="country_name" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Country</label>
                     <input type="text" id="country_name" name="country_name" value="{{ old('country_name') }}" required
-                        class="w-full border @error('country_name') border-red-500 @else border-gray-300 @enderror rounded px-4 py-2">
+                        style="width: 100%; border: 1px solid; @error('country_name') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                     @error('country_name')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
                     @enderror
                 </div>
-                <div class="w-1/3">
-                    <label for="province_name" class="block font-semibold mb-1">Province</label>
-                    <input type="text" id="province_name" name="province_name" value="{{ old('province_name') }}"
-                        required
-                        class="w-full border @error('province_name') border-red-500 @else border-gray-300 @enderror rounded px-4 py-2">
+                <div style="flex: 1;">
+                    <label for="province_name" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Province</label>
+                    <input type="text" id="province_name" name="province_name" value="{{ old('province_name') }}" required
+                        style="width: 100%; border: 1px solid; @error('province_name') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                     @error('province_name')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
                     @enderror
                 </div>
-                <div class="w-1/3">
-                    <label for="district_name" class="block font-semibold mb-1">District</label>
-                    <input type="text" id="district_name" name="district_name" value="{{ old('district_name') }}"
-                        required
-                        class="w-full border @error('district_name') border-red-500 @else border-gray-300 @enderror rounded px-4 py-2">
+                <div style="flex: 1;">
+                    <label for="district_name" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">District</label>
+                    <input type="text" id="district_name" name="district_name" value="{{ old('district_name') }}" required
+                        style="width: 100%; border: 1px solid; @error('district_name') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                     @error('district_name')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
 
             <!-- Currency and Event Category -->
-            <div class="flex gap-4 mb-2">
-                <div class="w-1/2">
-                    <label for="currency" class="block font-semibold mb-1">Currency</label>
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <div style="flex: 1;">
+                    <label for="currency" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Currency</label>
                     <input type="text" id="currency" name="currency" value="{{ old('currency') }}" required
-                        class="w-full border @error('currency') border-red-500 @else border-gray-300 @enderror rounded px-4 py-2">
+                        style="width: 100%; border: 1px solid; @error('currency') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                     @error('currency')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
                     @enderror
                 </div>
-                <div class="w-1/2">
-                    <label for="event_category" class="block font-semibold mb-1">Event Category</label>
-                    <input type="text" id="event_category" name="event_category" value="{{ old('event_category') }}"
-                        maxlength="100"
-                        class="w-full border @error('event_category') border-red-500 @else border-gray-300 @enderror rounded px-4 py-2">
+                <div style="flex: 1;">
+                    <label for="event_category" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Event Category</label>
+                    <input type="text" id="event_category" name="event_category" value="{{ old('event_category') }}" maxlength="100"
+                        style="width: 100%; border: 1px solid; @error('event_category') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                     @error('event_category')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
 
             <!-- Ticket Categories -->
-            <div id="ticket-categories">
-                <label class="block font-semibold mb-1">Ticket Categories</label>
-                @php $ticketCats = old('ticket_category_price', [['category' => '', 'price' => '']]); @endphp
+            <div id="ticket-categories" style="margin-bottom: 1.5rem;">
+                <label style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Ticket Categories</label>
+                @php $ticketCats = old('ticket_category_price') ?? [['category' => '', 'price' => '']]; @endphp
                 @foreach($ticketCats as $i => $ticketCat)
-                <div class="flex gap-4 mb-2">
-                    <input type="text" name="ticket_category_price[{{ $i }}][category]" placeholder="Category" required
-                        maxlength="50" value="{{ $ticketCat['category'] ?? '' }}"
-                        class="flex-1 border @error("ticket_category_price.$i.category") border-red-500 @else border-gray-300 @enderror rounded px-4 py-2">
-                    <input type="number" name="ticket_category_price[{{ $i }}][price]" placeholder="Price" required
-                        min="0" step="0.01" value="{{ $ticketCat['price'] ?? '' }}"
-                        class="flex-1 border @error("ticket_category_price.$i.price") border-red-500 @else border-gray-300 @enderror rounded px-4 py-2">
+                <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                    <input type="text" name="ticket_category_price[{{ $i }}][category]" placeholder="Category" required maxlength="50" value="{{ $ticketCat['category'] ?? ''}}"
+                        style="flex: 1; border: 1px solid; @error("ticket_category_price.$i.category") border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
+                    <input type="number" name="ticket_category_price[{{ $i }}][price]" placeholder="Price" required min="0" step="0.01" value="{{ $ticketCat['price'] ?? ''}}"
+                        style="flex: 1; border: 1px solid; @error("ticket_category_price.$i.price") border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                 </div>
                 @endforeach
             </div>
 
-            <!-- Image -->
-            <div class="flex gap-4 mb-2">
-                <div class="w-1/2">
-                    <!-- Add Category Button -->
+            <!-- Buttons -->
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <div style="flex: 1;">
                     <button type="button" onclick="addCategory()"
-                        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Add Category</button>
+                        style="width: 100%; background-color: #3b82f6; color: #ffffff; padding: 0.5rem 1rem; border-radius: 0.375rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s;">
+                        Add Category
+                    </button>
                 </div>
-                <div class="w-1/2">
-                    <!-- Submit -->
+                <div style="flex: 1;">
                     <button type="submit"
-                        class="w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700">
+                        style="width: 100%; background-color: #10b981; color: #ffffff; padding: 0.5rem 1rem; border-radius: 0.375rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s;">
                         Submit Event
                     </button>
                 </div>
@@ -214,19 +206,20 @@
 </div>
 
 <script>
-    let categoryIndex = 1;
+    let categoryIndex = {{ count(old('ticket_category_price', [])) }};
     function addCategory() {
         const container = document.getElementById('ticket-categories');
         const div = document.createElement('div');
-        div.classList.add('flex', 'gap-4', 'mb-2');
+        div.style.cssText = 'display: flex; gap: 1rem; margin-bottom: 1rem;';
         div.innerHTML = `
             <input type="text" name="ticket_category_price[${categoryIndex}][category]" placeholder="Category" required maxlength="50"
-                class="flex-1 border border-gray-300 rounded px-4 py-2">
+                style="flex: 1; border: 1px solid #d1d5db; border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
             <input type="number" name="ticket_category_price[${categoryIndex}][price]" placeholder="Price" required min="0" step="0.01"
-                class="flex-1 border border-gray-300 rounded px-4 py-2">
+                style="flex: 1; border: 1px solid #d1d5db; border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
         `;
         container.appendChild(div);
         categoryIndex++;
     }
 </script>
+
 @endsection

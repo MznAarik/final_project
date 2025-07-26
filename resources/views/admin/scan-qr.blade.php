@@ -1,7 +1,8 @@
 @extends('admin.layouts.app')
 
 <style>
-    .scanner-container {
+    .container {
+        height: calc(100vh - 90px);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -207,14 +208,14 @@
                         console.log('Response data:', responseData);
                         // Update UI with scan and validation result
                         const scanResult = `
-                                                                                                                                                                                                                                                                                                <div class="scan-entry">
-                                                                                                                                                                                                                                                                                                    <h4>Scanned at ${timestamp}</h4>
-                                                                                                                                                                                                                                                                                                    <table>
-                                                                                                                                                                                                                                                                                                        <tr><th>Field</th><th>Value</th></tr>
-                                                                                                                                                                                                                                                                                                        <tr><td>Validation</td><td class="${responseData.status}">${responseData.message}</td></tr>
-                                                                                                                                                                                                                                                                                                    </table>
-                                                                                                                                                                                                                                                                                                </div>
-                                                                                                                                                                                                                                                                                            `;
+                                                                                                                                                                                                                                                                                                                                                                            <div class="scan-entry">
+                                                                                                                                                                                                                                                                                                                                                                                <h4>Scanned at ${timestamp}</h4>
+                                                                                                                                                                                                                                                                                                                                                                                <table>
+                                                                                                                                                                                                                                                                                                                                                                                    <tr><th>Field</th><th>Value</th></tr>
+                                                                                                                                                                                                                                                                                                                                                                                    <tr><td>Validation</td><td class="${responseData.status}">${responseData.message}</td></tr>
+                                                                                                                                                                                                                                                                                                                                                                                </table>
+                                                                                                                                                                                                                                                                                                                                                                            </div>
+                                                                                                                                                                                                                                                                                                                                                                        `;
                         console.log('Updating resultDiv with: ', scanResult);
                         resultDiv.innerHTML = scanResult + resultDiv.innerHTML;
                         resultDiv.classList.remove('error');

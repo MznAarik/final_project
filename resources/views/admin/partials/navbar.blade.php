@@ -39,22 +39,23 @@
 
     <!-- Breadcrumb -->
     <div class="breadcrumb">
-        <a href="{{ route('admin.dashboard') }}">Dashboard</a>
+        <a href="{{ route('admin.dashboard') }}"
+            class="{{ request()->routeIs('admin.dashboard') ? 'text-red-600 font-bold' : 'hover:text-red-500' }}">Dashboard</a>
         @if (request()->is('admin/scan-qr'))
             <span class="separator">/</span>
             <a href="{{ route('admin.scanQr') }}"
-                class="{{ request()->routeIs('admin.scanQr') ? 'text-red-600 font-bold' : 'hover:text-red-600' }}">Scan
+                class="{{ request()->routeIs('admin.scanQr') ? 'text-red-600 font-bold' : 'hover:text-red-500' }}">Scan
                 QR-Code</a>
         @endif
         @if (request()->is('events*'))
             <span class="separator">/</span>
             <a href="{{ route('events.index') }}"
-                class="{{ request()->routeIs('events.index') ? 'text-red-600 font-bold' : 'hover:text-red-600' }}">All
+                class="{{ request()->routeIs('events.index') ? 'text-red-600 font-bold' : 'hover:text-red-500' }}">All
                 Events</a>
             @if (request()->routeIs('events.create'))
                 <span class="separator">/</span>
                 <a href="{{ route('events.create') }}"
-                    class="{{ request()->routeIs('events.create') ? 'text-red-600 font-bold' : 'hover:text-red-600' }} mt-10">
+                    class="{{ request()->routeIs('events.create') ? 'text-red-600 font-bold' : 'hover:text-red-500' }} mt-10">
                     Create Event
                 </a>
             @endif
