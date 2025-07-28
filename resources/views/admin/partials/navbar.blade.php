@@ -60,6 +60,13 @@
                 </a>
             @endif
         @endif
+        @if (request()->is('admin/users*'))
+            <span class="seperator">/</span>
+            <a href="{{ route('users.index') }}"
+                class="{{ request()->routeIs('admin/users.index') ? 'text-red-600 font-bold' : 'hover:text-red-500' }}">
+                All Users
+            </a>
+        @endif
     </div>
 
     <!-- Hamburger button for mobile -->
