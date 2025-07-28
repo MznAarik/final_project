@@ -29,6 +29,10 @@ class AdminController extends Controller
             $qrData = AesHelper::decrypt($encryptedData);
 
             $decodedQr = json_decode($qrData, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                Log::error('Invalid QR code format', ['error' => json_last_error_msg()]);
+                return response()->json(['success' => false, 'message' => 'Invalid QR code format']);
+            }
 
             $ticket = Ticket::where('batch_code', $decodedQr['batch_code'])
                 ->where('user_id', $decodedQr['user_id'])
