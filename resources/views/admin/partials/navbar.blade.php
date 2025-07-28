@@ -72,9 +72,9 @@
                 @endif
             @endif
             @if (request()->is('admin/users*'))
-                <span class="seperator">/</span>
+                <span class="separator">/</span>
                 <a href="{{ route('users.index') }}"
-                    class="{{ request()->routeIs('admin/users.index') ? 'text-red-600 font-bold' : 'hover:text-red-500' }}">
+                    class="{{ request()->routeIs('users.index') ? 'text-red-600 font-bold' : 'hover:text-red-500' }}">
                     All Users
                 </a>
             @endif
