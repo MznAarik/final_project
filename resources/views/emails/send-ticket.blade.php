@@ -64,10 +64,11 @@
                 @endif
 
                 <table width="100%" cellpadding="0" cellspacing="0"
-                    style="margin-top: 24px; background-color: #b91c1c; color: #ffffff; border-radius: 6px; text-transform: capitalize;">
+                    style="margin-top: 24px; background-color: #b91c1c; color: #ffffff; border-radius: 6px;">
                     <tr>
                         <td style="padding: 16px; font-weight: bold;">Total Amount</td>
-                        <td style="padding: 16px; text-align: right; font-size: 18px; font-weight: bold;">
+                        <td
+                            style="padding: 16px; text-align: right; font-size: 18px; font-weight: bold; text-transform: uppercase;">
                             {{ $ticket->event['currency'] ?? '$' }} {{ $ticket->total_price ?? '0.00' }}
                         </td>
                     </tr>
