@@ -28,9 +28,15 @@ class AdminController extends Controller
 
             $qrData = AesHelper::decrypt($encryptedData);
 
-            $ticket = Ticket::where('batch_code', $qrData['batch_code'])
-                ->where('user_id', $qrData['user_id'])
-                ->where('event_id', $qrData['event_id'])
+            $decodedQr = json_decode($qrData, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                Log::error('Invalid QR code format', ['error' => json_last_error_msg()]);
+                return response()->json(['success' => false, 'message' => 'Invalid QR code format']);
+            }
+
+            $ticket = Ticket::where('batch_code', $decodedQr['batch_code'])
+                ->where('user_id', $decodedQr['user_id'])
+                ->where('event_id', $decodedQr['event_id'])
                 ->where('delete_flag', '!=', true)
                 ->where('status', '!=', 'used')
                 ->first();
@@ -40,7 +46,7 @@ class AdminController extends Controller
                 Log::debug('Decrypted batch code:', ['batch_code' => $batchCode]);
 
                 if (
-                    $batchCode === $qrData['batch_code'] &&
+                    $batchCode === $decodedQr['batch_code'] &&
                     $ticket->delete_flag == false &&
                     now()->lessThan(Carbon::parse($ticket->deadline))
                 ) {

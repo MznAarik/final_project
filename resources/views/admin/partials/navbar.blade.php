@@ -35,47 +35,56 @@
 </style>
 
 <nav class="top-nav">
-    <a href="{{ route('admin.dashboard') }}" class="logo">🎫 Admin Panel</a>
-
+    <a href="{{ route('admin.dashboard') }}" class="logo flex items-center justify-center space-x-2">
+        <svg class="w-10 h-10 text-white text-3xl" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z">
+            </path>
+        </svg>
+        <span class="text-white text-3xl font-semibold">BooKets</span>
+    </a>
     <!-- Breadcrumb -->
-    <div class="breadcrumb">
-        <a href="{{ route('admin.dashboard') }}"
-            class="{{ request()->routeIs('admin.dashboard') ? 'text-red-600 font-bold' : 'hover:text-red-500' }}">Dashboard</a>
-        @if (request()->is('admin/scan-qr'))
-            <span class="separator">/</span>
-            <a href="{{ route('admin.scanQr') }}"
-                class="{{ request()->routeIs('admin.scanQr') ? 'text-red-600 font-bold' : 'hover:text-red-500' }}">Scan
-                QR-Code</a>
-        @endif
-        @if (request()->is('events*'))
-            <span class="separator">/</span>
-            <a href="{{ route('events.index') }}"
-                class="{{ request()->routeIs('events.index') ? 'text-red-600 font-bold' : 'hover:text-red-500' }}">All
-                Events</a>
-            @if (request()->routeIs('events.create'))
+    <div style="display:flex; align-items: center; justify-content: center; gap:15px">
+
+        <a href="{{ route('admin.dashboard') }}" class="logo"> Admin Panel</a>
+
+        <div class="breadcrumb">
+            <a href="{{ route('admin.dashboard') }}"
+                class="{{ request()->routeIs('admin.dashboard') ? 'text-red-600 font-bold' : 'hover:text-red-500' }}"> /
+                Dashboard</a>
+            @if (request()->is('admin/scan-qr'))
                 <span class="separator">/</span>
-                <a href="{{ route('events.create') }}"
-                    class="{{ request()->routeIs('events.create') ? 'text-red-600 font-bold' : 'hover:text-red-500' }} mt-10">
-                    Create Event
+                <a href="{{ route('admin.scanQr') }}"
+                    class="{{ request()->routeIs('admin.scanQr') ? 'text-red-600 font-bold' : 'hover:text-red-500' }}">Scan
+                    QR-Code</a>
+            @endif
+            @if (request()->is('events*'))
+                <span class="separator">/</span>
+                <a href="{{ route('events.index') }}"
+                    class="{{ request()->routeIs('events.index') ? 'text-red-600 font-bold' : 'hover:text-red-500' }}">All
+                    Events</a>
+                @if (request()->routeIs('events.create'))
+                    <span class="separator">/</span>
+                    <a href="{{ route('events.create') }}"
+                        class="{{ request()->routeIs('events.create') ? 'text-red-600 font-bold' : 'hover:text-red-500' }} mt-10">
+                        Create Event
+                    </a>
+                @endif
+            @endif
+            @if (request()->is('admin/users*'))
+                <span class="seperator">/</span>
+                <a href="{{ route('users.index') }}"
+                    class="{{ request()->routeIs('admin/users.index') ? 'text-red-600 font-bold' : 'hover:text-red-500' }}">
+                    All Users
                 </a>
             @endif
-        @endif
-        @if (request()->is('admin/users*'))
-            <span class="seperator">/</span>
-            <a href="{{ route('users.index') }}"
-                class="{{ request()->routeIs('admin/users.index') ? 'text-red-600 font-bold' : 'hover:text-red-500' }}">
-                All Users
-            </a>
-        @endif
+        </div>
     </div>
 
     <!-- Hamburger button for mobile -->
     <button class="hamburger" aria-label="Toggle menu">☰</button>
 
-    <!-- Desktop search -->
-    <div class="search-container desktop-search">
-        <input type="text" placeholder="Search ..." class="search-bar" />
-    </div>
+
 
     <!-- Desktop Navigation -->
     <ul class="nav-links desktop-nav">
