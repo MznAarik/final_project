@@ -13,21 +13,10 @@
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/preview.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: #e5e7eb;
-            min-height: 100vh;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-
         /* Sidebar styles */
         .admin-sidebar {
             position: fixed;

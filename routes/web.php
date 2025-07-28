@@ -7,6 +7,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use function App\Helpers\svg_to_png;
@@ -72,6 +73,14 @@ Route::middleware(['checkRole:user'])->prefix('cart')->group(function () {
     Route::get('/checkout/success', [PaymentController::class, 'successCallback'])->name('cart.checkout.success');
     Route::get('/checkout/failure', [PaymentController::class, 'failureCallback'])->name('cart.checkout.failure');
     Route::post('/checkout/paypal/notify', [PaymentController::class, 'paypalNotify'])->name('cart.checkout.paypal.notify');
+});
+
+Route::middleware(['checkRole:admin'])->prefix('admin/users')->group(function () {
+    Route::get('/', [UserController::class, 'index'])->name('users.index');
+    Route::get('edit/{id}', [UserController::class, 'edit'])->name('users.edit');
+    Route::post('update/{id}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/{id}', [UserController::class, 'destroy'])->name('users.delete');
+    Route::patch('/{user}/role', [UserController::class, 'updateRole'])->name('users.updateRole');
 });
 
 // Route::middleware([ 'checkRole:admin'])->prefix('admin')->group(function () {
