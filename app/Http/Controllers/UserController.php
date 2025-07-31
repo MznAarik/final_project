@@ -84,7 +84,7 @@ class UserController extends Controller
 
             $user->update(array_merge(
                 $request->only(['name', 'email', 'phoneno']),
-                ['updated_by' => Auth::id(), 'updated_at' => now()]
+                ['updated_by' => Auth::id()]
             ));
         } catch (Exception $e) {
             Log::error('Update error:' . $e->getMessage());
