@@ -54,7 +54,7 @@ class UserController extends Controller
             ]);
         } catch (Exception $e) {
             Log::error('Role update error:' . $e->getMessage());
-            return response()->json(['message', ' Something went wrong!']);
+            return response()->json(['message' => 'Something went wrong!']);
         }
 
         return response()->json(['message' => 'Role updated successfully'], 200);
