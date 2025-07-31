@@ -38,9 +38,10 @@ Route::get('/email/verify', [AuthController::class, 'sendVerificationEmail'])
     ->name('verification.send');
 
 Route::middleware(['checkRole:admin'])->prefix('admin')->group(function () {
-    Route::get('dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    // Route::get('dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('scan-qr', [AdminController::class, 'showScanQrPage'])->name('admin.scanQr');
     Route::get('verify-ticket', [AdminController::class, 'verifyTicket'])->name('admin.verify-ticket');
+    Route::get('dashboard', [AdminController::class, 'adminDashboard'])->name('admin.dashboard');
 });
 
 Route::prefix('events')->middleware('checkRole:admin')->group(function () {

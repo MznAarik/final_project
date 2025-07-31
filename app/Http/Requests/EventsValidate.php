@@ -27,7 +27,7 @@ class EventsValidate extends FormRequest
             'location' => 'required|string|max:255',
             'status' => 'nullable|string|in:upcoming,active,completed,cancelled',
             'capacity' => 'required|integer|min:1',
-            'description' => 'required|string',
+            'description' => 'string',
             'contact_info' => 'required|email',
             'start_date' => 'required|date|after:today|before_or_equal:end_date',
             'end_date' => 'required|date|after_or_equal:start_date',
