@@ -53,7 +53,7 @@ class UserController extends Controller
                 'updated_at' => now(),
             ]);
         } catch (Exception $e) {
-            Log::error('Deletion error:' . $e->getMessage());
+            Log::error('Role update error:' . $e->getMessage());
             return response()->json(['message', ' Something went wrong!']);
         }
 
@@ -82,11 +82,13 @@ class UserController extends Controller
                 'phoneno' => 'nullable|string|max:10',
             ]);
 
-            $user->update($request->only(['name', 'email', 'phoneno']));
-            $user->update(['updated_by' => Auth::id(), 'updated_at' => now()]);
+            $user->update(array_merge(
+                $request->only(['name', 'email', 'phoneno']),
+                ['updated_by' => Auth::id(), 'updated_at' => now()]
+            ));
         } catch (Exception $e) {
-            Log::error('Deletion error:' . $e->getMessage());
-            return response()->json(['message', ' Something went wrong!']);
+            Log::error('Update error:' . $e->getMessage());
+            return response()->json(['message' => ' Something went wrong!']);
         }
         return response()->json(['message' => 'User updated successfully'], 200);
     }
