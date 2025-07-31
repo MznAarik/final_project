@@ -6,6 +6,7 @@ use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -52,8 +53,8 @@ class UserController extends Controller
                 'updated_at' => now(),
             ]);
         } catch (Exception $e) {
-            Log::error('Deletion error:', $e->getMessage());
-            return response()->json(['message', ' Something went wrong!']);
+            Log::error('Role update error:' . $e->getMessage());
+            return response()->json(['message' => 'Something went wrong!']);
         }
 
         return response()->json(['message' => 'Role updated successfully'], 200);
@@ -81,11 +82,13 @@ class UserController extends Controller
                 'phoneno' => 'nullable|string|max:10',
             ]);
 
-            $user->update($request->only(['name', 'email', 'phoneno']));
-            $user->update(['updated_by' => Auth::id(), 'updated_at' => now()]);
+            $user->update(array_merge(
+                $request->only(['name', 'email', 'phoneno']),
+                ['updated_by' => Auth::id()]
+            ));
         } catch (Exception $e) {
-            Log::error('Deletion error:', $e->getMessage());
-            return response()->json(['message', ' Something went wrong!']);
+            Log::error('Update error:' . $e->getMessage());
+            return response()->json(['message' => ' Something went wrong!']);
         }
         return response()->json(['message' => 'User updated successfully'], 200);
     }
@@ -97,10 +100,14 @@ class UserController extends Controller
     {
         try {
             $user = User::findOrFail($id);
-            $user->delete();
+            $user->update([
+                'delete_flag' => true,
+                'updated_by' => Auth::id(),
+                'updated_at' => now()
+            ]);
             return response()->json(['message' => 'User deleted successfully'], 200);
         } catch (Exception $e) {
-            Log::error('Deletion error:', $e->getMessage());
+            Log::error('Deletion error:' . $e->getMessage());
             return response()->json(['message' => 'Something went wrong!']);
         }
     }
