@@ -50,7 +50,7 @@
 
         <div class="breadcrumb">
             <a href="{{ route('admin.dashboard') }}"
-                class="{{ request()->routeIs('admin.dashboard') ? 'text-red-600 font-bold' : 'hover:text-red-500' }}"> /
+                class="{{ request()->routeIs('admin.dashboard') ? 'text-red-600 font-bold' : 'hover:text-red-500' }}">
                 Dashboard</a>
             @if (request()->is('admin/scan-qr'))
                 <span class="separator">/</span>
