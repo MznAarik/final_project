@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\AesHelper;
+use App\Models\Event;
 use App\Models\Ticket;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
@@ -80,4 +83,28 @@ class AdminController extends Controller
             ], 400);
         }
     }
+
+    public function adminDashboard()
+    {
+        $events = Event::where('start_date', '>=', now())
+            ->orderBy('start_date', 'asc')
+            ->take(5)
+            ->get();
+
+        $ticketData = Ticket::select(DB::raw('event_id, SUM(total_price) as total_price'))
+            ->groupBy('event_id')
+            ->get();
+
+        $totalPrice = $ticketData->pluck('total_price');
+        $activeUsers = User::where('delete_flag', 'false')->count();
+
+        $ticketRevenue = $events->mapWithKeys(function ($item) use ($ticketData) {
+            $total = $ticketData->where('event_id', $item->id)->sum('total_price');
+            return [$item->id => $total];
+        });
+
+        return view('admin.dashboard', compact('ticketRevenue', 'totalPrice', 'activeUsers', 'events'));
+
+    }
+
 }

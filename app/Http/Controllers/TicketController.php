@@ -18,22 +18,13 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class TicketController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $tickets = Auth::user()->tickets()
             ->where('delete_flag', 0)
-            ->where('status', '!=', 'cancelled')->get();
-        $totalPrice = Auth::user()->tickets()->sum('total_price');
-        $ticketStatus = Auth::user()->tickets()->pluck('status')->all();
+            ->where('status', '!=', 'cancelled')->orderByDesc('created_at')->get();
         return view('user.tickets.index', compact('tickets'));
     }
-
-    /**
-     * Store a newly created resource in storage.
-     */
 
     public function store(Request $request)
     {
@@ -42,19 +33,13 @@ class TicketController extends Controller
                 'event_id' => 'required|exists:events,id',
                 'ticket_details' => 'required|array',
                 'ticket_details.*.category' => 'required|string',
-                'ticket_details.*.quantity' => 'required|integer',
+                'ticket_details.*.quantity' => 'required|integer|min:1',
             ]);
+
             DB::beginTransaction();
 
             $event = Event::findOrFail($request->event_id);
-            if ($event->status == 'cancelled') {
-                return redirect()->back()->with('error', 'Sorry, The event has been cancelled! Please stay tuned for more such events!');
-            }
-
             $deadline = $event->start_date ? Carbon::parse($event->start_date)->subHours(24) : null;
-            $categoryData = json_decode($event->ticket_category_price, true);
-            $ticketsSold = $event->tickets_sold;
-            $eventCapacity = $event->capacity ?? 0;
 
             $ticketDetails = [];
             $totalPrice = 0;
@@ -63,39 +48,14 @@ class TicketController extends Controller
             foreach ($request->ticket_details as $categoryInput) {
                 $category = strtolower($categoryInput['category']);
                 $quantity = $categoryInput['quantity'];
-                $selected = collect($categoryData)->firstWhere('category', $category);
-                if (!$selected) {
-                    return redirect()->back()->with(['status' => false, 'message' => "Category '$category' not found."], 404);
-                }
-                $price = $selected['price'] ?? 0;
-                if ($quantity > 0) {
-                    $ticketDetails[] = [
-                        'category' => $category,
-                        'quantity' => $quantity,
-                        'price' => $price
-                    ];
-                    $totalQuantity += $quantity;
-                }
-                $totalPrice += $price * $quantity;
+                $ticketDetails[] = [
+                    'category' => $category,
+                    'quantity' => $quantity,
+                    'price' => $categoryInput['price'] ?? 0, // Price already validated in CartController
+                ];
+                $totalQuantity += $quantity;
+                $totalPrice += ($categoryInput['price'] ?? 0) * $quantity;
             }
-
-            if (empty($ticketDetails)) {
-                return redirect()->back()->with(['status' => false, 'message' => 'Please select at least one category with a positive quantity.'], 400);
-            }
-
-            $newTicketsSold = $ticketsSold + $totalQuantity;
-            if ($newTicketsSold > $eventCapacity) {
-                return redirect()->back()->with(['status' => false, 'message' => 'Sorry! All the tickets are sold out.'], 400);
-            }
-
-
-            $event = Event::where('id', $event->id)->firstOrFail();
-            $popularityScore = ($event->tickets_sold * 5) + (10 / (now()->diffInDays($event->created_at) + 1));
-
-            $event->update([
-                'tickets_sold' => $newTicketsSold,
-                'popularity_score' => $popularityScore,
-            ]);
 
             $batchCode = uniqid('batch_') . '-' . $request->event_id;
             $userId = Auth::user()->id;
@@ -104,10 +64,11 @@ class TicketController extends Controller
                 'event_id' => $request->event_id,
                 'batch_code' => $batchCode,
             ];
-            $encryptedData = AesHelper::encrypt($sensitiveData);
-            $qrCodeSvg = QrCode::size(200)->generate(url('admin/verify-ticket') . '?data=' . urlencode($encryptedData));
-            $fileName = 'qrcodes/' . time() . '_' . Str::random(8) . uniqid() . '.svg';
-            Storage::disk('public')->put($fileName, $qrCodeSvg);
+            $encryptedData = AesHelper::encrypt(json_encode($sensitiveData));
+            $qrCodeUrl = route('admin.verify-ticket') . '?data=' . urlencode($encryptedData);
+            $qrCode = QrCode::format('svg')->size(200)->generate($qrCodeUrl);
+            $fileName = 'qrcodes/ticket_' . time() . '_' . Str::random(8) . '.svg';
+            Storage::disk('public')->put($fileName, $qrCode);
 
             $ticket = Ticket::create([
                 'user_id' => $userId,
@@ -117,7 +78,7 @@ class TicketController extends Controller
                 'ticket_details' => json_encode($ticketDetails),
                 'total_quantity' => $totalQuantity,
                 'total_price' => $totalPrice,
-                'status' => 'pending',
+                'status' => 'completed', // Set to completed as payment is handled in PaymentController
                 'deadline' => $deadline,
                 'created_by' => $userId,
                 'updated_by' => $userId,
@@ -125,7 +86,7 @@ class TicketController extends Controller
 
             DB::commit();
 
-            Mail::to(Auth::user()->email)->send(new SendTicket($ticket));
+            Mail::to(Auth::user()->email)->send(new SendTicket($ticket, $fileName));
 
             return redirect()->route('user.tickets.show')->with(['status' => true, 'message' => 'Tickets created successfully.']);
         } catch (\Exception $e) {
@@ -135,9 +96,6 @@ class TicketController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $batch_code)
     {
         try {
@@ -158,9 +116,6 @@ class TicketController extends Controller
         return view('user.tickets.show', compact('ticket'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $batch_code)
     {
         try {
@@ -168,16 +123,13 @@ class TicketController extends Controller
                 'event_id' => 'required|exists:events,id',
                 'ticket_details' => 'required|array',
                 'ticket_details.*.category' => 'required|string',
-                'ticket_details.*.quantity' => 'required|integer',
+                'ticket_details.*.quantity' => 'required|integer|min:1',
             ]);
 
             DB::beginTransaction();
 
             $event = Event::findOrFail($request->event_id);
             $deadline = $event->start_date ? Carbon::parse($event->start_date)->subHours(24) : null;
-            $categoryData = json_decode($event->ticket_category_price, true);
-            $ticketsSold = $event->tickets_sold ?? 0;
-            $eventCapacity = $event->capacity ?? 0;
             $ticket = Ticket::where('batch_code', $batch_code)
                 ->where('status', '!=', 'cancelled')
                 ->where('delete_flag', 0)->firstOrFail();
@@ -191,38 +143,14 @@ class TicketController extends Controller
             foreach ($request->ticket_details as $categoryInput) {
                 $category = strtolower($categoryInput['category']);
                 $quantity = $categoryInput['quantity'];
-                $selected = collect($categoryData)->firstWhere('category', $category);
-                if (!$selected) {
-                    return redirect()->back()->with(['status' => false, 'message' => "Category '$category' not found."], 404);
-                }
-                $price = $selected['price'] ?? 0;
-                if ($quantity > 0) {
-                    $ticketDetails[] = [
-                        'category' => $category,
-                        'quantity' => $quantity,
-                        'price' => $price
-                    ];
-                    $totalQuantity += $quantity;
-                }
-                $totalPrice += $price * $quantity;
+                $ticketDetails[] = [
+                    'category' => $category,
+                    'quantity' => $quantity,
+                    'price' => $categoryInput['price'] ?? 0, // Price validated in CartController
+                ];
+                $totalQuantity += $quantity;
+                $totalPrice += ($categoryInput['price'] ?? 0) * $quantity;
             }
-
-            if (empty($ticketDetails)) {
-                return redirect()->back()->with(['status' => false, 'message' => 'Please select at least one category with a positive quantity.'], 400);
-            }
-
-            $quantityChange = $totalQuantity - $previousTotalQuantity;
-            $newTicketsSold = $ticketsSold + $quantityChange;
-            if ($newTicketsSold > $eventCapacity) {
-                return redirect()->back()->with(['status' => false, 'message' => 'Sorry! The tickets are sold.'], 400);
-            }
-
-            $popularityScore = ($event->tickets_sold * 5) + (10 / (now()->diffInDays($event->created_at) + 1));
-
-            $event->update([
-                'tickets_sold' => $newTicketsSold,
-                'popularity_score' => $popularityScore,
-            ]);
 
             $batchCode = $batch_code;
             $userId = Auth::user()->id;
@@ -232,15 +160,16 @@ class TicketController extends Controller
                 'batch_code' => $batchCode,
             ];
 
-            $encryptedData = AesHelper::encrypt($sensitiveData);
-            $qrCodeSvg = QrCode::size(200)->generate(url('admin/verify-ticket') . '?data=' . urlencode($encryptedData));
-            $fileName = 'qrcodes/' . time() . '_' . Str::random(8) . uniqid() . '.svg';
+            $encryptedData = AesHelper::encrypt(json_encode($sensitiveData));
+            $qrCodeUrl = route('admin.verify-ticket') . '?data=' . urlencode($encryptedData);
+            $qrCode = QrCode::format('svg')->size(200)->generate($qrCodeUrl);
+            $fileName = 'qrcodes/ticket_' . time() . '_' . Str::random(8) . '.svg';
 
-            if ($ticket->qr_code != 0 && Storage::disk('public')->exists($ticket->qr_code)) {
+            if ($ticket->qr_code && Storage::disk('public')->exists($ticket->qr_code)) {
                 Storage::disk('public')->delete($ticket->qr_code);
             }
 
-            Storage::disk('public')->put($fileName, $qrCodeSvg);
+            Storage::disk('public')->put($fileName, $qrCode);
 
             $ticket->update([
                 'user_id' => $userId,
@@ -250,7 +179,7 @@ class TicketController extends Controller
                 'ticket_details' => json_encode($ticketDetails),
                 'total_quantity' => $totalQuantity,
                 'total_price' => $totalPrice,
-                'status' => 'pending',
+                'status' => 'completed', // Set to completed as payment is handled elsewhere
                 'deadline' => $deadline,
                 'updated_by' => $userId,
                 'updated_at' => now(),
@@ -258,9 +187,9 @@ class TicketController extends Controller
 
             DB::commit();
 
-            Mail::to(Auth::user()->email)->send(new SendTicket($ticket));
+            Mail::to(Auth::user()->email)->send(new SendTicket($ticket, $fileName));
 
-            return redirect()->route('user.tickets.show')->with(['status' => true, 'message' => 'Tickets updated successfully.']);
+            return redirect()->route('user.tickets.index')->with(['status' => true, 'message' => 'Tickets updated successfully.']);
         } catch (\Exception $e) {
             Log::error('Error updating ticket: ' . $e->getMessage());
             DB::rollback();
@@ -268,9 +197,6 @@ class TicketController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $batch_code)
     {
         try {
@@ -282,14 +208,12 @@ class TicketController extends Controller
 
             $event = Event::findOrFail($ticket->event_id);
 
-            // Delete QR code if it exists
             if ($ticket->qr_code && Storage::disk('public')->exists($ticket->qr_code)) {
                 Storage::disk('public')->delete($ticket->qr_code);
             }
 
             $ticket->delete();
 
-            // to update the total tickets sold required for the event
             $newTicketSold = Ticket::where('event_id', $event->id)
                 ->where('batch_code', '!=', $batch_code)
                 ->where('status', '!=', 'cancelled')
