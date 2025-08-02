@@ -93,7 +93,7 @@ class AdminController extends Controller
 
         $ticketData = Ticket::select(DB::raw('event_id, SUM(total_price) as total_price'))
             ->where('status', '!=', 'cancelled')
-            ->where('delete_flag', 'false')
+            ->where('delete_flag', false)
             ->groupBy('event_id')
             ->get();
 
