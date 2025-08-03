@@ -110,7 +110,7 @@
             background: #f9fafb;
             padding: 1rem;
             border-radius: 8px;
-            border-left: 4px solid #e11d48;
+            border-left: 4px solid #de8196;
             transition: all 0.2s ease;
         }
 
@@ -191,12 +191,12 @@
                 <p>{{ isset($events) ? $events->sum('tickets_sold') : 0 }}</p>
             </div>
             <div class="stat-item">
-                <h2>Active Users</h2>
-                <p>{{ $activeUsers ?? 0 }}</p>
-            </div>
-            <div class="stat-item">
                 <h2>Total Events</h2>
                 <p>{{ isset($events) ? $events->count() : 0 }}</p>
+            </div>
+            <div class="stat-item">
+                <h2>Active Users</h2>
+                <p>{{ $activeUsers ?? 0 }}</p>
             </div>
         </div>
 

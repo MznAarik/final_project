@@ -84,10 +84,12 @@ Route::middleware(['checkRole:admin'])->prefix('admin/users')->group(function ()
     Route::patch('/{user}/role', [UserController::class, 'updateRole'])->name('users.updateRole');
 });
 
-// Route::middleware([ 'checkRole:admin'])->prefix('admin')->group(function () {
-//     Route::get('/tickets', [AdminTicketController::class, 'index'])->name('admin.tickets.index');
-//     // Route::get('/tickets/create', [AdminTicketController::class, 'create'])->name('admin.tickets.create');
-//     Route::post('/tickets', [AdminTicketController::class, 'store'])->name('admin.tickets.store');
+Route::middleware(['checkRole:admin'])->prefix('admin/tickets')->group(function () {
+    Route::get('/', [TicketController::class, 'index'])->name('admin.tickets.index');
+    // Route::get('/tickets/create', [TicketController::class, 'create'])->name('admin.tickets.create');
+    Route::post('/tickets', [TicketController::class, 'store'])->name('admin.tickets.store');
+});
+
 
 Route::get('/test-alert', function () {
     return redirect()->route('home')->with([
