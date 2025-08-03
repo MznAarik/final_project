@@ -61,8 +61,8 @@ class AdminController extends Controller
                         'updated_at' => now(),
                         // 'delete_flag' => true,
                     ]);
-                    $ticketDetails = json_decode($ticket->ticket_details, true);
-                    $categories = array_column($ticketDetails, 'quantity', 'category');
+                    $ticketDetails = json_decode($ticket->ticket_details, true) ?: [];
+                    $categories = !empty($ticketDetails) ? array_column($ticketDetails, 'quantity', 'category') : [];
 
                     return response()->json([
                         'status' => 'valid',
