@@ -90,15 +90,19 @@ class AdminController extends Controller
 
     public function adminDashboard()
     {
-        $events = Event::where('start_date', '>=', now())
-            ->orderBy('start_date', 'asc')
-            ->take(5)
-            ->get();
 
         $ticketData = Ticket::select(DB::raw('event_id, SUM(total_price) as total_price'))
             ->where('status', '!=', 'cancelled')
             ->where('delete_flag', false)
             ->groupBy('event_id')
+            ->take(5)
+            ->get();
+
+        $eventIds = $ticketData->pluck('event_id')->toArray();
+        $events = Event::whereIn('id', $eventIds)
+            ->where('start_date', '>=', now())
+            ->orderBy('start_date', 'asc')
+            ->take(5)
             ->get();
 
         $totalPrice = $ticketData->pluck('total_price');
