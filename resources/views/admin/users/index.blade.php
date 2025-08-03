@@ -399,7 +399,7 @@
                 <div style="margin-bottom: 1rem;">
                     <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Email:</label>
                     <input type="email" id="editEmail"
-                        style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 4px;">
+                        style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 4px;  text-transform: lowercase;">
                 </div>
 
                 <div style="margin-bottom: 1rem;">
@@ -559,17 +559,17 @@
         function showNotification(message, type) {
             const notification = document.createElement('div');
             notification.style.cssText = `
-                            position: fixed;
-                            top: 20px;
-                            right: 20px;
-                            padding: 1rem 1.5rem;
-                            border-radius: 6px;
-                            color: white;
-                            font-weight: 500;
-                            z-index: 9999;
-                            animation: slideIn 0.3s ease;
-                            background: ${type === 'success' ? '#059669' : '#ef4444'};
-                        `;
+                                                    position: fixed;
+                                                    top: 20px;
+                                                    right: 20px;
+                                                    padding: 1rem 1.5rem;
+                                                    border-radius: 6px;
+                                                    color: white;
+                                                    font-weight: 500;
+                                                    z-index: 9999;
+                                                    animation: slideIn 0.3s ease;
+                                                    background: ${type === 'success' ? '#059669' : '#ef4444'};
+                                                `;
             notification.textContent = message;
 
             document.body.appendChild(notification);
@@ -582,11 +582,11 @@
         // Add CSS for notification animation
         const style = document.createElement('style');
         style.textContent = `
-                        @keyframes slideIn {
-                            from { transform: translateX(100%); opacity: 0; }
-                            to { transform: translateX(0); opacity: 1; }
-                        }
-                    `;
+                                                @keyframes slideIn {
+                                                    from { transform: translateX(100%); opacity: 0; }
+                                                    to { transform: translateX(0); opacity: 1; }
+                                                }
+                                            `;
         document.head.appendChild(style);
 
         // Close modal when clicking outside

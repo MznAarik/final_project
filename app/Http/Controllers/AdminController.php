@@ -14,10 +14,10 @@ use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
-    public function index()
-    {
-        return view('admin.dashboard')->with(['status' => 1, 'message' => 'Welcome Admin']);
-    }
+    // public function index()
+    // {
+    //     return view('admin.dashboard')->with(['status' => 1, 'message' => 'Welcome Admin']);
+    // }
 
     public function showScanQrPage()
     {
@@ -42,6 +42,7 @@ class AdminController extends Controller
                 ->where('event_id', $decodedQr['event_id'])
                 ->where('delete_flag', '!=', true)
                 ->where('status', '!=', 'used')
+                ->where('status', '!=', 'cancelled')
                 ->first();
 
             if ($ticket) {
@@ -58,11 +59,14 @@ class AdminController extends Controller
                         'deadline' => null,
                         'updated_by' => Auth::user()->id,
                         'updated_at' => now(),
-                        'delete_flag' => true,
+                        // 'delete_flag' => true,
                     ]);
+                    $ticketDetails = json_decode($ticket->ticket_details, true);
+                    $categories = array_column($ticketDetails, 'quantity', 'category');
+
                     return response()->json([
                         'status' => 'valid',
-                        'message' => 'Ticket validated for ' . $ticket->user->name . '  with event ' . $ticket->event->name,
+                        'message' => 'Ticket validated for ' . $ticket->user->name . ' of categories ' . implode(', ', array_keys($categories)) . ' with quantities ' . implode(', ', $categories) . ' respectively' . ' of event ' . $ticket->event->name,
                     ]);
                 }
             }

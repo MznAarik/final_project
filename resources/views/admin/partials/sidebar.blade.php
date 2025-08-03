@@ -22,7 +22,7 @@
             </a>
         </li>
         <li>
-            <a href="{{ url('all-tickets') }}"
+            <a href="{{ route('admin.tickets.index') }}"
                 class="block px-3 py-2 rounded-md {{ request()->is('admin/tickets*') ? 'bg-red-600 font-semibold' : 'hover:bg-red-700' }}">
                 <i class="sidebar-icon fa-solid fa-ticket"></i> All Tickets
             </a>
