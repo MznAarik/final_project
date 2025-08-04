@@ -155,18 +155,21 @@ class EventController extends Controller
     {
         try {
             $event = Event::findOrFail($id);
-            // $event->delete();
-            $event->update(['delete_flag' => 1]);
-            return redirect()->route('home')->with([
+
+            $event->delete_flag = true;
+            $event->save();
+
+            return response()->json([
                 'status' => 1,
                 'message' => 'Event deleted successfully',
             ]);
         } catch (\Exception $e) {
-            Log::error('Event deletion failed: ' . $e->getMessage());
-            return redirect()->route('home')->with([
+            Log::error("Event deletion failed for ID {$id}: " . $e->getMessage());
+
+            return response()->json([
                 'status' => 0,
-                'error' => $e->getMessage(),
-            ]);
+                'error' => 'Something went wrong while deleting the event.',
+            ], 500);
         }
     }
 }
