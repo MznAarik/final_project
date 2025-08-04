@@ -313,27 +313,11 @@
 
 <body>
   <!-- Modal -->
-  <div id="signupModalUnique" class="signup-modal" aria-hidden="true" role="dialog" aria-modal="true"
+  <div id="signupModalUnique" class="signup-modal" aria-hidden="false" role="dialog" aria-modal="true"
     aria-labelledby="signupTitleUnique">
     <div id="signupModalUniqueContent" class="signup-modal-content" style="position:relative;">
       <button id="signupCloseButtonUnique" class="signup-close" aria-label="close">×</button>
       <h2 id="signupTitleUnique">Sign Up</h2>
-
-      @if (session('message'))
-      <div class="alert alert-{{ session('status') ?: 'info' }}">
-      {{ session('message') }}
-      </div>
-    @endif
-
-      @if ($errors->any())
-      <div class="alert alert-danger">
-      <ul class="mb-0">
-        @foreach ($errors->all() as $error)
-      <li>{{ $error }}</li>
-      @endforeach
-      </ul>
-      </div>
-    @endif
 
       <div id="signupAlertContainerUnique" role="alert" aria-live="polite" aria-atomic="true"></div>
 
@@ -362,21 +346,6 @@
             value="{{ old('address') }}" />
           <span id="addressError" style="color:red; display:none;overflow:hidden;"></span>
 
-          <script>
-            const address = document.getElementById('addressUnique');
-            const error = document.getElementById('addressError');
-
-            address.addEventListener('input', () => {
-              if (address.value.length <= 3) {
-                error.style.display = 'block';
-                address.setCustomValidity("Please write the complete address.");
-              } else {
-                error.style.display = 'none';
-                address.setCustomValidity('');
-              }
-            });
-          </script>
-
           @php
       $maxDate = \Carbon\Carbon::now()->subYears(16)->format('Y-m-d');
       @endphp
@@ -388,34 +357,22 @@
             <span id="dobError" style="color:red; font-size: 0.7em;"></span>
           </div>
 
-          <script>
-            function validateAge() {
-              const dobInput = document.getElementById('dateOfBirthUnique');
-              const errorSpan = document.getElementById('dobError');
-              const selectedDate = new Date(dobInput.value);
-              const today = new Date();
-              const age = today.getFullYear() - selectedDate.getFullYear();
-              const monthDiff = today.getMonth() - selectedDate.getMonth();
-              const dayDiff = today.getDate() - selectedDate.getDate();
-
-              let isUnder16 = age < 16 || (age === 16 && (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)));
-
-              if (isUnder16) {
-                errorSpan.textContent = "You must be at least 16 years old.";
-                dobInput.setCustomValidity("You must be at least 16 years old.");
-              } else {
-                errorSpan.textContent = "";
-                dobInput.setCustomValidity("");
-              }
-            }
-          </script>
-          <label for="districtIdUnique">District Name</label>
-          <input type="text" name="district_name" id="districtIdUnique" placeholder="District Name"
-            value="{{ old('district_name') }}" required title="Please write correct district." />
-
           <label for="provinceIdUnique">Province Name</label>
-          <input type="text" name="province_name" id="provinceIdUnique" placeholder="Province Name"
-            value="{{ old('province_name') }}" required title="Please write correct province." />
+          <select name="province_name" id="provinceIdUnique" required>
+            <option value="" disabled selected>Select Province</option>
+            <option value="Koshi Pradesh" {{ old('province_name') == 'Koshi Pradesh' ? 'selected' : '' }}>Koshi Pradesh</option>
+            <option value="Madhesh Pradesh" {{ old('province_name') == 'Madhesh Pradesh' ? 'selected' : '' }}>Madhesh Pradesh</option>
+            <option value="Bagmati Pradesh" {{ old('province_name') == 'Bagmati Pradesh' ? 'selected' : '' }}>Bagmati Pradesh</option>
+            <option value="Gandaki Pradesh" {{ old('province_name') == 'Gandaki Pradesh' ? 'selected' : '' }}>Gandaki Pradesh</option>
+            <option value="Lumbini Pradesh" {{ old('province_name') == 'Lumbini Pradesh' ? 'selected' : '' }}>Lumbini Pradesh</option>
+            <option value="Karnali Pradesh" {{ old('province_name') == 'Karnali Pradesh' ? 'selected' : '' }}>Karnali Pradesh</option>
+            <option value="Sudurpashchim Pradesh" {{ old('province_name') == 'Sudurpashchim Pradesh' ? 'selected' : '' }}>Sudurpashchim Pradesh</option>
+          </select>
+
+          <label for="districtIdUnique">District Name</label>
+          <select name="district_name" id="districtIdUnique" required>
+            <option value="" disabled selected>Select District</option>
+          </select>
 
           <label for="countryIdUnique">Country Name</label>
           <input type="text" name="country_name" id="countryIdUnique" placeholder="Country Name" value="Nepal" readonly
@@ -444,46 +401,6 @@
             <i id="eye-icon-confirm" class="fas fa-eye-slash"></i>
           </span>
 
-          <script>
-            const password = document.getElementById('passwordUnique');
-            const confirmPassword = document.getElementById('passwordConfirmationUnique');
-
-            confirmPassword.addEventListener('input', function () {
-              if (confirmPassword.value !== password.value) {
-                confirmPassword.setCustomValidity("Passwords do not match.");
-              } else {
-                confirmPassword.setCustomValidity("");
-              }
-            });
-
-            function togglePasswordVisibility(e) {
-              const passwordInput = document.getElementById('passwordUnique');
-              const eyeIcon = document.getElementById('eye-icon');
-              if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                eyeIcon.classList.remove('fa-eye-slash');
-                eyeIcon.classList.add('fa-eye');
-              } else {
-                passwordInput.type = 'password';
-                eyeIcon.classList.remove('fa-eye');
-                eyeIcon.classList.add('fa-eye-slash');
-              }
-            }
-            function confirmTogglePasswordVisibility(e) {
-              const confirmPasswordInput = document.getElementById('passwordConfirmationUnique');
-              const eyeIcon = document.getElementById('eye-icon-confirm');
-              if (confirmPasswordInput.type === 'password') {
-                confirmPasswordInput.type = 'text';
-                eyeIcon.classList.remove('fa-eye-slash');
-                eyeIcon.classList.add('fa-eye');
-              } else {
-                confirmPasswordInput.type = 'password';
-                eyeIcon.classList.remove('fa-eye');
-                eyeIcon.classList.add('fa-eye-slash');
-              }
-            }
-          </script>
-
           <button type="submit" id="signupSubmitButtonUnique">Sign Up</button>
 
           <div class="alreadyLoginUnique">
@@ -498,16 +415,142 @@
   <div id="globalAlert" style="display: none;"></div>
 
   <script>
+    // Province-District data for Nepal
+    const provinceDistrictData = {
+      "Koshi Pradesh": [
+        "Bhojpur", "Dhankuta", "Ilam", "Jhapa", "Khotang", "Morang", 
+        "Okhaldhunga", "Panchthar", "Sankhuwasabha", "Solukhumbu", 
+        "Sunsari", "Taplejung", "Terhathum", "Udayapur"
+      ],
+      "Madhesh Pradesh": [
+        "Bara", "Dhanusha", "Mahottari", "Parsa", "Rautahat", 
+        "Saptari", "Sarlahi", "Siraha"
+      ],
+      "Bagmati Pradesh": [
+        "Bhaktapur", "Chitwan", "Dhading", "Dolakha", "Kathmandu", 
+        "Kavrepalanchok", "Lalitpur", "Makwanpur", "Nuwakot", 
+        "Ramechhap", "Rasuwa", "Sindhuli", "Sindhupalchok"
+      ],
+      "Gandaki Pradesh": [
+        "Baglung", "Gorkha", "Kaski", "Lamjung", "Manang", 
+        "Mustang", "Myagdi", "Nawalpur", "Parbat", "Syangja", "Tanahun"
+      ],
+      "Lumbini Pradesh": [
+        "Arghakhanchi", "Banke", "Bardiya", "Dang", "Gulmi", 
+        "Kapilvastu", "Palpa", "Parasi", "Pyuthan", "Rolpa", 
+        "Rukum East", "Rupandehi"
+      ],
+      "Karnali Pradesh": [
+        "Dailekh", "Dolpa", "Humla", "Jajarkot", "Jumla", 
+        "Kalikot", "Mugu", "Rukum West", "Salyan", "Surkhet"
+      ],
+      "Sudurpashchim Pradesh": [
+        "Achham", "Baitadi", "Bajhang", "Bajura", "Dadeldhura", 
+        "Darchula", "Doti", "Kailali", "Kanchanpur"
+      ]
+    };
+
     const form = document.getElementById('signupFormUnique');
     const modal = document.getElementById('signupModalUnique');
     const alertBox = document.getElementById('globalAlert');
+    const provinceSelect = document.getElementById('provinceIdUnique');
+    const districtSelect = document.getElementById('districtIdUnique');
 
-    // Ensure modal is hidden on page load
-    if (modal) {
-      modal.classList.remove('show');
-      modal.setAttribute('aria-hidden', 'true');
+    // Initialize form validation scripts
+    const address = document.getElementById('addressUnique');
+    const error = document.getElementById('addressError');
+
+    address.addEventListener('input', () => {
+      if (address.value.length <= 3) {
+        error.style.display = 'block';
+        address.setCustomValidity("Please write the complete address.");
+      } else {
+        error.style.display = 'none';
+        address.setCustomValidity('');
+      }
+    });
+
+    function validateAge() {
+      const dobInput = document.getElementById('dateOfBirthUnique');
+      const errorSpan = document.getElementById('dobError');
+      const selectedDate = new Date(dobInput.value);
+      const today = new Date();
+      const age = today.getFullYear() - selectedDate.getFullYear();
+      const monthDiff = today.getMonth() - selectedDate.getMonth();
+      const dayDiff = today.getDate() - selectedDate.getDate();
+
+      let isUnder16 = age < 16 || (age === 16 && (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)));
+
+      if (isUnder16) {
+        errorSpan.textContent = "You must be at least 16 years old.";
+        dobInput.setCustomValidity("You must be at least 16 years old.");
+      } else {
+        errorSpan.textContent = "";
+        dobInput.setCustomValidity("");
+      }
     }
 
+    // Province-District functionality
+    provinceSelect.addEventListener('change', function() {
+      const selectedProvince = this.value;
+      const districts = provinceDistrictData[selectedProvince] || [];
+      
+      // Clear existing district options
+      districtSelect.innerHTML = '<option value="" disabled selected>Select District</option>';
+      
+      // Add districts for selected province
+      districts.forEach(district => {
+        const option = document.createElement('option');
+        option.value = district;
+        option.textContent = district;
+        districtSelect.appendChild(option);
+      });
+      
+      // Enable district dropdown
+      districtSelect.disabled = false;
+    });
+
+    // Password validation and visibility toggle
+    const password = document.getElementById('passwordUnique');
+    const confirmPassword = document.getElementById('passwordConfirmationUnique');
+
+    confirmPassword.addEventListener('input', function () {
+      if (confirmPassword.value !== password.value) {
+        confirmPassword.setCustomValidity("Passwords do not match.");
+      } else {
+        confirmPassword.setCustomValidity("");
+      }
+    });
+
+    function togglePasswordVisibility(e) {
+      const passwordInput = document.getElementById('passwordUnique');
+      const eyeIcon = document.getElementById('eye-icon');
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeIcon.classList.remove('fa-eye-slash');
+        eyeIcon.classList.add('fa-eye');
+      } else {
+        passwordInput.type = 'password';
+        eyeIcon.classList.remove('fa-eye');
+        eyeIcon.classList.add('fa-eye-slash');
+      }
+    }
+    
+    function confirmTogglePasswordVisibility(e) {
+      const confirmPasswordInput = document.getElementById('passwordConfirmationUnique');
+      const eyeIcon = document.getElementById('eye-icon-confirm');
+      if (confirmPasswordInput.type === 'password') {
+        confirmPasswordInput.type = 'text';
+        eyeIcon.classList.remove('fa-eye-slash');
+        eyeIcon.classList.add('fa-eye');
+      } else {
+        confirmPasswordInput.type = 'password';
+        eyeIcon.classList.remove('fa-eye');
+        eyeIcon.classList.add('fa-eye-slash');
+      }
+    }
+
+    // Form submission
     form.addEventListener('submit', async function (e) {
       e.preventDefault();
 
@@ -589,6 +632,9 @@
       form.reset();
       document.getElementById('addressError').style.display = 'none';
       document.getElementById('dobError').textContent = '';
+      // Reset district dropdown
+      districtSelect.innerHTML = '<option value="" disabled selected>Select District</option>';
+      districtSelect.disabled = true;
     }
 
     document.getElementById('signupCloseButtonUnique').addEventListener('click', () => {
@@ -596,7 +642,13 @@
       modal.classList.remove('show');
       clearSignupForm();
     });
+
+    // Initialize district dropdown as disabled
+    districtSelect.disabled = true;
   </script>
+  
+  <!-- Font Awesome for eye icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </body>
 
 </html>
