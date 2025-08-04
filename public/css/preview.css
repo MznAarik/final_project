@@ -276,33 +276,17 @@
     margin: 0.5rem 0;
 }
 
-#previewDescription {
-    font-size: 0.92rem;
-    color: #333;
-    line-height: 1.5;
-    margin-top: 0.7rem;
-    max-height: 200px;
-    /* or whatever height fits your design */
-    overflow-y: auto;
-    padding-right: 8px;
-    /* space for custom scrollbar */
-    position: relative;
-}
-
-#previewDescription::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 4px;
-    height: 100%;
-    pointer-events: none;
-}
 
 .fade-bottom {
-    position: relative;
+    min-height: 120px;
+    max-height: 120px;
+    overflow-y: auto;
+    padding: 8px;
+    margin-top: 15px;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.5;
 }
-
 .fade-bottom::after {
     content: "";
     position: absolute;
@@ -313,18 +297,7 @@
     pointer-events: none;
 }
 
-#previewDescription::-webkit-scrollbar {
-    width: 5px;
-}
 
-#previewDescription::-webkit-scrollbar-thumb {
-    background-color: rgba(204, 0, 0, 0.5);
-    border-radius: 3px;
-}
-
-#previewDescription::-webkit-scrollbar-track {
-    background: transparent;
-}
 
 .share-container {
     position: relative;
@@ -590,4 +563,72 @@
     .event-section h2 {
         font-size: 1.3rem;
     }
+}
+.ticket-categories {
+    display: flex;
+    gap: 15px; /* Reduced gap for closer spacing */
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 15px; /* Reduced margin */
+}
+
+.ticket-box {
+    background-color: #f9f9f9; /* Light background for contrast */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px; /* Reduced padding */
+    width: 130px; /* Fixed width for uniformity */
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s; /* Smooth transition */
+}
+
+.ticket-box:hover {
+    transform: translateY(-4px); /* Slight lift on hover */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Deeper shadow on hover */
+}
+
+.ticket-box.active {
+    border: 2px solid #007bff; /* Highlight active selection */
+    background-color: #e7f3ff; /* Light blue background for selected */
+}
+
+.ticket-box strong {
+    display: block;
+    margin-bottom: 5px; /* Reduced margin */
+    font-size: 1em; /* Adjusted font size */
+}
+
+.price {
+    font-weight: bold;
+    color: red; /* Bold red for price */
+    margin-top: 5px; /* Space above price */
+}
+
+.quantity {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 5px; /* Reduced margin */
+}
+
+.text-quantity {
+    width: 30px; /* Smaller input width */
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.button {
+    background-color: #007bff; /* Primary button color */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px; /* Smaller button padding */
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.button:hover {
+    background-color: #0056b3; /* Darker shade on hover */
 }

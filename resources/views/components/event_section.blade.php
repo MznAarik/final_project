@@ -52,7 +52,6 @@
     @endforeach
 </section>
 
-<!-- Modal Preview -->
 <div id="previewModal" class="preview-modal" style="display: none;">
     <div class="preview-modal-content">
         <button class="preview-close-btn">×</button>
@@ -84,245 +83,288 @@
             <div class="preview-details">
                 <h2 id="previewTitle">Event Name</h2>
 
-                <p><strong>Organizer:</strong> <span id="previewOrganizer">N/A</span></p>
-                <p><strong>Contact:</strong> <span id="previewContact" class="lowercase">N/A</span></p>
-                <p><strong>Venue:</strong> <span id="previewVenue">N/A</span></p>
-                <p><strong>Status:</strong> <span id="previewStatus">N/A</span></p>
-                <p><strong>Date:</strong> <span id="previewDate">N/A</span></p>
-                <p id="previewLocation"> <strong> Location: </strong><span class="location-value"> N/A</span></p>
-
-                <p><strong>Ticket Categories:</strong></p>
-                <div id="previewTicketCategories" style="display:flex; gap:10px; margin: 7px 10px 0; flex-wrap: wrap;">
+                <div style="max-height: 250px; overflow-y: auto; border: 1px solid #ccc; padding: 8px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                        <tr>
+                            <td style="padding: 2px 4px; font-weight: bold;">Organizer:</td>
+                            <td style="padding: 2px 4px;"><span id="previewOrganizer">N/A</span></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 2px 4px; font-weight: bold;">Contact:</td>
+                            <td style="padding: 2px 4px;"><span id="previewContact" class="lowercase">N/A</span></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 2px 4px; font-weight: bold;">Venue:</td>
+                            <td style="padding: 2px 4px;"><span id="previewVenue">N/A</span></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 2px 4px; font-weight: bold;">Date:</td>
+                            <td style="padding: 2px 4px;"><span id="previewDate">N/A</span></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 2px 4px; font-weight: bold;">Location:</td>
+                            <td style="padding: 2px 4px;"><span id="previewLocation" class="location-value">N/A</span>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
-
-                <form id="bookForm" action="{{ route('cart.add') }}" method="POST">
-                    @csrf
-                    <input type="hidden" id="previewEventId" name="id">
-                    <input type="hidden" id="ticketQuantities" name="ticketQuantities">
-                    <button class="preview-action-btn" type="submit">Book Now</button>
-                </form>
-
+                
+                <!-- Fade effect for description -->
                 <div class="fade-bottom">
                     <p id="previewDescription">Event Description</p>
+                </div>
+
+                <div style="flex-shrink: 0; padding: 15px 20px; text-align: center;">
+                    <p style="margin: 8px 0;"><strong>Ticket Categories</strong></p>
+
+                    <div id="previewTicketCategories" class="ticket-categories">
+                        <!-- Ticket categories will be inserted here -->
+                    </div>
+
+                    <form id="bookForm" action="{{ route('cart.add') }}" method="POST" style="text-align: center;">
+                        @csrf
+                        <input type="hidden" id="previewEventId" name="id">
+                        <input type="hidden" id="ticketQuantities" name="ticketQuantities">
+                        <button class="preview-action-btn" type="submit" style="padding: 8px 20px; font-weight: bold;">Book Now</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+
 <!-- Styles and Scripts -->
 <link rel="stylesheet" href="{{ asset('css/preview.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const modal = document.getElementById('previewModal');
-        const closeBtn = modal.querySelector('.preview-close-btn');
-        const fullscreenIcon = document.getElementById('fullscreenIcon');
-        const favIcon = document.getElementById('favoriteIcon');
-        const img = document.getElementById('previewImage');
-        const userLoggedIn = true; // replace with actual auth check
-        const bookForm = document.getElementById('bookForm');
-        const previewTicketCategories = document.getElementById('previewTicketCategories');
-        const previewEventId = document.getElementById('previewEventId');
-        const ticketQuantitiesInput = document.getElementById('ticketQuantities');
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('previewModal');
+    const closeBtn = modal.querySelector('.preview-close-btn');
+    const fullscreenIcon = document.getElementById('fullscreenIcon');
+    const favIcon = document.getElementById('favoriteIcon');
+    const img = document.getElementById('previewImage');
+    const userLoggedIn = true; // replace with actual auth check
+    const bookForm = document.getElementById('bookForm');
+    const previewTicketCategories = document.getElementById('previewTicketCategories');
+    const previewEventId = document.getElementById('previewEventId');
+    const ticketQuantitiesInput = document.getElementById('ticketQuantities');
 
-        // Preview modal content elements
-        const previewTitle = document.getElementById('previewTitle');
-        const previewOrganizer = document.getElementById('previewOrganizer');
-        const previewContact = document.getElementById('previewContact');
-        const previewLocation = document.getElementById('previewLocation').querySelector('.location-value');
-        const previewVenue = document.getElementById('previewVenue');
-        const previewStatus = document.getElementById('previewStatus');
-        const previewDate = document.getElementById('previewDate');
-        const previewDesc = document.getElementById('previewDescription');
+    const previewTitle = document.getElementById('previewTitle');
+    const previewOrganizer = document.getElementById('previewOrganizer');
+    const previewContact = document.getElementById('previewContact');
+    const previewLocation = document.getElementById('previewLocation');
+    const previewVenue = document.getElementById('previewVenue');
+    const previewDate = document.getElementById('previewDate');
+    const previewDesc = document.getElementById('previewDescription');
 
-        let ticketData = []; // Moved to global scope within the event listener
+    let ticketData = [];
 
-        document.querySelectorAll('.open-previewmodal-trigger').forEach(trigger => {
-            trigger.addEventListener('click', (e) => {
-                const card = e.target.closest('.event-card');
-                if (!card) return;
+    function renderTicketCategories() {
+        previewTicketCategories.innerHTML = '';
 
-                img.src = card.dataset.image || '';
-                previewTitle.textContent = card.dataset.name || 'N/A';
-                previewOrganizer.textContent = card.dataset.organizer || 'N/A';
-                previewContact.textContent = card.dataset.contact || 'N/A';
-                previewLocation.textContent = card.dataset.location || 'N/A';
-                previewVenue.textContent = card.dataset.venue || 'N/A';
-                previewStatus.textContent = card.dataset.status || 'N/A';
+        ticketData.forEach((ticket, index) => {
+            const div = document.createElement('div');
+            div.className = 'ticket-box';
+            div.style.border = '1px solid #ccc';
+            div.style.padding = '8px';
+            div.style.borderRadius = '4px';
+            div.style.width = '100px';         // Force consistent narrow width
+div.style.margin = '0 5px';        // Optional horizontal gap
+div.style.boxSizing = 'border-box';
+div.style.textAlign = 'center';
+            div.innerHTML = `
+                <strong>${ticket.category.toUpperCase()}</strong><br>
+                <p class="price" id="price-${index}">Rs. ${ticket.price}</p>
+                <div class="quantity flex mt-2" data-index="${index}">
+                    <button class="sub-btn m-2 text-2xl" type="button">-</button>
+                    <input type="text" class="text-quantity" value="0" oninput="this.value = this.value.replace(/[^0-9]/g, '')" style="width: 40px; text-align: center;">
+                    <button class="add-btn m-2 text-2xl" type="button">+</button>
+                </div>
+            `;
+            previewTicketCategories.appendChild(div);
+        });
+    }
 
-                const start = new Date(card.dataset.startdate);
-                const end = new Date(card.dataset.enddate);
-                previewDate.textContent = (isNaN(start) || isNaN(end))
-                    ? 'N/A'
-                    : `${start.toLocaleDateString()} - ${end.toLocaleDateString()}`;
+    function updatePrice(index, quantity) {
+        const priceElement = document.getElementById(`price-${index}`);
+        if (!priceElement || !ticketData[index]) return;
+        const unitPrice = ticketData[index].price || 0;
+        const totalPrice = quantity > 0 ? unitPrice * quantity : unitPrice;
+        priceElement.textContent = `Rs. ${totalPrice}`;
+    }
 
-                previewDesc.textContent = card.dataset.description || 'No description';
-                previewEventId.value = card.dataset.id || '';
+    previewTicketCategories.addEventListener('click', (e) => {
+        const btn = e.target.closest('.add-btn, .sub-btn');
+        if (!btn) return;
 
-                // Parse and store ticket data
-                try {
-                    ticketData = JSON.parse(card.dataset.ticketdata || '[]');
-                } catch (error) {
-                    ticketData = [];
-                }
+        const quantityDiv = btn.closest('.quantity');
+        const input = quantityDiv.querySelector('.text-quantity');
+        const index = parseInt(quantityDiv.dataset.index);
+        const ticketBox = btn.closest('.ticket-box');
 
-                // Clear previous ticket categories
-                previewTicketCategories.innerHTML = '';
+        let value = parseInt(input.value) || 0;
 
-                // Render ticket categories with quantity controls
-                ticketData.forEach((ticket, index) => {
-                    const div = document.createElement('div');
-                    div.style.border = '1px solid #ccc';
-                    div.style.padding = '10px';
-                    div.style.borderRadius = '4px';
-                    div.style.minWidth = '100px';
-                    div.innerHTML = `
-                    <strong>${ticket.category.toUpperCase()}</strong><br>Rs. ${ticket.price}
-                    <div class="quantity flex mt-2" data-index="${index}">
-                        <button class="sub-btn m-2 text-2xl" type="button">-</button>
-                        <input type="text" class="text-quantity" oninput="this.value = this.value.replace(/[^0-9]/g, '')" min="0" value="0" style="width: 40px; text-align: center;">
-                        <button class="add-btn m-2 text-2xl" type="button">+</button>
-                    </div>
-                `;
-                    previewTicketCategories.appendChild(div);
+        if (btn.classList.contains('add-btn')) {
+            if (value === 0) {
+                // Enforce exclusive selection
+                previewTicketCategories.querySelectorAll('.text-quantity').forEach(i => {
+                    if (i !== input) i.value = '0';
                 });
-
-                modal.style.display = 'flex';
-            });
-        });
-
-        // Quantity control event listeners
-        previewTicketCategories.addEventListener('click', (e) => {
-            const btn = e.target.closest('.add-btn, .sub-btn');
-            if (!btn) return;
-
-            const quantityDiv = btn.closest('.quantity');
-            const input = quantityDiv.querySelector('.text-quantity');
-            let value = parseInt(input.value) || 0;
-
-            if (btn.classList.contains('add-btn')) {
-                value++;
-            } else if (btn.classList.contains('sub-btn') && value > 0) {
-                value--;
+                previewTicketCategories.querySelectorAll('.ticket-box').forEach(box => box.classList.remove('active'));
+                ticketBox.classList.add('active');
             }
-
-            input.value = value;
-        });
-
-        // Form submission with validation
-        bookForm.addEventListener('submit', (e) => {
-            const quantities = Array.from(previewTicketCategories.querySelectorAll('.text-quantity'))
-                .map(input => parseInt(input.value) || 0);
-            const totalQuantity = quantities.reduce((sum, qty) => sum + qty, 0);
-
-            if (totalQuantity === 0) {
-                e.preventDefault();
-                alert('Please select at least one ticket.');
-                return;
-            }
-
-            const selectedTickets = [];
-            previewTicketCategories.querySelectorAll('.quantity').forEach((div, index) => {
-                const quantity = parseInt(div.querySelector('.text-quantity').value) || 0;
-                if (quantity > 0 && ticketData[index]) {
-                    selectedTickets.push({
-                        category: ticketData[index].category,
-                        quantity: quantity
-                    });
-                }
-            });
-            ticketQuantitiesInput.value = JSON.stringify(selectedTickets);
-        });
-
-        // Close modal
-        closeBtn.addEventListener('click', () => {
-            modal.style.display = 'none';
-        });
-
-        // Close modal when clicking outside content
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-
-        // Fullscreen toggle on image
-        fullscreenIcon.addEventListener('click', () => {
-            if (!document.fullscreenElement) {
-                if (img.requestFullscreen) {
-                    img.requestFullscreen();
-                } else if (img.webkitRequestFullscreen) {
-                    img.webkitRequestFullscreen();
-                } else if (img.msRequestFullscreen) {
-                    img.msRequestFullscreen();
-                }
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                }
-            }
-        });
-
-        // Load favorite status
-        if (userLoggedIn) {
-            const isFav = localStorage.getItem('favoriteActive') === 'true';
-            if (isFav) {
-                favIcon.textContent = 'favorite';
-                favIcon.classList.add('fav-active');
-            }
+            value += 1;
+        } else if (btn.classList.contains('sub-btn') && value > 0) {
+            value -= 1;
+            if (value === 0) ticketBox.classList.remove('active');
         }
 
-        // Toggle favorite icon
-        favIcon.addEventListener('click', () => {
-            if (!userLoggedIn) {
-                alert('Please log in to favorite items.');
-                return;
-            }
+        input.value = value;
+        updatePrice(index, value);
+    });
 
-            if (favIcon.textContent === 'favorite_border') {
-                favIcon.textContent = 'favorite';
-                favIcon.classList.add('fav-active');
-                localStorage.setItem('favoriteActive', 'true');
-            } else {
-                favIcon.textContent = 'favorite_border';
-                favIcon.classList.remove('fav-active');
-                localStorage.setItem('favoriteActive', 'false');
+    previewTicketCategories.addEventListener('input', (e) => {
+        if (!e.target.classList.contains('text-quantity')) return;
+
+        const input = e.target;
+        const quantityDiv = input.closest('.quantity');
+        const index = parseInt(quantityDiv.dataset.index);
+        let value = parseInt(input.value) || 0;
+
+        if (value > 0) {
+            previewTicketCategories.querySelectorAll('.text-quantity').forEach(i => {
+                if (i !== input) i.value = '0';
+            });
+            previewTicketCategories.querySelectorAll('.ticket-box').forEach(box => box.classList.remove('active'));
+            input.closest('.ticket-box').classList.add('active');
+        } else {
+            input.closest('.ticket-box').classList.remove('active');
+        }
+
+        input.value = value;
+        updatePrice(index, value);
+    });
+
+    bookForm.addEventListener('submit', (e) => {
+        const quantities = Array.from(previewTicketCategories.querySelectorAll('.text-quantity'))
+            .map(input => parseInt(input.value) || 0);
+        const totalQuantity = quantities.reduce((sum, qty) => sum + qty, 0);
+
+        if (totalQuantity === 0) {
+            e.preventDefault();
+            alert('Please select at least one ticket.');
+            return;
+        }
+
+        const selectedTickets = [];
+        previewTicketCategories.querySelectorAll('.quantity').forEach((div, index) => {
+            const quantity = parseInt(div.querySelector('.text-quantity').value) || 0;
+            if (quantity > 0 && ticketData[index]) {
+                selectedTickets.push({
+                    category: ticketData[index].category,
+                    quantity: quantity
+                });
             }
         });
 
-        // Share buttons toggle
-        document.querySelectorAll('.share-container').forEach((shareWrapper) => {
-            const shareIcon = shareWrapper.querySelector('.share-icon');
-            const shareOptions = shareWrapper.querySelector('.share-options');
-            const card = shareWrapper.closest('.image-box-floating');
+        ticketQuantitiesInput.value = JSON.stringify(selectedTickets);
+    });
 
-            shareIcon.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const isExpanded = shareWrapper.classList.toggle('expanded');
-                shareOptions.classList.toggle('active', isExpanded);
-                card.classList.toggle('share-active', isExpanded);
-            });
+    document.querySelectorAll('.open-previewmodal-trigger').forEach(trigger => {
+        trigger.addEventListener('click', (e) => {
+            const card = e.target.closest('.event-card');
+            if (!card) return;
 
-            document.addEventListener('click', (e) => {
-                if (!shareWrapper.contains(e.target)) {
-                    shareWrapper.classList.remove('expanded');
-                    shareOptions.classList.remove('active');
-                    card.classList.remove('share-active');
-                }
-            });
-        });
+            img.src = card.dataset.image || '';
+            previewTitle.textContent = card.dataset.name || 'N/A';
+            previewOrganizer.textContent = card.dataset.organizer || 'N/A';
+            previewContact.textContent = card.dataset.contact || 'N/A';
+            previewLocation.textContent = card.dataset.location || 'N/A';
+            previewVenue.textContent = card.dataset.venue || 'N/A';
 
-        // Thumbnail click swap
-        document.querySelectorAll('.photo-thumbnails .thumb').forEach(thumb => {
-            thumb.addEventListener('click', function () {
-                img.src = this.src;
+            const start = new Date(card.dataset.startdate);
+            const end = new Date(card.dataset.enddate);
+            previewDate.textContent = (isNaN(start) || isNaN(end))
+                ? 'N/A'
+                : `${start.toLocaleDateString()} - ${end.toLocaleDateString()}`;
 
-                document.querySelectorAll('.photo-thumbnails .thumb').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-            });
+            previewDesc.textContent = card.dataset.description || 'No description';
+            previewEventId.value = card.dataset.id || '';
+
+            try {
+                ticketData = JSON.parse(card.dataset.ticketdata || '[]');
+            } catch {
+                ticketData = [];
+            }
+
+            renderTicketCategories();
+            modal.style.display = 'flex';
         });
     });
+
+    closeBtn.addEventListener('click', () => modal.style.display = 'none');
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.style.display = 'none';
+    });
+
+    fullscreenIcon.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+            img.requestFullscreen?.();
+            img.webkitRequestFullscreen?.();
+            img.msRequestFullscreen?.();
+        } else {
+            document.exitFullscreen?.();
+        }
+    });
+
+    if (userLoggedIn) {
+        const isFav = localStorage.getItem('favoriteActive') === 'true';
+        if (isFav) {
+            favIcon.textContent = 'favorite';
+            favIcon.classList.add('fav-active');
+        }
+    }
+
+    favIcon.addEventListener('click', () => {
+        if (!userLoggedIn) {
+            alert('Please log in to favorite items.');
+            return;
+        }
+        const isFavorite = favIcon.textContent === 'favorite';
+        favIcon.textContent = isFavorite ? 'favorite_border' : 'favorite';
+        favIcon.classList.toggle('fav-active', !isFavorite);
+        localStorage.setItem('favoriteActive', String(!isFavorite));
+    });
+
+    document.querySelectorAll('.share-container').forEach((shareWrapper) => {
+        const shareIcon = shareWrapper.querySelector('.share-icon');
+        const shareOptions = shareWrapper.querySelector('.share-options');
+        const card = shareWrapper.closest('.image-box-floating');
+
+        shareIcon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isExpanded = shareWrapper.classList.toggle('expanded');
+            shareOptions.classList.toggle('active', isExpanded);
+            card.classList.toggle('share-active', isExpanded);
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!shareWrapper.contains(e.target)) {
+                shareWrapper.classList.remove('expanded');
+                shareOptions.classList.remove('active');
+                card.classList.remove('share-active');
+            }
+        });
+    });
+
+    document.querySelectorAll('.photo-thumbnails .thumb').forEach(thumb => {
+        thumb.addEventListener('click', function () {
+            img.src = this.src;
+            document.querySelectorAll('.photo-thumbnails .thumb').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+});
 </script>
