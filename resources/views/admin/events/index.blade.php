@@ -1,7 +1,6 @@
 @extends('admin.layouts.app')
 
-
-@section('title','Event Management')
+@section('title', 'Event Management')
 
 @section('content')
     <style>
@@ -175,17 +174,17 @@
             background: #E3342F;
             color: white;
         }
-        
+
         .status-active {
             background: rgba(34, 197, 94, 0.9);
             color: white;
         }
-        
+
         .status-completed {
             background: rgba(59, 130, 246, 0.9);
             color: white;
         }
-        
+
         .status-cancelled {
             background: rgba(107, 114, 128, 0.9);
             color: white;
@@ -500,7 +499,7 @@
                         }) : 0;
                     @endphp
 
-                    <div class="event-card" data-status="{{ strtolower($event->status ?? '') }}" data-name="{{ strtolower($event->name) }}" data-date="{{ $event->start_date }}">
+                    <div class="event-card" data-event-id="{{ $event->id }}" data-status="{{ strtolower($event->status ?? '') }}" data-name="{{ strtolower($event->name) }}" data-date="{{ $event->start_date }}">
                         <div class="event-image">
                             <span class="status-ribbon status-{{ strtolower($event->status ?? 'upcoming') }}">
                                 @switch(strtolower($event->status ?? ''))
@@ -570,7 +569,7 @@
                                     <i class="fa-solid fa-edit"></i>
                                     Edit
                                 </a>
-                                <button onclick="deleteEvent({{ $event->id }}, '{{ $event->name }}')" class="action-btn btn-delete">
+                                <button onclick="deleteEvent({{ $event->id }}, '{{ addslashes($event->name) }}')" class="action-btn btn-delete">
                                     <i class="fa-solid fa-trash"></i>
                                 </button>
                             </div>
@@ -641,43 +640,49 @@
 
         // Delete Event Function
         function deleteEvent(eventId, eventName) {
-            if (confirm(`Are you sure you want to delete the event "${eventName}"? This action cannot be undone and will affect all associated tickets.`)) {
-                // Show loading state
-                const card = document.querySelector(`[data-event-id="${eventId}"]`);
-                if (card) {
-                    card.style.opacity = '0.5';
-                    card.style.pointerEvents = 'none';
-                }
-
-                // Simulate API call (replace with actual implementation)
-                fetch(`/admin/events/${eventId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(response => {
-                    if (response.ok) {
-                        showNotification('Event deleted successfully!', 'success');
-                        // Remove card from DOM
-                        if (card) card.remove();
-                        // Update stats
-                        location.reload();
-                    } else {
-                        throw new Error('Failed to delete event');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showNotification('Failed to delete event. Please try again.', 'error');
-                    // Restore card state
-                    if (card) {
-                        card.style.opacity = '1';
-                        card.style.pointerEvents = 'auto';
-                    }
-                });
+            if (!confirm(`Are you sure you want to delete the event "${eventName}"? This action will soft delete the event and may affect associated tickets.`)) {
+                return;
             }
+
+            const card = document.querySelector(`[data-event-id="${eventId}"]`);
+            if (card) {
+                card.style.opacity = '0.5';
+                card.style.pointerEvents = 'none';
+            }
+
+            
+            fetch(`/events/destroy/${eventId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        throw new Error(text || 'Failed to soft delete event');
+                    });
+                }
+                
+                return response.json();
+                
+            })
+            .then(data => {
+                showNotification('Event soft deleted successfully!', 'success');
+                if (card) card.remove();
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Error soft deleting event:', error);
+                showNotification(`Failed to soft delete event: ${error.message}`, 'error');
+                if (card) {
+                    card.style.opacity = '1';
+                    card.style.pointerEvents = 'auto';
+                }
+            });
         }
 
         // Notification Function
