@@ -78,6 +78,13 @@
                     All Users
                 </a>
             @endif
+            @if (request()->is('admin/tickets*'))
+                <span class="separator">/</span>
+                <a href="{{ route('admin.tickets.index') }}"
+                    class="{{ request()->routeIs('admin.tickets.index') ? 'text-red-600 font-bold' : 'hover:text-red-500' }}">
+                    Tickets
+                </a>
+            @endif
         </div>
     </div>
 

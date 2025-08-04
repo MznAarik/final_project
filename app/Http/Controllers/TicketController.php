@@ -20,10 +20,11 @@ class TicketController extends Controller
 {
     public function index()
     {
-        $tickets = Auth::user()->tickets()
+        $tickets = Ticket::with(['user:id,name', 'event:id,name'])
             ->where('delete_flag', 0)
-            ->where('status', '!=', 'cancelled')->orderByDesc('created_at')->get();
-        return view('user.tickets.index', compact('tickets'));
+            ->orderBy('created_at', 'asc')->get();
+        // dd($tickets->toArray());
+        return view('admin.tickets.index', compact('tickets'));
     }
 
     public function store(Request $request)

@@ -215,10 +215,68 @@
             pointer-events: none;
         }
 
+        /* Filter Styles */
+        .filter-container {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            background: white;
+            min-width: 120px;
+            color: black;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #991b1b;
+            color: black;
+            box-shadow: 0 0 0 2px rgba(153, 27, 27, 0.1);
+        }
+
+        .btn-clear {
+            background: #6b7280;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-clear:hover {
+            background: #4b5563;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 2rem;
+            color: #6b7280;
+            font-style: italic;
+        }
+
         @media (max-width: 768px) {
             .users-header>div {
                 flex-direction: column;
                 align-items: stretch;
+            }
+
+            .filter-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-select,
+            .btn-clear {
+                width: 100%;
             }
 
             .action-buttons {
@@ -230,16 +288,7 @@
                 width: 100%;
                 height: 28px;
             }
-        }
 
-        .no-data {
-            text-align: center;
-            padding: 2rem;
-            color: #6b7280;
-            font-style: italic;
-        }
-
-        @media (max-width: 768px) {
             .users-header h1 {
                 font-size: 1.5rem;
             }
@@ -258,7 +307,26 @@
     <div class="users-container">
         <div class="users-header">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-                <h1>All Users ({{ count($users) }})</h1>
+                <h1>All Users (<span id="userCount">{{ count($users) }}</span>)</h1>
+                <div class="filter-container">
+                    <select id="filterRole" class="filter-select">
+                        <option value="">All Roles</option>
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                    <select id="filterGender" class="filter-select">
+                        <option value="">All Genders</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <select id="filterVerified" class="filter-select">
+                        <option value="">All Verification Status</option>
+                        <option value="verified">Verified</option>
+                        <option value="unverified">Unverified</option>
+                    </select>
+                    <button class="btn-clear" onclick="clearFilters()">Clear Filters</button>
+                </div>
             </div>
         </div>
 
@@ -281,9 +349,10 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="usersTableBody">
                         @foreach ($users as $user)
-                            <tr>
+                            <tr data-role="{{ $user->role }}" data-gender="{{ $user->gender ?? 'other' }}"
+                                data-verified="{{ $user->email_verified_at ? 'verified' : 'unverified' }}">
                                 <td>{{ $user->id }}</td>
                                 <td>
                                     <strong>{{ $user->name }}</strong>
@@ -315,7 +384,6 @@
                                     <select class="role-selector" data-user-id="{{ $user->id }}" onchange="updateUserRole(this)">
                                         <option value="user" {{ $user->role == 'user' ? 'selected' : '' }}>User</option>
                                         <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
-                                        </option>
                                     </select>
                                     <div class="role-badge-display" style="margin-top: 4px;">
                                         <span class="role-badge role-{{ $user->role }}">
@@ -399,7 +467,7 @@
                 <div style="margin-bottom: 1rem;">
                     <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Email:</label>
                     <input type="email" id="editEmail"
-                        style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 4px;  text-transform: lowercase;">
+                        style="width: 100%; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 4px; text-transform: lowercase;">
                 </div>
 
                 <div style="margin-bottom: 1rem;">
@@ -420,6 +488,51 @@
     </div>
 
     <script>
+        // Filter Functionality
+        function applyFilters() {
+            const roleFilter = document.getElementById('filterRole').value;
+            const genderFilter = document.getElementById('filterGender').value;
+            const verifiedFilter = document.getElementById('filterVerified').value;
+            const rows = document.querySelectorAll('#usersTableBody tr');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const role = row.dataset.role;
+                const gender = row.dataset.gender;
+                const verified = row.dataset.verified;
+
+                const matchesRole = !roleFilter || role === roleFilter;
+                const matchesGender = !genderFilter || gender === genderFilter;
+                const matchesVerified = !verifiedFilter || verified === verifiedFilter;
+
+                if (matchesRole && matchesGender && matchesVerified) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            document.getElementById('userCount').textContent = visibleCount;
+            document.querySelector('.no-data').style.display = visibleCount === 0 ? 'block' : 'none';
+            document.querySelector('.users-table').style.display = visibleCount === 0 ? 'none' : 'table';
+        }
+
+        function clearFilters() {
+            document.getElementById('filterRole').value = '';
+            document.getElementById('filterGender').value = '';
+            document.getElementById('filterVerified').value = '';
+            applyFilters();
+        }
+
+        // Attach filter event listeners
+        document.getElementById('filterRole').addEventListener('change', applyFilters);
+        document.getElementById('filterGender').addEventListener('change', applyFilters);
+        document.getElementById('filterVerified').addEventListener('change', applyFilters);
+
+        // Initial filter application
+        applyFilters();
+
         // Update user role with confirmation
         async function updateUserRole(selectElement) {
             const userId = selectElement.dataset.userId;
@@ -453,7 +566,10 @@
                         badgeElement.className = `role-badge role-${newRole}`;
                         badgeElement.textContent = newRole.charAt(0).toUpperCase() + newRole.slice(1);
                     }
+                    const row = selectElement.closest('tr');
+                    row.dataset.role = newRole;
                     showNotification('Role updated successfully!', 'success');
+                    applyFilters(); // Re-apply filters after role change
                 } else {
                     throw new Error(data.message || 'Failed to update role');
                 }
@@ -482,7 +598,10 @@
                     document.getElementById('editEmail').value = user.email || '';
                     document.getElementById('editPhone').value = user.phoneno || '';
                 })
-                .catch(error => console.error('Error fetching user:', error));
+                .catch(error => {
+                    console.error('Error fetching user:', error);
+                    showNotification(`Failed to fetch user data. ${error.message}`, 'error');
+                });
         }
 
         function closeEditModal() {
@@ -525,8 +644,6 @@
                 }
             } catch (error) {
                 console.error('Error updating user:', error);
-                const responseText = await response.text(); // Log raw response
-                console.log('Response text:', responseText);
                 showNotification(`Failed to update user. ${error.message}`, 'error');
             }
         });
@@ -559,17 +676,17 @@
         function showNotification(message, type) {
             const notification = document.createElement('div');
             notification.style.cssText = `
-                                                    position: fixed;
-                                                    top: 20px;
-                                                    right: 20px;
-                                                    padding: 1rem 1.5rem;
-                                                    border-radius: 6px;
-                                                    color: white;
-                                                    font-weight: 500;
-                                                    z-index: 9999;
-                                                    animation: slideIn 0.3s ease;
-                                                    background: ${type === 'success' ? '#059669' : '#ef4444'};
-                                                `;
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        padding: 1rem 1.5rem;
+                        border-radius: 6px;
+                        color: white;
+                        font-weight: 500;
+                        z-index: 9999;
+                        animation: slideIn 0.3s ease;
+                        background: ${type === 'success' ? '#059669' : '#ef4444'};
+                    `;
             notification.textContent = message;
 
             document.body.appendChild(notification);
@@ -582,11 +699,11 @@
         // Add CSS for notification animation
         const style = document.createElement('style');
         style.textContent = `
-                                                @keyframes slideIn {
-                                                    from { transform: translateX(100%); opacity: 0; }
-                                                    to { transform: translateX(0); opacity: 1; }
-                                                }
-                                            `;
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                `;
         document.head.appendChild(style);
 
         // Close modal when clicking outside
