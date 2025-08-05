@@ -51,7 +51,7 @@
                     <select id="status" name="status" required
                         style="width: 100%; border: 1px solid; @error('status') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                         <option value="">-- Select Status --</option>
-                        @foreach(['upcoming', 'active', 'completed', 'cancelled'] as $status)
+                        @foreach(['upcoming','exclusive', 'active', 'completed', 'cancelled'] as $status)
                             <option value="{{ $status }}" @selected(old('status', $event->status) === $status)>{{ ucfirst($status) }}</option>
                         @endforeach
                     </select>

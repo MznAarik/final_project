@@ -25,7 +25,7 @@ class EventsValidate extends FormRequest
             'name' => 'required|string|max:255',
             'venue' => 'required|string|max:255',
             'location' => 'required|string|max:255',
-            'status' => 'nullable|string|in:upcoming,active,completed,cancelled',
+            'status' => 'nullable|string|in:exclusive,upcoming,active,completed,cancelled',
             'capacity' => 'required|integer|min:1',
             'description' => 'nullable|string',
             'contact_info' => 'required|email',
@@ -35,8 +35,8 @@ class EventsValidate extends FormRequest
             'tickets_sold' => 'nullable|integer|min:0',
             'event_category' => 'nullable|string|max:50',
             'ticket_category_price' => 'required|array',
-            'ticket_category_price.*.category' => 'required|string|max:50',
-            'ticket_category_price.*.price' => 'required|numeric|min:0',
+            // 'ticket_category_price.*.category' => 'required|string|max:50',
+            // 'ticket_category_price.*.price' => 'required|numeric|min:0',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:20480'
         ];
     }
