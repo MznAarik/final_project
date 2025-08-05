@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\EventsValidate;
 use App\Models\Country;
 use App\Models\Event;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -92,7 +93,7 @@ class EventController extends Controller
             DB::rollBack();
             Log::error('Event creation failed: ' . $e->getMessage());
 
-            return redirect()->route('home')->with([
+            return redirect()->back()->with([
                 'status' => 0,
                 'error' => $e->getMessage(),
             ]);
@@ -108,7 +109,7 @@ class EventController extends Controller
             ->where('status', '!=', 'cancelled')
             ->firstOrFail();
         if (!$event) {
-            return redirect()->route('home')->with([
+            return redirect()->back()->with([
                 'status' => 0,
                 'message' => 'Event not found or has been cancelled.',
             ]);
@@ -122,7 +123,7 @@ class EventController extends Controller
     public function edit(string $id)
     {
         $event = Event::findOrFail($id);
-        return view('admin.events.createEvents', compact('event'));
+        return view('admin.events.updateEvents', compact('event'));
     }
 
     /**
@@ -134,14 +135,14 @@ class EventController extends Controller
             $event = Event::findOrFail($id);
             $event->update($request->validated());
 
-            return redirect()->route('home')->with([
+            return redirect()->back()->with([
                 'status' => 1,
                 'message' => 'Event updated successfully',
             ]);
         } catch (\Exception $e) {
             Log::error('Event update failed: ' . $e->getMessage());
 
-            return redirect()->route('home')->with([
+            return redirect()->back()->with([
                 'status' => 0,
                 'error' => $e->getMessage(),
             ]);

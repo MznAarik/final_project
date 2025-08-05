@@ -430,12 +430,16 @@
                     <div class="stat-label">Total Events</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-number">{{ $events->where('status', 'active')->count() }}</div>
-                    <div class="stat-label">Active</div>
-                </div>
-                <div class="stat-item">
                     <div class="stat-number">{{ $events->where('status', 'upcoming')->count() }}</div>
                     <div class="stat-label">Upcoming</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ $events->where('status', 'exclusive')->count() }}</div>
+                    <div class="stat-label">Exclusive</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ $events->where('status', 'active')->count() }}</div>
+                    <div class="stat-label">Active</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-number">{{ $events->where('status', 'completed')->count() }}</div>
@@ -461,6 +465,7 @@
                 <select class="filter-select" id="statusFilter">
                     <option value="">All Status</option>
                     <option value="upcoming">Upcoming</option>
+                    <option value="exclusive">Exclusive</option>
                     <option value="active">Active</option>
                     <option value="completed">Completed</option>
                     <option value="cancelled">Cancelled</option>
@@ -676,7 +681,6 @@
                 location.reload();
             })
             .catch(error => {
-                console.error('Error soft deleting event:', error);
                 showNotification(`Failed to soft delete event: ${error.message}`, 'error');
                 if (card) {
                     card.style.opacity = '1';

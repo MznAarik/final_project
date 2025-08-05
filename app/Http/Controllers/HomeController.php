@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -14,10 +15,25 @@ class HomeController extends Controller
     public function index()
     {
         try {
+            //Auto deleting finished event after 24hours
+            $cutoffTime = Carbon::now()->subHours(24);
+            Event::whereDate('end_date', '<=', $cutoffTime)
+                ->where('delete_flag', false)
+                ->update(['delete_flag'=> true]);
+
             $recommendedEvents = [];
 
             if (Auth::check()) {
                 $user = Auth::user();
+
+                //Auto redirect admin to admin dashboard
+                if ($user->role === 'admin') {
+                    return redirect()->route('admin.dashboard')->with([
+                        'status' => 1,
+                        'message' => 'Welcome Admin!'
+                    ]);
+                }
+
                 $countryId = $user->country_id;
                 $provinceId = $user->province_id;
                 $districtId = $user->district_id;
