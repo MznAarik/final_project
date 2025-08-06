@@ -40,6 +40,7 @@ public function updateProfile(Request $request)
     public function index()
     {
         $users = User::orderByDesc('created_at')->where('delete_flag', '!=', true)->get();
+        return view('admin.users.index', compact('users'));
     }
 
     /**
