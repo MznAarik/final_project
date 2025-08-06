@@ -23,9 +23,18 @@ Route::get('popular', [HomeController::class, 'showPopularEvents'])->name('popul
 //     return view('my_tickets');
 // })->name('my_tickets');
 
-Route::middleware('auth')->get('/profile', function () {
-    return view('profile');
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [UserController::class, 'showProfile'])->name('profile.show');
+
+    // Use POST for profile update (your own profile)
+    Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
+
+    // Admin user update uses PUT method
+    Route::put('/admin/users/{id}', [UserController::class, 'update'])->name('admin.users.update');
 });
+Route::get('/search', [EventController::class, 'search'])->name('search.events');
+Route::get('/search/suggestions', [EventController::class, 'suggestions']);
+
 
 Route::post('register', [AuthController::class, 'register'])->name('register.submit');
 Route::middleware('throttle: 5, 1')->post('login', [AuthController::class, 'login'])->name('login.submit');

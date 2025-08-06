@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Province;
+use App\Models\District;
 
 use App\Http\Requests\EventsValidate;
 use App\Models\Country;
@@ -9,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
@@ -173,4 +176,29 @@ class EventController extends Controller
             ], 500);
         }
     }
+  public function search(Request $request)
+{
+    $query = $request->input('query');
+
+    $events = Event::where('name', 'ILIKE', '%' . $query . '%')
+        ->orWhere('location', 'ILIKE', '%' . $query . '%')
+        ->orWhere('venue', 'ILIKE', '%' . $query . '%')
+        ->orWhere('description', 'ILIKE', '%' . $query . '%')
+        ->orWhere('contact_info', 'ILIKE', '%' . $query . '%')
+        ->get();
+
+    return view('search_results', compact('events', 'query'));
+}
+public function suggestions(Request $request)
+{
+    $query = $request->query('q');
+
+    $suggestions = Event::where('name', 'ILIKE', '%' . $query . '%')
+                        ->select('name')
+                        ->limit(10)
+                        ->get();
+
+    return response()->json($suggestions);
+}
+
 }

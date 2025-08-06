@@ -108,10 +108,12 @@
                         </tr>
                     </table>
                 </div>
-                
+
                 <!-- Fade effect for description -->
                 <div class="fade-bottom">
-                    <p id="previewDescription">Event Description</p>
+                    <!-- Add style white-space: pre-line to preserve line breaks -->
+                    <p id="previewDescription" style="white-space: pre-line;">Event Description</p>
+
                 </div>
 
                 <div style="flex-shrink: 0; padding: 15px 20px; text-align: center;">
@@ -125,7 +127,8 @@
                         @csrf
                         <input type="hidden" id="previewEventId" name="id">
                         <input type="hidden" id="ticketQuantities" name="ticketQuantities">
-                        <button class="preview-action-btn" type="submit" style="padding: 8px 20px; font-weight: bold;">Book Now</button>
+                        <button class="preview-action-btn" type="submit"
+                            style="padding: 8px 20px; font-weight: bold;">Book Now</button>
                     </form>
                 </div>
             </div>
@@ -139,42 +142,42 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const modal = document.getElementById('previewModal');
-    const closeBtn = modal.querySelector('.preview-close-btn');
-    const fullscreenIcon = document.getElementById('fullscreenIcon');
-    const favIcon = document.getElementById('favoriteIcon');
-    const img = document.getElementById('previewImage');
-    const userLoggedIn = true; // replace with actual auth check
-    const bookForm = document.getElementById('bookForm');
-    const previewTicketCategories = document.getElementById('previewTicketCategories');
-    const previewEventId = document.getElementById('previewEventId');
-    const ticketQuantitiesInput = document.getElementById('ticketQuantities');
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('previewModal');
+        const closeBtn = modal.querySelector('.preview-close-btn');
+        const fullscreenIcon = document.getElementById('fullscreenIcon');
+        const favIcon = document.getElementById('favoriteIcon');
+        const img = document.getElementById('previewImage');
+        const userLoggedIn = true; // replace with actual auth check
+        const bookForm = document.getElementById('bookForm');
+        const previewTicketCategories = document.getElementById('previewTicketCategories');
+        const previewEventId = document.getElementById('previewEventId');
+        const ticketQuantitiesInput = document.getElementById('ticketQuantities');
 
-    const previewTitle = document.getElementById('previewTitle');
-    const previewOrganizer = document.getElementById('previewOrganizer');
-    const previewContact = document.getElementById('previewContact');
-    const previewLocation = document.getElementById('previewLocation');
-    const previewVenue = document.getElementById('previewVenue');
-    const previewDate = document.getElementById('previewDate');
-    const previewDesc = document.getElementById('previewDescription');
+        const previewTitle = document.getElementById('previewTitle');
+        const previewOrganizer = document.getElementById('previewOrganizer');
+        const previewContact = document.getElementById('previewContact');
+        const previewLocation = document.getElementById('previewLocation');
+        const previewVenue = document.getElementById('previewVenue');
+        const previewDate = document.getElementById('previewDate');
+        const previewDesc = document.getElementById('previewDescription');
 
-    let ticketData = [];
+        let ticketData = [];
 
-    function renderTicketCategories() {
-        previewTicketCategories.innerHTML = '';
+        function renderTicketCategories() {
+            previewTicketCategories.innerHTML = '';
 
-        ticketData.forEach((ticket, index) => {
-            const div = document.createElement('div');
-            div.className = 'ticket-box';
-            div.style.border = '1px solid #ccc';
-            div.style.padding = '8px';
-            div.style.borderRadius = '4px';
-            div.style.width = '100px';         // Force consistent narrow width
-div.style.margin = '0 5px';        // Optional horizontal gap
-div.style.boxSizing = 'border-box';
-div.style.textAlign = 'center';
-            div.innerHTML = `
+            ticketData.forEach((ticket, index) => {
+                const div = document.createElement('div');
+                div.className = 'ticket-box';
+                div.style.border = '1px solid #ccc';
+                div.style.padding = '8px';
+                div.style.borderRadius = '4px';
+                div.style.width = '100px';         // Force consistent narrow width
+                div.style.margin = '0 5px';        // Optional horizontal gap
+                div.style.boxSizing = 'border-box';
+                div.style.textAlign = 'center';
+                div.innerHTML = `
                 <strong>${ticket.category.toUpperCase()}</strong><br>
                 <p class="price" id="price-${index}">Rs. ${ticket.price}</p>
                 <div class="quantity flex mt-2" data-index="${index}">
@@ -183,188 +186,188 @@ div.style.textAlign = 'center';
                     <button class="add-btn m-2 text-2xl" type="button">+</button>
                 </div>
             `;
-            previewTicketCategories.appendChild(div);
+                previewTicketCategories.appendChild(div);
+            });
+        }
+
+        function updatePrice(index, quantity) {
+            const priceElement = document.getElementById(`price-${index}`);
+            if (!priceElement || !ticketData[index]) return;
+            const unitPrice = ticketData[index].price || 0;
+            const totalPrice = quantity > 0 ? unitPrice * quantity : unitPrice;
+            priceElement.textContent = `Rs. ${totalPrice}`;
+        }
+
+        previewTicketCategories.addEventListener('click', (e) => {
+            const btn = e.target.closest('.add-btn, .sub-btn');
+            if (!btn) return;
+
+            const quantityDiv = btn.closest('.quantity');
+            const input = quantityDiv.querySelector('.text-quantity');
+            const index = parseInt(quantityDiv.dataset.index);
+            const ticketBox = btn.closest('.ticket-box');
+
+            let value = parseInt(input.value) || 0;
+
+            if (btn.classList.contains('add-btn')) {
+                if (value === 0) {
+                    // Enforce exclusive selection
+                    previewTicketCategories.querySelectorAll('.text-quantity').forEach(i => {
+                        if (i !== input) i.value = '0';
+                    });
+                    previewTicketCategories.querySelectorAll('.ticket-box').forEach(box => box.classList.remove('active'));
+                    ticketBox.classList.add('active');
+                }
+                value += 1;
+            } else if (btn.classList.contains('sub-btn') && value > 0) {
+                value -= 1;
+                if (value === 0) ticketBox.classList.remove('active');
+            }
+
+            input.value = value;
+            updatePrice(index, value);
         });
-    }
 
-    function updatePrice(index, quantity) {
-        const priceElement = document.getElementById(`price-${index}`);
-        if (!priceElement || !ticketData[index]) return;
-        const unitPrice = ticketData[index].price || 0;
-        const totalPrice = quantity > 0 ? unitPrice * quantity : unitPrice;
-        priceElement.textContent = `Rs. ${totalPrice}`;
-    }
+        previewTicketCategories.addEventListener('input', (e) => {
+            if (!e.target.classList.contains('text-quantity')) return;
 
-    previewTicketCategories.addEventListener('click', (e) => {
-        const btn = e.target.closest('.add-btn, .sub-btn');
-        if (!btn) return;
+            const input = e.target;
+            const quantityDiv = input.closest('.quantity');
+            const index = parseInt(quantityDiv.dataset.index);
+            let value = parseInt(input.value) || 0;
 
-        const quantityDiv = btn.closest('.quantity');
-        const input = quantityDiv.querySelector('.text-quantity');
-        const index = parseInt(quantityDiv.dataset.index);
-        const ticketBox = btn.closest('.ticket-box');
-
-        let value = parseInt(input.value) || 0;
-
-        if (btn.classList.contains('add-btn')) {
-            if (value === 0) {
-                // Enforce exclusive selection
+            if (value > 0) {
                 previewTicketCategories.querySelectorAll('.text-quantity').forEach(i => {
                     if (i !== input) i.value = '0';
                 });
                 previewTicketCategories.querySelectorAll('.ticket-box').forEach(box => box.classList.remove('active'));
-                ticketBox.classList.add('active');
+                input.closest('.ticket-box').classList.add('active');
+            } else {
+                input.closest('.ticket-box').classList.remove('active');
             }
-            value += 1;
-        } else if (btn.classList.contains('sub-btn') && value > 0) {
-            value -= 1;
-            if (value === 0) ticketBox.classList.remove('active');
-        }
 
-        input.value = value;
-        updatePrice(index, value);
-    });
+            input.value = value;
+            updatePrice(index, value);
+        });
 
-    previewTicketCategories.addEventListener('input', (e) => {
-        if (!e.target.classList.contains('text-quantity')) return;
+        bookForm.addEventListener('submit', (e) => {
+            const quantities = Array.from(previewTicketCategories.querySelectorAll('.text-quantity'))
+                .map(input => parseInt(input.value) || 0);
+            const totalQuantity = quantities.reduce((sum, qty) => sum + qty, 0);
 
-        const input = e.target;
-        const quantityDiv = input.closest('.quantity');
-        const index = parseInt(quantityDiv.dataset.index);
-        let value = parseInt(input.value) || 0;
+            if (totalQuantity === 0) {
+                e.preventDefault();
+                alert('Please select at least one ticket.');
+                return;
+            }
 
-        if (value > 0) {
-            previewTicketCategories.querySelectorAll('.text-quantity').forEach(i => {
-                if (i !== input) i.value = '0';
+            const selectedTickets = [];
+            previewTicketCategories.querySelectorAll('.quantity').forEach((div, index) => {
+                const quantity = parseInt(div.querySelector('.text-quantity').value) || 0;
+                if (quantity > 0 && ticketData[index]) {
+                    selectedTickets.push({
+                        category: ticketData[index].category,
+                        quantity: quantity
+                    });
+                }
             });
-            previewTicketCategories.querySelectorAll('.ticket-box').forEach(box => box.classList.remove('active'));
-            input.closest('.ticket-box').classList.add('active');
-        } else {
-            input.closest('.ticket-box').classList.remove('active');
-        }
 
-        input.value = value;
-        updatePrice(index, value);
-    });
+            ticketQuantitiesInput.value = JSON.stringify(selectedTickets);
+        });
 
-    bookForm.addEventListener('submit', (e) => {
-        const quantities = Array.from(previewTicketCategories.querySelectorAll('.text-quantity'))
-            .map(input => parseInt(input.value) || 0);
-        const totalQuantity = quantities.reduce((sum, qty) => sum + qty, 0);
+        document.querySelectorAll('.open-previewmodal-trigger').forEach(trigger => {
+            trigger.addEventListener('click', (e) => {
+                const card = e.target.closest('.event-card');
+                if (!card) return;
 
-        if (totalQuantity === 0) {
-            e.preventDefault();
-            alert('Please select at least one ticket.');
-            return;
-        }
+                img.src = card.dataset.image || '';
+                previewTitle.textContent = card.dataset.name || 'N/A';
+                previewOrganizer.textContent = card.dataset.organizer || 'N/A';
+                previewContact.textContent = card.dataset.contact || 'N/A';
+                previewLocation.textContent = card.dataset.location || 'N/A';
+                previewVenue.textContent = card.dataset.venue || 'N/A';
 
-        const selectedTickets = [];
-        previewTicketCategories.querySelectorAll('.quantity').forEach((div, index) => {
-            const quantity = parseInt(div.querySelector('.text-quantity').value) || 0;
-            if (quantity > 0 && ticketData[index]) {
-                selectedTickets.push({
-                    category: ticketData[index].category,
-                    quantity: quantity
-                });
+                const start = new Date(card.dataset.startdate);
+                const end = new Date(card.dataset.enddate);
+                previewDate.textContent = (isNaN(start) || isNaN(end))
+                    ? 'N/A'
+                    : `${start.toLocaleDateString()} - ${end.toLocaleDateString()}`;
+
+                previewDesc.textContent = card.dataset.description || 'No description';
+                previewEventId.value = card.dataset.id || '';
+
+                try {
+                    ticketData = JSON.parse(card.dataset.ticketdata || '[]');
+                } catch {
+                    ticketData = [];
+                }
+
+                renderTicketCategories();
+                modal.style.display = 'flex';
+            });
+        });
+
+        closeBtn.addEventListener('click', () => modal.style.display = 'none');
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.style.display = 'none';
+        });
+
+        fullscreenIcon.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                img.requestFullscreen?.();
+                img.webkitRequestFullscreen?.();
+                img.msRequestFullscreen?.();
+            } else {
+                document.exitFullscreen?.();
             }
         });
 
-        ticketQuantitiesInput.value = JSON.stringify(selectedTickets);
-    });
-
-    document.querySelectorAll('.open-previewmodal-trigger').forEach(trigger => {
-        trigger.addEventListener('click', (e) => {
-            const card = e.target.closest('.event-card');
-            if (!card) return;
-
-            img.src = card.dataset.image || '';
-            previewTitle.textContent = card.dataset.name || 'N/A';
-            previewOrganizer.textContent = card.dataset.organizer || 'N/A';
-            previewContact.textContent = card.dataset.contact || 'N/A';
-            previewLocation.textContent = card.dataset.location || 'N/A';
-            previewVenue.textContent = card.dataset.venue || 'N/A';
-
-            const start = new Date(card.dataset.startdate);
-            const end = new Date(card.dataset.enddate);
-            previewDate.textContent = (isNaN(start) || isNaN(end))
-                ? 'N/A'
-                : `${start.toLocaleDateString()} - ${end.toLocaleDateString()}`;
-
-            previewDesc.textContent = card.dataset.description || 'No description';
-            previewEventId.value = card.dataset.id || '';
-
-            try {
-                ticketData = JSON.parse(card.dataset.ticketdata || '[]');
-            } catch {
-                ticketData = [];
+        if (userLoggedIn) {
+            const isFav = localStorage.getItem('favoriteActive') === 'true';
+            if (isFav) {
+                favIcon.textContent = 'favorite';
+                favIcon.classList.add('fav-active');
             }
-
-            renderTicketCategories();
-            modal.style.display = 'flex';
-        });
-    });
-
-    closeBtn.addEventListener('click', () => modal.style.display = 'none');
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) modal.style.display = 'none';
-    });
-
-    fullscreenIcon.addEventListener('click', () => {
-        if (!document.fullscreenElement) {
-            img.requestFullscreen?.();
-            img.webkitRequestFullscreen?.();
-            img.msRequestFullscreen?.();
-        } else {
-            document.exitFullscreen?.();
         }
-    });
 
-    if (userLoggedIn) {
-        const isFav = localStorage.getItem('favoriteActive') === 'true';
-        if (isFav) {
-            favIcon.textContent = 'favorite';
-            favIcon.classList.add('fav-active');
-        }
-    }
-
-    favIcon.addEventListener('click', () => {
-        if (!userLoggedIn) {
-            alert('Please log in to favorite items.');
-            return;
-        }
-        const isFavorite = favIcon.textContent === 'favorite';
-        favIcon.textContent = isFavorite ? 'favorite_border' : 'favorite';
-        favIcon.classList.toggle('fav-active', !isFavorite);
-        localStorage.setItem('favoriteActive', String(!isFavorite));
-    });
-
-    document.querySelectorAll('.share-container').forEach((shareWrapper) => {
-        const shareIcon = shareWrapper.querySelector('.share-icon');
-        const shareOptions = shareWrapper.querySelector('.share-options');
-        const card = shareWrapper.closest('.image-box-floating');
-
-        shareIcon.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const isExpanded = shareWrapper.classList.toggle('expanded');
-            shareOptions.classList.toggle('active', isExpanded);
-            card.classList.toggle('share-active', isExpanded);
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!shareWrapper.contains(e.target)) {
-                shareWrapper.classList.remove('expanded');
-                shareOptions.classList.remove('active');
-                card.classList.remove('share-active');
+        favIcon.addEventListener('click', () => {
+            if (!userLoggedIn) {
+                alert('Please log in to favorite items.');
+                return;
             }
+            const isFavorite = favIcon.textContent === 'favorite';
+            favIcon.textContent = isFavorite ? 'favorite_border' : 'favorite';
+            favIcon.classList.toggle('fav-active', !isFavorite);
+            localStorage.setItem('favoriteActive', String(!isFavorite));
         });
-    });
 
-    document.querySelectorAll('.photo-thumbnails .thumb').forEach(thumb => {
-        thumb.addEventListener('click', function () {
-            img.src = this.src;
-            document.querySelectorAll('.photo-thumbnails .thumb').forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
+        document.querySelectorAll('.share-container').forEach((shareWrapper) => {
+            const shareIcon = shareWrapper.querySelector('.share-icon');
+            const shareOptions = shareWrapper.querySelector('.share-options');
+            const card = shareWrapper.closest('.image-box-floating');
+
+            shareIcon.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isExpanded = shareWrapper.classList.toggle('expanded');
+                shareOptions.classList.toggle('active', isExpanded);
+                card.classList.toggle('share-active', isExpanded);
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!shareWrapper.contains(e.target)) {
+                    shareWrapper.classList.remove('expanded');
+                    shareOptions.classList.remove('active');
+                    card.classList.remove('share-active');
+                }
+            });
+        });
+
+        document.querySelectorAll('.photo-thumbnails .thumb').forEach(thumb => {
+            thumb.addEventListener('click', function () {
+                img.src = this.src;
+                document.querySelectorAll('.photo-thumbnails .thumb').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
         });
     });
-});
 </script>

@@ -135,12 +135,19 @@
 
             <!-- Current Image Display -->
             @if($event->image)
-            <div style="margin-bottom: 1.5rem; text-align: center;">
-                <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">Current Event Image</label>
-                <img src="{{ asset('storage/' . $event->image) }}" alt="Current Event Image" 
-                     style="max-width: 300px; max-height: 200px; border-radius: 0.375rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-            </div>
-            @endif
+    <div style="margin-bottom: 1.5rem; text-align: center;">
+        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">
+            Current Event Image
+        </label>
+        <img 
+            src="{{ asset('storage/' . $event->image) }}" 
+            alt="Current Event Image" 
+            style="max-width: 300px; max-height: 200px; border-radius: 0.375rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);"
+            loading="lazy"
+        >
+    </div>
+@endif
+ 
 
             <!-- Description -->
             <div style="margin-bottom: 1.5rem;">
@@ -229,24 +236,23 @@
             </div>
 
             <!-- Ticket Categories -->
+             
             <div id="ticket-categories" style="margin-bottom: 1.5rem;">
                 <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">Ticket Categories</label>
-                @php 
-                    // Get existing ticket categories from the event or old input
-                    $existingTickets = $event->ticketCategories ?? collect();
-                    $ticketCats = old('ticket_category_price');
-                    
-                    if (!$ticketCats && $existingTickets->count() > 0) {
-                        $ticketCats = $existingTickets->map(function($ticket) {
-                            return [
-                                'category' => $ticket->category,
-                                'price' => $ticket->price
-                            ];
-                        })->toArray();
-                    } elseif (!$ticketCats) {
-                        $ticketCats = [['category' => '', 'price' => '']];
-                    }
-                @endphp
+               @php
+    $existingTickets = collect();
+
+    if (!empty($event->ticket_category_price)) {
+        $existingTickets = collect(json_decode($event->ticket_category_price, true));
+    }
+
+    $ticketCats = old('ticket_category_price', $existingTickets->toArray());
+
+    if (empty($ticketCats)) {
+        $ticketCats = [['category' => '', 'price' => '']];
+    }
+@endphp
+
                 
                 @foreach($ticketCats as $i => $ticketCat)
                 <div class="ticket-category-row" style="display: flex; gap: 1rem; margin-bottom: 1rem; align-items: center;">
@@ -368,6 +374,7 @@
     });
 
     // Ticket category management
+
     let categoryIndex = {{ count($ticketCats) }};
     
     function addCategory() {
