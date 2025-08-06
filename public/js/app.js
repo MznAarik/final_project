@@ -242,3 +242,59 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('searchInput');
+  const suggestionsBox = document.getElementById('suggestionsBox');
+
+  let debounceTimeout;
+
+  input.addEventListener('keyup', () => {
+    const query = input.value.trim();
+
+    if (debounceTimeout) clearTimeout(debounceTimeout);
+
+    if (query.length === 0) {
+      suggestionsBox.innerHTML = '';
+      suggestionsBox.style.display = 'none';
+      return;
+    }
+
+    debounceTimeout = setTimeout(() => {
+      fetch(`/search/suggestions?q=${encodeURIComponent(query)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.length === 0) {
+            suggestionsBox.innerHTML = '<div class="suggestion-item">No suggestions</div>';
+          } else {
+            suggestionsBox.innerHTML = data.map(item => 
+              `<div class="suggestion-item">${item.name}</div>`
+            ).join('');
+          }
+          suggestionsBox.style.display = 'block';
+
+          // Add click event to suggestions to fill input and optionally submit form
+          suggestionsBox.querySelectorAll('.suggestion-item').forEach(el => {
+            el.addEventListener('click', () => {
+              input.value = el.textContent;
+              suggestionsBox.style.display = 'none';
+              // Optionally submit form here if you want auto-search on click
+              // input.form.submit();
+            });
+          });
+        })
+        .catch(() => {
+          suggestionsBox.innerHTML = '<div class="suggestion-item">Error loading suggestions</div>';
+          suggestionsBox.style.display = 'block';
+        });
+    }, 300); // debounce 300ms to avoid too many requests
+  });
+
+  // Hide suggestions if clicked outside
+  document.addEventListener('click', (e) => {
+    if (!input.contains(e.target) && !suggestionsBox.contains(e.target)) {
+      suggestionsBox.style.display = 'none';
+    }
+  });
+});

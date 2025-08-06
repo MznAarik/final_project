@@ -12,9 +12,10 @@
   <button class="hamburger" aria-label="Toggle menu">&#9776;</button>
 
   <!-- Desktop search -->
-  <div class="search-container desktop-search">
-    <input type="text" placeholder="Search events..." class="search-bar" />
-  </div>
+ <form action="{{ route('search.events') }}" method="GET" class="search-container desktop-search" onsubmit="return true;" style="position: relative;">
+  <input type="text" name="query" id="searchInput" placeholder="Search events..." class="search-bar" autocomplete="off" required>
+  <div id="suggestionsBox" style="position: absolute; top: 100%; left: 0; z-index: 9999;"></div>
+</form>
 
   <!-- Desktop Navigation -->
   <ul class="nav-links desktop-nav">

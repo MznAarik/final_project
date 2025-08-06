@@ -10,17 +10,36 @@ use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
+
+    public function showProfile()
+{
+    $user = auth()->user(); // get logged-in user
+    return view('profile', compact('user'));
+}
+public function updateProfile(Request $request)
+{
+    $user = auth()->user();
+
+    $validatedData = $request->validate([
+        'name' => 'required|string|max:255',
+        'phoneno' => 'nullable|string|max:20',
+        'address' => 'nullable|string|max:500',
+        'province_id' => 'nullable|exists:provinces,id',
+        'district_id' => 'nullable|exists:districts,id',
+        // Add validation rules for other fields like gender, date_of_birth, etc.
+    ]);
+
+    $user->update($validatedData);
+
+    return redirect()->route('profile.show')->with('success', 'Profile updated successfully.');
+}
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $users = User::orderByDesc('created_at')->get();
-        // foreach ($users as $user) {
-        //     $updatedUser = User::where($user->updated_by, 'id')->value('name');
-        // }
-        // dump($updatedUser);
-        return view('admin.users.index', compact('users'));
+        $users = User::orderByDesc('created_at')->where('delete_flag', '!=', true)->get();
     }
 
     /**
