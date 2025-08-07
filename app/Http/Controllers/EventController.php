@@ -12,15 +12,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
 {
 
     public function index()
     {
-        $events = Event::where('delete_flag', 0)
-            ->where('status', '!=', 'cancelled')
-            ->latest()->get();
+        $events = Event::latest()->get();
         return view('admin.events.index', compact('events'));
     }
     /**
@@ -93,10 +92,10 @@ class EventController extends Controller
 
         } catch (\Exception $e) {
 
-            DB::rollBack();
+            DB::rollroute('events.index');
             Log::error('Event creation failed: ' . $e->getMessage());
 
-            return redirect()->back()->with([
+            return redirect()->route('events.index')->with([
                 'status' => 0,
                 'error' => $e->getMessage(),
             ]);
@@ -106,19 +105,19 @@ class EventController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        $event = Event::findOrFail($id)->where('delete_flag', 0)
-            ->where('status', '!=', 'cancelled')
-            ->firstOrFail();
-        if (!$event) {
-            return redirect()->back()->with([
-                'status' => 0,
-                'message' => 'Event not found or has been cancelled.',
-            ]);
-        }
-        return view('components.preview', compact('event'));
-    }
+    // public function show(string $id)
+    // {
+    //     $event = Event::findOrFail($id)->where('delete_flag', 0)
+    //         ->where('status', '!=', 'cancelled')
+    //         ->firstOrFail();
+    //     if (!$event) {
+    //         return redirect()->route('events.index')->with([
+    //             'status' => 0,
+    //             'message' => 'Event not found or has been cancelled.',
+    //         ]);
+    //     }
+    //     return view('components.preview', compact('event'));
+    // }
 
     /**
      * Show the form for editing the specified resource.
@@ -132,25 +131,43 @@ class EventController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(EventsValidate $request, string $id)
+
+    public function update(EventsValidate $request, $id)
     {
         try {
             $event = Event::findOrFail($id);
-            $event->update($request->validated());
+            $data = $request->validated();
 
-            return redirect()->back()->with([
+            if ($request->hasFile('image')) {
+                // Delete old image if it exists
+                if ($event->image && Storage::exists($event->image)) {
+                    Storage::delete($event->image);
+                }
+
+                // Store new image
+                $file = $request->file('image');
+                $imageName = time() . '.' . $file->getClientOriginalExtension();
+                $imgPath = $file->storeAs('images/events', $imageName);
+                $data['image'] = $imgPath;
+            }
+
+            // Update the event
+            $event->update($data);
+
+            return redirect()->route('events.index')->with([
                 'status' => 1,
                 'message' => 'Event updated successfully',
             ]);
         } catch (\Exception $e) {
             Log::error('Event update failed: ' . $e->getMessage());
 
-            return redirect()->back()->with([
+            return redirect()->route('events.index')->with([
                 'status' => 0,
-                'error' => $e->getMessage(),
+                'error' => 'Failed to update event. ' . $e->getMessage(),
             ]);
         }
     }
+
 
     /**
      * Remove the specified resource from storage.

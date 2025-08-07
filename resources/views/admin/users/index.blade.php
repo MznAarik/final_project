@@ -381,15 +381,24 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <select class="role-selector" data-user-id="{{ $user->id }}" onchange="updateUserRole(this)">
-                                        <option value="user" {{ $user->role == 'user' ? 'selected' : '' }}>User</option>
-                                        <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
-                                    </select>
-                                    <div class="role-badge-display" style="margin-top: 4px;">
-                                        <span class="role-badge role-{{ $user->role }}">
-                                            {{ ucfirst($user->role) }}
-                                        </span>
-                                    </div>
+                                    @if ($user->name === 'super admin')
+                                        <div class="role-badge-display" style="margin-top: 4px;">
+                                            <span class="role-badge role-{{ $user->role }}">
+                                                {{ ucfirst($user->role) }}
+                                            </span>
+                                        </div>
+                                    @else
+
+                                        <select class="role-selector" data-user-id="{{ $user->id }}" onchange="updateUserRole(this)">
+                                            <option value="user" {{ $user->role == 'user' ? 'selected' : '' }}>User</option>
+                                            <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
+                                        </select>
+                                        <div class="role-badge-display" style="margin-top: 4px;">
+                                            <span class="role-badge role-{{ $user->role }}">
+                                                {{ ucfirst($user->role) }}
+                                            </span>
+                                        </div>
+                                    @endif
                                 </td>
                                 <td>
                                     @if($user->email_verified_at)
@@ -417,7 +426,7 @@
                                 </td>
                                 <td>
                                     <div class="action-buttons">
-                                        @if($user->name == 'Super Admin')
+                                        @if($user->name == 'super admin')
                                             N/A
                                         @else
                                             <button onclick="editUser({{ $user->id }})" class="btn-edit" title="Edit User">
@@ -514,8 +523,16 @@
             });
 
             document.getElementById('userCount').textContent = visibleCount;
-            document.querySelector('.no-data').style.display = visibleCount === 0 ? 'block' : 'none';
-            document.querySelector('.users-table').style.display = visibleCount === 0 ? 'none' : 'table';
+
+            const noDataEl = document.querySelector('.no-data');
+            if (noDataEl) {
+                noDataEl.style.display = visibleCount === 0 ? 'block' : 'none';
+            }
+
+            const usersTableEl = document.querySelector('.users-table');
+            if (usersTableEl) {
+                usersTableEl.style.display = visibleCount === 0 ? 'none' : 'table';
+            }
         }
 
         function clearFilters() {
@@ -676,17 +693,17 @@
         function showNotification(message, type) {
             const notification = document.createElement('div');
             notification.style.cssText = `
-                        position: fixed;
-                        top: 20px;
-                        right: 20px;
-                        padding: 1rem 1.5rem;
-                        border-radius: 6px;
-                        color: white;
-                        font-weight: 500;
-                        z-index: 9999;
-                        animation: slideIn 0.3s ease;
-                        background: ${type === 'success' ? '#059669' : '#ef4444'};
-                    `;
+                                position: fixed;
+                                top: 20px;
+                                right: 20px;
+                                padding: 1rem 1.5rem;
+                                border-radius: 6px;
+                                color: white;
+                                font-weight: 500;
+                                z-index: 9999;
+                                animation: slideIn 0.3s ease;
+                                background: ${type === 'success' ? '#059669' : '#ef4444'};
+                            `;
             notification.textContent = message;
 
             document.body.appendChild(notification);
@@ -699,11 +716,11 @@
         // Add CSS for notification animation
         const style = document.createElement('style');
         style.textContent = `
-                    @keyframes slideIn {
-                        from { transform: translateX(100%); opacity: 0; }
-                        to { transform: translateX(0); opacity: 1; }
-                    }
-                `;
+                            @keyframes slideIn {
+                                from { transform: translateX(100%); opacity: 0; }
+                                to { transform: translateX(0); opacity: 1; }
+                            }
+                        `;
         document.head.appendChild(style);
 
         // Close modal when clicking outside

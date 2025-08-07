@@ -69,6 +69,12 @@
                         class="{{ request()->routeIs('events.create') ? 'text-red-600 font-bold' : 'hover:text-red-500' }} mt-10">
                         Create Event
                     </a>
+                @elseif (request()->routeIs('events.edit'))
+                    <span class="separator">/</span>
+                    <a href="{{ url('#') }}"
+                        class="{{ request()->routeIs('events.create') ? 'text-red-600 font-bold' : 'hover:text-red-500' }} mt-10">
+                        Update Event
+                    </a>
                 @endif
             @endif
             @if (request()->is('admin/users*'))

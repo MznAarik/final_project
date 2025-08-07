@@ -153,7 +153,7 @@
             <div style="margin-bottom: 1.5rem;">
                 <label for="description" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Description</label>
                 <textarea id="description" name="description" rows="5" required
-                    style="width: 100%; border: 1px solid; @error('description') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; height: 5rem; resize: vertical; transition: border-color 0.2s;">{{ old('description', $event->description) }}</textarea>
+                    style="width: 100%; border: 1px solid; @error('description') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; height: 5rem; resize: vertical; transition: border-color 0.2s; text-transform: none;">{{ old('description', $event->description) }}</textarea>
                 @error('description')
                     <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
                 @enderror

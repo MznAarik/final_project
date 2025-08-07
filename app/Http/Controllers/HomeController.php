@@ -15,11 +15,15 @@ class HomeController extends Controller
     public function index()
     {
         try {
-            //Auto deleting finished event after 24hours
+            //Auto updating status and  deleting finished event after 24hours
+            Event::where('end_date', '<=', Carbon::now())
+                ->where('status', '!=', 'completed')
+                ->update(['status' => 'completed']);
+
             $cutoffTime = Carbon::now()->subHours(24);
             Event::whereDate('end_date', '<=', $cutoffTime)
                 ->where('delete_flag', false)
-                ->update(['delete_flag'=> true]);
+                ->update(['delete_flag' => true]);
 
             $recommendedEvents = [];
 
@@ -77,6 +81,8 @@ class HomeController extends Controller
         $exactMatch = Event::where('country_id', $countryId)
             ->where('province_id', $provinceId)
             ->where('district_id', $districtId)
+            ->where('status', '!=', 'cancelled')
+            ->where('status', '!=', 'completed')
             ->orderBy('popularity_score', 'desc')
             ->orderBy('created_at', 'desc')
             ->take(6)
@@ -85,6 +91,8 @@ class HomeController extends Controller
         $partialMatch = Event::where('country_id', $countryId)
             ->where('province_id', $provinceId)
             ->whereNotIn('id', $exactMatch->pluck('id'))
+            ->where('status', '!=', 'cancelled')
+            ->where('status', '!=', 'completed')
             ->orderBy('popularity_score', 'desc')
             ->orderBy('created_at', 'desc')
             ->take(4)
@@ -92,6 +100,8 @@ class HomeController extends Controller
 
         $broadMatch = Event::where('country_id', $countryId)
             ->whereNotIn('id', $exactMatch->pluck('id')->merge($partialMatch->pluck('id')))
+            ->where('status', '!=', 'cancelled')
+            ->where('status', '!=', 'completed')
             ->orderBy('popularity_score', 'desc')
             ->orderBy('created_at', 'desc')
             ->take(2)
@@ -106,10 +116,7 @@ class HomeController extends Controller
     public function showAllEvents()
     {
         try {
-            $events = Event::where('delete_flag', 0)
-                ->where('status', '!=', 'cancelled')
-                ->orderByDesc('created_at')
-                ->paginate(10);
+            $events = Event::orderByDesc('created_at')->paginate(10);
             return view('home', [
                 'recommendedEvents' => $events,
                 'sectionType' => 'all',
@@ -126,6 +133,8 @@ class HomeController extends Controller
     {
         try {
             $upcomingEvents = Event::where('status', 'upcoming')
+                ->where('delete_flag', '!=', true)
+                ->where('status', '!=', 'cancelled')
                 ->orderBy('start_date', 'asc')
                 ->paginate(10);
 
@@ -145,6 +154,7 @@ class HomeController extends Controller
     {
         try {
             $popularEvents = Event::where('status', '!=', 'cancelled')
+                ->where('delete_flag', '!=', true)
                 ->orderBy('popularity_score', 'desc')
                 ->paginate(10);
             return view('home', [
