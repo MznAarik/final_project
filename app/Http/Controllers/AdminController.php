@@ -91,6 +91,16 @@ class AdminController extends Controller
     public function adminDashboard()
     {
 
+        // Auto updating status and  deleting finished event after 24hours
+        Event::where('end_date', '<=', Carbon::now())
+            ->where('status', '!=', 'completed')
+            ->update(['status' => 'completed']);
+
+        $cutoffTime = Carbon::now()->subHours(24);
+        Event::whereDate('end_date', '<=', $cutoffTime)
+            ->where('delete_flag', false)
+            ->update(['delete_flag' => true]);
+
         $ticketData = Ticket::select(DB::raw('event_id, SUM(total_price) as total_price'))
             ->where('status', '!=', 'cancelled')
             ->where('delete_flag', false)

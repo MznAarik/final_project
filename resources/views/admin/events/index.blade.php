@@ -170,6 +170,11 @@
             gap: 0.25rem;
         }
 
+        .status-exclusive {
+            background: #fbbf24;
+            color: #92400e;
+        }
+        
         .status-upcoming {
             background: #E3342F;
             color: white;
@@ -566,16 +571,13 @@
                             </div>
 
                             <div class="card-actions">
-                                <a href="{{ route('events.show', $event->id) }}" class="action-btn btn-view">
-                                    <i class="fa-solid fa-eye"></i>
-                                    View
-                                </a>
                                 <a href="{{ route('events.edit', $event->id) }}" class="action-btn btn-edit">
                                     <i class="fa-solid fa-edit"></i>
                                     Edit
                                 </a>
                                 <button onclick="deleteEvent({{ $event->id }}, '{{ addslashes($event->name) }}')" class="action-btn btn-delete">
                                     <i class="fa-solid fa-trash"></i>
+                                    Delete
                                 </button>
                             </div>
                         </div>
