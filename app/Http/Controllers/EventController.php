@@ -93,8 +93,11 @@ class EventController extends Controller
         } catch (\Exception $e) {
 
             DB::rollBack();
-            return redirect()->route('events.index');
             Log::error('Event creation failed: ' . $e->getMessage());
+            return redirect()->route('events.index')->with([
+                'status' => 0,
+                'error' => $e->getMessage(),
+            ]);
 
             return redirect()->route('events.index')->with([
                 'status' => 0,
