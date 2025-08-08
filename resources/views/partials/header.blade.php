@@ -19,7 +19,7 @@
 
   <!-- Desktop Navigation -->
   <ul class="nav-links desktop-nav">
-    <li><a href="{{ route('buy_tickets') }}"><i class="fa fa-ticket-alt"></i> Buy Tickets</a></li>
+    <li><a href="{{ route('buy_tickets') }}"><i class="fa fa-ticket-alt"></i> All Events</a></li>
     <li><a href="{{ route('upcoming') }}"><i class="fa fa-calendar-alt"></i> Upcoming</a></li>
     <li><a href="{{ route('popular') }}"><i class="fa fa-fire"></i> Popular</a></li>
     <li> <a href="{{ route('cart.index') }}"><i class="fa fa-shopping-cart"></i>My
@@ -64,7 +64,7 @@
     </div>
 
     <ul class="nav-links">
-      <li><a href="{{ route('buy_tickets') }}"><i class="fa fa-ticket-alt"></i> Buy Tickets</a></li>
+      <li><a href="{{ route('buy_tickets') }}"><i class="fa fa-ticket-alt"></i> All Events</a></li>
       <li><a href="{{ route('upcoming') }}"><i class="fa fa-calendar-alt"></i> Upcoming</a></li>
       <li><a href="{{ route('popular') }}"><i class="fa fa-fire"></i> Popular</a></li>
       <li><a href="{{ route('cart.index') }}"><i class="fa fa-shopping-cart"></i> My Cart</a></li>

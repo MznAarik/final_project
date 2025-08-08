@@ -14,10 +14,15 @@ use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
-    // public function index()
-    // {
-    //     return view('admin.dashboard')->with(['status' => 1, 'message' => 'Welcome Admin']);
-    // }
+    public function viewAllTickets()
+    {
+        $tickets = Ticket::with(['user:id,name', 'event:id,name','payments:id,ticket_id,payment_method,amount'])
+            ->where('delete_flag', 0)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+            
+        return view('admin.tickets.index', compact('tickets'));
+    }
 
     public function showScanQrPage()
     {

@@ -170,31 +170,34 @@
             gap: 0.25rem;
         }
 
-        .status-exclusive {
-            background: #fbbf24;
-            color: #92400e;
+       .status-upcoming {
+            background-color: #e3342f;
+            color:white;
+            /* green */
         }
-        
-        .status-upcoming {
-            background: #E3342F;
-            color: white;
+
+        .status-exclusive {
+            background-color: #0bcaff;
+            color:white;
         }
 
         .status-active {
-            background: rgba(34, 197, 94, 0.9);
-            color: white;
+            background-color: #38c172;
+            color:white;
+            /* blue */
         }
 
         .status-completed {
-            background: rgba(59, 130, 246, 0.9);
-            color: white;
+            background-color: #6c757d;
+            color:white;
+            /* gray */
         }
 
         .status-cancelled {
-            background: rgba(107, 114, 128, 0.9);
-            color: white;
+            background-color: #f6993f;
+            color:white;
+            /* orange */
         }
-
         .image-overlay {
             position: absolute;
             bottom: 0;

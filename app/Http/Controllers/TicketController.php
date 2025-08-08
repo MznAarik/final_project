@@ -22,9 +22,9 @@ class TicketController extends Controller
     {
         $tickets = Ticket::with(['user:id,name', 'event:id,name'])
             ->where('delete_flag', 0)
-            ->orderBy('created_at', 'asc')->get();
+            ->orderBy('created_at', 'desc')->get();
         // dd($tickets->toArray());
-        return view('admin.tickets.index', compact('tickets'));
+        return view('user.tickets.index', compact('tickets'));
     }
 
     public function store(Request $request)

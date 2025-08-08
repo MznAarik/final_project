@@ -3,7 +3,7 @@
         return;
 
     $groupedEvents = $recommendedEvents->groupBy('status');
-    $prioritizedStatuses = ['upcoming', 'active', 'completed', 'cancelled'];
+    $prioritizedStatuses = ['upcoming','exclusive', 'active', 'completed', 'cancelled'];
 @endphp
 
 <section class="event-section">

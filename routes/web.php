@@ -51,7 +51,13 @@ Route::middleware(['checkRole:admin'])->prefix('admin')->group(function () {
     Route::get('scan-qr', [AdminController::class, 'showScanQrPage'])->name('admin.scanQr');
     Route::get('verify-ticket', [AdminController::class, 'verifyTicket'])->name('admin.verify-ticket');
     Route::get('dashboard', [AdminController::class, 'adminDashboard'])->name('admin.dashboard');
+    Route::get('/tickets', [AdminController::class, 'viewAllTickets'])->name('admin.tickets.index');
 });
+
+// Route::middleware(['checkRole:admin'])->prefix('admin/tickets')->group(function () {
+    // Route::get('/tickets/create', [TicketController::class, 'create'])->name('admin.tickets.create');
+    // Route::post('/tickets', [TicketController::class, 'store'])->name('admin.tickets.store');
+// });
 
 Route::prefix('events')->middleware('checkRole:admin')->group(function () {
     Route::get('/', [EventController::class, 'index'])->name('events.index');
@@ -92,13 +98,6 @@ Route::middleware(['checkRole:admin'])->prefix('admin/users')->group(function ()
     Route::delete('/{id}', [UserController::class, 'destroy'])->name('users.delete');
     Route::patch('/{user}/role', [UserController::class, 'updateRole'])->name('users.updateRole');
 });
-
-Route::middleware(['checkRole:admin'])->prefix('admin/tickets')->group(function () {
-    Route::get('/', [TicketController::class, 'index'])->name('admin.tickets.index');
-    // Route::get('/tickets/create', [TicketController::class, 'create'])->name('admin.tickets.create');
-    Route::post('/tickets', [TicketController::class, 'store'])->name('admin.tickets.store');
-});
-
 
 Route::get('/test-alert', function () {
     return redirect()->route('home')->with([
