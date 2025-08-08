@@ -198,6 +198,10 @@
     /* green */
 }
 
+.ribbon.exclusive {
+    background-color: #0bcaff;
+}
+
 .ribbon.active {
     background-color: #38c172;
     /* blue */

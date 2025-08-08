@@ -22,11 +22,19 @@ class Payment extends Model
     ];
     public function user()
     {
-        return $this->belongsTo('User::class');
+        return $this->belongsToMany(User::class);
     }
 
     public function event()
     {
         return $this->belongsTo(Event::class);
     }
+
+    // Payment.php
+    public function ticket()
+    {
+        return $this->belongsTo(Ticket::class, 'ticket_id');
+    }
+
+
 }

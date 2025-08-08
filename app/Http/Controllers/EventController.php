@@ -99,10 +99,6 @@ class EventController extends Controller
                 'error' => $e->getMessage(),
             ]);
 
-            return redirect()->route('events.index')->with([
-                'status' => 0,
-                'error' => $e->getMessage(),
-            ]);
         }
     }
 

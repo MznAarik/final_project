@@ -116,7 +116,7 @@ class HomeController extends Controller
     public function showAllEvents()
     {
         try {
-            $events = Event::orderByDesc('created_at')->paginate(10);
+            $events = Event::orderByDesc('created_at')->where('delete_flag', 0)->paginate(10);
             return view('home', [
                 'recommendedEvents' => $events,
                 'sectionType' => 'all',

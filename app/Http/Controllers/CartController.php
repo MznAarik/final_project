@@ -25,7 +25,11 @@ class CartController extends Controller
 
         $event = Event::findOrFail($eventId);
         if ($event->status == 'cancelled') {
-            return redirect()->back()->withErrors(['event' => "Event {$event->name} is cancelled"]);
+            return redirect()->back()->with(['status'=>0, 'message' => "The event {$event->name} is cancelled! Please contact the organizers."]);
+        }
+
+        if ($event->status == 'completed') {
+            return redirect()->back()->with(['status'=>0, 'message' => "The event {$event->name} has already finished! Please be with us for such events."]);
         }
 
         $ticketData = is_array($event->ticket_category_price) ? $event->ticket_category_price : json_decode($event->ticket_category_price, true);
