@@ -115,7 +115,7 @@
                         <div class="contents">
                             <h2>Verify Your Email to Finish Signing Up!</h2>
                             <h4>
-                                Thank you {{ $data['name'] }} for choosing us!<br>
+                                Thank you {{ ucfirst($data['name']) }} for choosing us!<br>
                                 Please confirm that {{ $data['email'] }} is your email address<br>
                                 by clicking the button below or use this link:<br>
                                 <p style="font-size: smaller">

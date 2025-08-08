@@ -52,7 +52,9 @@
     padding: 0;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     transform: translateY(0);
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    transition:
+        transform 0.4s ease,
+        box-shadow 0.4s ease;
     will-change: transform, box-shadow;
 }
 
@@ -114,7 +116,9 @@
     cursor: pointer;
     font-weight: bold;
     font-size: 0.8rem;
-    transition: background 0.3s ease, transform 0.3s ease;
+    transition:
+        background 0.3s ease,
+        transform 0.3s ease;
     position: relative;
     top: -3px;
     right: 3px;
@@ -140,7 +144,9 @@
     border-radius: 8px;
     cursor: pointer;
     font-weight: bold;
-    transition: background 0.3s ease, transform 0.3s ease;
+    transition:
+        background 0.3s ease,
+        transform 0.3s ease;
 }
 
 /* Button Hover Effect */
@@ -192,6 +198,10 @@
     /* green */
 }
 
+.ribbon.exclusive {
+    background-color: #0bcaff;
+}
+
 .ribbon.active {
     background-color: #38c172;
     /* blue */
@@ -206,7 +216,6 @@
     background-color: #f6993f;
     /* orange */
 }
-
 
 .fas {
     margin-right: 8px;

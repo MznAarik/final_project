@@ -41,7 +41,7 @@ class SendTicket extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'user.tickets.show',
+            view: 'emails.send-ticket',
         );
     }
 

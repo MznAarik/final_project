@@ -40,4 +40,9 @@ class Ticket extends Model
     {
         return $this->belongsTo(Event::class, 'event_id');
     }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class, 'ticket_id');
+    }
 }

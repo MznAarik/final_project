@@ -3,7 +3,7 @@
 @section('content')
 <div style="background-color: #f3f4f6; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 1rem;">
     <div style="width: 48rem; margin-left: auto; margin-right: auto; background-color: #ffffff; padding: 2rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); border-radius: 0.5rem; position: relative; z-index: 1;">
-        <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; text-align: center; color: #1f2937;">Add Event</h1>
+        <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; text-align: center; color: #1f2937;">Edit Event</h1>
         
         @if ($errors->any())
             <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 1rem; margin-bottom: 1.5rem; border-radius: 0.375rem;">
@@ -15,12 +15,20 @@
             </div>
         @endif
 
-        <form action="{{ route('events.store') }}" method="POST" enctype="multipart/form-data" style="margin-bottom: 1.5rem;">
-            @csrf            
+        @if(session('success'))
+            <div style="background-color: #f0f9ff; border-left: 4px solid #10b981; padding: 1rem; margin-bottom: 1.5rem; border-radius: 0.375rem;">
+                <p style="color: #059669; font-weight: 500;">{{ session('success') }}</p>
+            </div>
+        @endif
+
+        <form action="{{ route('events.update', $event->id) }}" method="POST" enctype="multipart/form-data" style="margin-bottom: 1.5rem;">
+            @csrf
+            @method('PUT')
+
             <!-- Event Title -->
             <div style="margin-bottom: 1.5rem;">
                 <label for="name" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Event Title</label>
-                <input type="text" id="name" name="name" value="{{ old('name') }}" required maxlength="255"
+                <input type="text" id="name" name="name" value="{{ old('name', $event->name) }}" required maxlength="255"
                     style="width: 100%; border: 1px solid; @error('name') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                 @error('name')
                     <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
@@ -31,7 +39,7 @@
             <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
                 <div style="flex: 1;">
                     <label for="venue" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Venue</label>
-                    <input type="text" id="venue" name="venue" value="{{ old('venue') }}" required maxlength="255"
+                    <input type="text" id="venue" name="venue" value="{{ old('venue', $event->venue) }}" required maxlength="255"
                         style="width: 100%; border: 1px solid; @error('venue') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                     @error('venue')
                         <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
@@ -43,8 +51,8 @@
                     <select id="status" name="status" required
                         style="width: 100%; border: 1px solid; @error('status') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                         <option value="">-- Select Status --</option>
-                        @foreach(['upcoming', 'exclusive', 'active', 'completed', 'cancelled'] as $status)
-                            <option value="{{ $status }}" @selected(old('status') === $status)>{{ ucfirst($status) }}</option>
+                        @foreach(['upcoming','exclusive', 'active', 'completed', 'cancelled'] as $status)
+                            <option value="{{ $status }}" @selected(old('status', $event->status) === $status)>{{ ucfirst($status) }}</option>
                         @endforeach
                     </select>
                     @error('status')
@@ -56,7 +64,7 @@
             <!-- Location -->
             <div style="margin-bottom: 1.5rem;">
                 <label for="location" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Location</label>
-                <input type="text" id="location" name="location" value="{{ old('location') }}" required maxlength="255"
+                <input type="text" id="location" name="location" value="{{ old('location', $event->location) }}" required maxlength="255"
                     style="width: 100%; border: 1px solid; @error('location') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                 @error('location')
                     <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
@@ -67,7 +75,7 @@
             <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
                 <div style="flex: 1;">
                     <label for="country_name" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Country</label>
-                    <input type="text" id="country_name" name="country_name" value="{{ old('country_name', 'Nepal') }}" required
+                    <input type="text" id="country_name" name="country_name" value="{{ old('country_name', $event->country_name ?? 'Nepal') }}" required
                         style="width: 100%; border: 1px solid; @error('country_name') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                     @error('country_name')
                         <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
@@ -78,13 +86,13 @@
                     <select id="province_name" name="province_name" required
                         style="width: 100%; border: 1px solid; @error('province_name') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                         <option value="">-- Select Province --</option>
-                        <option value="Koshi Pradesh" {{ old('province_name') == 'Koshi Pradesh' ? 'selected' : '' }}>Koshi Pradesh</option>
-                        <option value="Madhesh Pradesh" {{ old('province_name') == 'Madhesh Pradesh' ? 'selected' : '' }}>Madhesh Pradesh</option>
-                        <option value="Bagmati Pradesh" {{ old('province_name') == 'Bagmati Pradesh' ? 'selected' : '' }}>Bagmati Pradesh</option>
-                        <option value="Gandaki Pradesh" {{ old('province_name') == 'Gandaki Pradesh' ? 'selected' : '' }}>Gandaki Pradesh</option>
-                        <option value="Lumbini Pradesh" {{ old('province_name') == 'Lumbini Pradesh' ? 'selected' : '' }}>Lumbini Pradesh</option>
-                        <option value="Karnali Pradesh" {{ old('province_name') == 'Karnali Pradesh' ? 'selected' : '' }}>Karnali Pradesh</option>
-                        <option value="Sudurpashchim Pradesh" {{ old('province_name') == 'Sudurpashchim Pradesh' ? 'selected' : '' }}>Sudurpashchim Pradesh</option>
+                        <option value="Koshi Pradesh" {{ old('province_name', $event->province_name) == 'Koshi Pradesh' ? 'selected' : '' }}>Koshi Pradesh</option>
+                        <option value="Madhesh Pradesh" {{ old('province_name', $event->province_name) == 'Madhesh Pradesh' ? 'selected' : '' }}>Madhesh Pradesh</option>
+                        <option value="Bagmati Pradesh" {{ old('province_name', $event->province_name) == 'Bagmati Pradesh' ? 'selected' : '' }}>Bagmati Pradesh</option>
+                        <option value="Gandaki Pradesh" {{ old('province_name', $event->province_name) == 'Gandaki Pradesh' ? 'selected' : '' }}>Gandaki Pradesh</option>
+                        <option value="Lumbini Pradesh" {{ old('province_name', $event->province_name) == 'Lumbini Pradesh' ? 'selected' : '' }}>Lumbini Pradesh</option>
+                        <option value="Karnali Pradesh" {{ old('province_name', $event->province_name) == 'Karnali Pradesh' ? 'selected' : '' }}>Karnali Pradesh</option>
+                        <option value="Sudurpashchim Pradesh" {{ old('province_name', $event->province_name) == 'Sudurpashchim Pradesh' ? 'selected' : '' }}>Sudurpashchim Pradesh</option>
                     </select>
                     @error('province_name')
                         <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
@@ -106,7 +114,7 @@
             <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
                 <div style="flex: 1;">
                     <label for="capacity" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Capacity</label>
-                    <input type="number" id="capacity" name="capacity" value="{{ old('capacity') }}" min="1" required
+                    <input type="number" id="capacity" name="capacity" value="{{ old('capacity', $event->capacity) }}" min="1" required
                         style="width: 100%; border: 1px solid; @error('capacity') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                     @error('capacity')
                         <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
@@ -116,17 +124,36 @@
                     <label for="image" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Event Image</label>
                     <input type="file" id="image" name="image" accept="image/*"
                         style="width: 100%; border: 1px solid; @error('image') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
+                    @if($event->image)
+                        <p style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem;">Current: {{ basename($event->image) }}</p>
+                    @endif
                     @error('image')
                         <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
 
+            <!-- Current Image Display -->
+            @if($event->image)
+    <div style="margin-bottom: 1.5rem; text-align: center;">
+        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">
+            Current Event Image
+        </label>
+        <img 
+            src="{{ asset('storage/' . $event->image) }}" 
+            alt="Current Event Image" 
+            style="max-width: 300px; max-height: 200px; border-radius: 0.375rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);"
+            loading="lazy"
+        >
+    </div>
+@endif
+ 
+
             <!-- Description -->
             <div style="margin-bottom: 1.5rem;">
                 <label for="description" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Description</label>
                 <textarea id="description" name="description" rows="5" required
-                    style="width: 100%; border: 1px solid; @error('description') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; height: 5rem; resize: vertical; transition: border-color 0.2s; text-transform: none;">{{ old('description') }}</textarea>
+                    style="width: 100%; border: 1px solid; @error('description') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; height: 5rem; resize: vertical; transition: border-color 0.2s; text-transform: none;">{{ old('description', $event->description) }}</textarea>
                 @error('description')
                     <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
                 @enderror
@@ -136,7 +163,7 @@
             <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
                 <div style="flex: 1;">
                     <label for="contact_info" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Contact Email</label>
-                    <input type="email" id="contact_info" name="contact_info" value="{{ old('contact_info') }}" required
+                    <input type="email" id="contact_info" name="contact_info" value="{{ old('contact_info', $event->contact_info) }}" required
                         style="width: 100%; border: 1px solid; @error('contact_info') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                     @error('contact_info')
                         <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
@@ -144,7 +171,7 @@
                 </div>
                 <div style="flex: 1;">
                     <label for="organizer" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Organizer</label>
-                    <input type="text" id="organizer" name="organizer" value="{{ old('organizer') }}" required maxlength="255"
+                    <input type="text" id="organizer" name="organizer" value="{{ old('organizer', $event->organizer) }}" required maxlength="255"
                         style="width: 100%; border: 1px solid; @error('organizer') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                     @error('organizer')
                         <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
@@ -156,7 +183,7 @@
             <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
                 <div style="flex: 1;">
                     <label for="start_date" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Start Date & Time</label>
-                    <input type="datetime-local" id="start_date" name="start_date" value="{{ old('start_date') }}" required
+                    <input type="datetime-local" id="start_date" name="start_date" value="{{ old('start_date', $event->start_date ? \Carbon\Carbon::parse($event->start_date)->format('Y-m-d\TH:i') : '') }}" required
                         style="width: 100%; border: 1px solid; @error('start_date') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                     @error('start_date')
                         <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
@@ -164,7 +191,7 @@
                 </div>
                 <div style="flex: 1;">
                     <label for="end_date" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">End Date & Time</label>
-                    <input type="datetime-local" id="end_date" name="end_date" value="{{ old('end_date') }}" required
+                    <input type="datetime-local" id="end_date" name="end_date" value="{{ old('end_date', $event->end_date ? \Carbon\Carbon::parse($event->end_date)->format('Y-m-d\TH:i') : '') }}" required
                         style="width: 100%; border: 1px solid; @error('end_date') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                     @error('end_date')
                         <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
@@ -179,10 +206,10 @@
                     <select id="currency" name="currency" required
                         style="width: 100%; border: 1px solid; @error('currency') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                         <option value="">-- Select Currency --</option>
-                        <option value="NPR" {{ old('currency') == 'NPR' ? 'selected' : '' }}>NPR (Nepalese Rupee)</option>
-                        <option value="USD" {{ old('currency') == 'USD' ? 'selected' : '' }}>USD (US Dollar)</option>
-                        <option value="EUR" {{ old('currency') == 'EUR' ? 'selected' : '' }}>EUR (Euro)</option>
-                        <option value="INR" {{ old('currency') == 'INR' ? 'selected' : '' }}>INR (Indian Rupee)</option>
+                        <option value="NPR" {{ old('currency', $event->currency) == 'NPR' ? 'selected' : '' }}>NPR (Nepalese Rupee)</option>
+                        <option value="USD" {{ old('currency', $event->currency) == 'USD' ? 'selected' : '' }}>USD (US Dollar)</option>
+                        <option value="EUR" {{ old('currency', $event->currency) == 'EUR' ? 'selected' : '' }}>EUR (Euro)</option>
+                        <option value="INR" {{ old('currency', $event->currency) == 'INR' ? 'selected' : '' }}>INR (Indian Rupee)</option>
                     </select>
                     @error('currency')
                         <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
@@ -193,14 +220,14 @@
                     <select id="event_category" name="event_category"
                         style="width: 100%; border: 1px solid; @error('event_category') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
                         <option value="">-- Select Category --</option>
-                        <option value="Conference" {{ old('event_category') == 'Conference' ? 'selected' : '' }}>Conference</option>
-                        <option value="Workshop" {{ old('event_category') == 'Workshop' ? 'selected' : '' }}>Workshop</option>
-                        <option value="Seminar" {{ old('event_category') == 'Seminar' ? 'selected' : '' }}>Seminar</option>
-                        <option value="Concert" {{ old('event_category') == 'Concert' ? 'selected' : '' }}>Concert</option>
-                        <option value="Festival" {{ old('event_category') == 'Festival' ? 'selected' : '' }}>Festival</option>
-                        <option value="Exhibition" {{ old('event_category') == 'Exhibition' ? 'selected' : '' }}>Exhibition</option>
-                        <option value="Sports" {{ old('event_category') == 'Sports' ? 'selected' : '' }}>Sports</option>
-                        <option value="Other" {{ old('event_category') == 'Other' ? 'selected' : '' }}>Other</option>
+                        <option value="Conference" {{ old('event_category', $event->event_category) == 'Conference' ? 'selected' : '' }}>Conference</option>
+                        <option value="Workshop" {{ old('event_category', $event->event_category) == 'Workshop' ? 'selected' : '' }}>Workshop</option>
+                        <option value="Seminar" {{ old('event_category', $event->event_category) == 'Seminar' ? 'selected' : '' }}>Seminar</option>
+                        <option value="Concert" {{ old('event_category', $event->event_category) == 'Concert' ? 'selected' : '' }}>Concert</option>
+                        <option value="Festival" {{ old('event_category', $event->event_category) == 'Festival' ? 'selected' : '' }}>Festival</option>
+                        <option value="Exhibition" {{ old('event_category', $event->event_category) == 'Exhibition' ? 'selected' : '' }}>Exhibition</option>
+                        <option value="Sports" {{ old('event_category', $event->event_category) == 'Sports' ? 'selected' : '' }}>Sports</option>
+                        <option value="Other" {{ old('event_category', $event->event_category) == 'Other' ? 'selected' : '' }}>Other</option>
                     </select>
                     @error('event_category')
                         <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
@@ -209,11 +236,24 @@
             </div>
 
             <!-- Ticket Categories -->
+             
             <div id="ticket-categories" style="margin-bottom: 1.5rem;">
                 <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">Ticket Categories</label>
-                @php 
-                    $ticketCats = old('ticket_category_price') ?? [['category' => '', 'price' => '']]; 
-                @endphp
+               @php
+    $existingTickets = collect();
+
+    if (!empty($event->ticket_category_price)) {
+        $existingTickets = collect(json_decode($event->ticket_category_price, true));
+    }
+
+    $ticketCats = old('ticket_category_price', $existingTickets->toArray());
+
+    if (empty($ticketCats)) {
+        $ticketCats = [['category' => '', 'price' => '']];
+    }
+@endphp
+
+                
                 @foreach($ticketCats as $i => $ticketCat)
                 <div class="ticket-category-row" style="display: flex; gap: 1rem; margin-bottom: 1rem; align-items: center;">
                     <input type="text" name="ticket_category_price[{{ $i }}][category]" placeholder="Category (e.g., VIP, General, Student)" required maxlength="50" value="{{ $ticketCat['category'] ?? ''}}"
@@ -238,7 +278,7 @@
                 </button>
                 <button type="submit"
                     style="flex: 2; background-color: #10b981; color: #ffffff; padding: 0.75rem 1rem; border: none; border-radius: 0.375rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s;">
-                    Submit Event
+                    Update Event
                 </button>
                 <a href="{{ route('events.index') }}" 
                     style="flex: 1; background-color: #6b7280; color: #ffffff; padding: 0.75rem 1rem; border: none; border-radius: 0.375rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s; text-decoration: none; text-align: center; display: inline-block;">
@@ -308,21 +348,21 @@
         districtSelect.disabled = false;
     });
 
-    // Initialize district dropdown based on old input (for form validation errors)
+    // Initialize district dropdown based on existing event data
     document.addEventListener('DOMContentLoaded', function() {
-        const oldProvince = "{{ old('province_name') }}";
-        const oldDistrict = "{{ old('district_name') }}";
+        const currentProvince = "{{ old('province_name', $event->province_name) }}";
+        const currentDistrict = "{{ old('district_name', $event->district_name) }}";
         
-        if (oldProvince) {
-            provinceSelect.value = oldProvince;
-            const districts = provinceDistrictData[oldProvince] || [];
+        if (currentProvince) {
+            provinceSelect.value = currentProvince;
+            const districts = provinceDistrictData[currentProvince] || [];
             
             districtSelect.innerHTML = '<option value="">-- Select District --</option>';
             districts.forEach(district => {
                 const option = document.createElement('option');
                 option.value = district;
                 option.textContent = district;
-                if (district === oldDistrict) {
+                if (district === currentDistrict) {
                     option.selected = true;
                 }
                 districtSelect.appendChild(option);
@@ -334,7 +374,8 @@
     });
 
     // Ticket category management
-    let categoryIndex = {{ count(old('ticket_category_price', [['category' => '', 'price' => '']])) }};
+
+    let categoryIndex = {{ count($ticketCats) }};
     
     function addCategory() {
         const container = document.getElementById('ticket-categories');
@@ -380,6 +421,13 @@
         if (endDate < startDate) {
             alert('End date cannot be before start date');
             this.value = '';
+        }
+    });
+
+    // Form submission confirmation
+    document.querySelector('form').addEventListener('submit', function(e) {
+        if (!confirm('Are you sure you want to update this event?')) {
+            e.preventDefault();
         }
     });
 </script>

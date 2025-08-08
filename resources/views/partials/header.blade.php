@@ -1,17 +1,25 @@
 <nav class="top-nav">
-  <a href="{{ route('home') }}" class="logo">🎫 EvenTickets</a>
+  <a href="{{ route('home') }}" class="logo flex items-center justify-center space-x-2">
+    <svg class="w-10 h-10 text-white text-3xl" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z">
+      </path>
+    </svg>
+    <span class="text-white text-3xl font-semibold">BooKets</span>
+  </a>
 
   <!-- Hamburger button for mobile -->
   <button class="hamburger" aria-label="Toggle menu">&#9776;</button>
 
   <!-- Desktop search -->
-  <div class="search-container desktop-search">
-    <input type="text" placeholder="Search events..." class="search-bar" />
-  </div>
+ <form action="{{ route('search.events') }}" method="GET" class="search-container desktop-search" onsubmit="return true;" style="position: relative;">
+  <input type="text" name="query" id="searchInput" placeholder="Search events..." class="search-bar" autocomplete="off" required>
+  <div id="suggestionsBox" style="position: absolute; top: 100%; left: 0; z-index: 9999;"></div>
+</form>
 
   <!-- Desktop Navigation -->
   <ul class="nav-links desktop-nav">
-    <li><a href="{{ route('buy_tickets') }}"><i class="fa fa-ticket-alt"></i> Buy Tickets</a></li>
+    <li><a href="{{ route('buy_tickets') }}"><i class="fa fa-ticket-alt"></i> All Events</a></li>
     <li><a href="{{ route('upcoming') }}"><i class="fa fa-calendar-alt"></i> Upcoming</a></li>
     <li><a href="{{ route('popular') }}"><i class="fa fa-fire"></i> Popular</a></li>
     <li> <a href="{{ route('cart.index') }}"><i class="fa fa-shopping-cart"></i>My
@@ -24,7 +32,7 @@
       <a href="{{ url('profile') }}" class="dropdown-button block py-1"><i
         class="fa fa-user mr-2"></i>{{ Auth::user()->name }}</a>
 
-      <a href="{{ route('my_tickets') }}" class="dropdown-button block py-1"><i
+      <a href="{{ route('user.tickets.index') }}" class="dropdown-button block py-1"><i
         class="fa fa-clipboard-list mr-2"></i>My
         Tickets</a>
 
@@ -56,11 +64,11 @@
     </div>
 
     <ul class="nav-links">
-      <li><a href="{{ route('buy_tickets') }}"><i class="fa fa-ticket-alt"></i> Buy Tickets</a></li>
+      <li><a href="{{ route('buy_tickets') }}"><i class="fa fa-ticket-alt"></i> All Events</a></li>
       <li><a href="{{ route('upcoming') }}"><i class="fa fa-calendar-alt"></i> Upcoming</a></li>
       <li><a href="{{ route('popular') }}"><i class="fa fa-fire"></i> Popular</a></li>
       <li><a href="{{ route('cart.index') }}"><i class="fa fa-shopping-cart"></i> My Cart</a></li>
-      <li><a href="{{ route('my_tickets') }}"><i class="fa fa-clipboard-list"></i> My Tickets</a></li>
+      <li><a href="{{ route('user.tickets.index') }}"><i class="fa fa-clipboard-list"></i> My Tickets</a></li>
 
       @if(Auth::check())
       <li><a href="{{ url('profile') }}"><i class="fa fa-user"></i> Welcome, {{ Auth::user()->name }}</a></li>

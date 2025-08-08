@@ -1,22 +1,25 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Province;
+use App\Models\District;
 
 use App\Http\Requests\EventsValidate;
 use App\Models\Country;
 use App\Models\Event;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
 {
 
     public function index()
     {
-        $events = Event::where('delete_flag', 0)
-            ->where('status', '!=', 'cancelled')
-            ->latest()->get();
+        $events = Event::latest()->get();
         return view('admin.events.index', compact('events'));
     }
     /**
@@ -91,31 +94,31 @@ class EventController extends Controller
 
             DB::rollBack();
             Log::error('Event creation failed: ' . $e->getMessage());
-
-            return redirect()->route('home')->with([
+            return redirect()->route('events.index')->with([
                 'status' => 0,
-                'message' => 'Error Occured! Please try again',
                 'error' => $e->getMessage(),
             ]);
+
         }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        $event = Event::findOrFail($id)->where('delete_flag', 0)
-            ->where('status', '!=', 'cancelled')
-            ->firstOrFail();
-        if (!$event) {
-            return redirect()->route('home')->with([
-                'status' => 0,
-                'message' => 'Event not found or has been cancelled.',
-            ]);
-        }
-        return view('components.preview', compact('event'));
-    }
+     // {
+     //     $event = Event::where('id', $id)
+     //         ->where('delete_flag', 0)
+     //         ->where('status', '!=', 'cancelled')
+    //         ->where('status', '!=', 'cancelled')
+    //         ->firstOrFail();
+    //     if (!$event) {
+    //         return redirect()->route('events.index')->with([
+    //             'status' => 0,
+    //             'message' => 'Event not found or has been cancelled.',
+    //         ]);
+    //     }
+    //     return view('components.preview', compact('event'));
+    // }
 
     /**
      * Show the form for editing the specified resource.
@@ -123,32 +126,49 @@ class EventController extends Controller
     public function edit(string $id)
     {
         $event = Event::findOrFail($id);
-        return view('admin.events.createEvents', compact('event'));
+        return view('admin.events.updateEvents', compact('event'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(EventsValidate $request, string $id)
+
+    public function update(EventsValidate $request, $id)
     {
         try {
             $event = Event::findOrFail($id);
-            $event->update($request->validated());
+            $data = $request->validated();
 
-            return redirect()->route('home')->with([
+            if ($request->hasFile('image')) {
+                // Delete old image if it exists
+                if ($event->image && Storage::exists($event->image)) {
+                    Storage::delete($event->image);
+                }
+
+                // Store new image
+                $file = $request->file('image');
+                $imageName = time() . '.' . $file->getClientOriginalExtension();
+                $imgPath = $file->storeAs('images/events', $imageName);
+                $data['image'] = $imgPath;
+            }
+
+            // Update the event
+            $event->update($data);
+
+            return redirect()->route('events.index')->with([
                 'status' => 1,
                 'message' => 'Event updated successfully',
             ]);
         } catch (\Exception $e) {
             Log::error('Event update failed: ' . $e->getMessage());
 
-            return redirect()->route('home')->with([
+            return redirect()->route('events.index')->with([
                 'status' => 0,
-                'message' => 'Error Occured! Please try again',
-                'error' => $e->getMessage(),
+                'error' => 'Failed to update event. ' . $e->getMessage(),
             ]);
         }
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -157,19 +177,46 @@ class EventController extends Controller
     {
         try {
             $event = Event::findOrFail($id);
-            // $event->delete();
-            $event->update(['delete_flag' => 1]);
-            return redirect()->route('home')->with([
+
+            $event->delete_flag = true;
+            $event->save();
+
+            return response()->json([
                 'status' => 1,
                 'message' => 'Event deleted successfully',
             ]);
         } catch (\Exception $e) {
-            Log::error('Event deletion failed: ' . $e->getMessage());
-            return redirect()->route('home')->with([
+            Log::error("Event deletion failed for ID {$id}: " . $e->getMessage());
+
+            return response()->json([
                 'status' => 0,
-                'message' => 'Error Occured! Please try again',
-                'error' => $e->getMessage(),
-            ]);
+                'error' => 'Something went wrong while deleting the event.',
+            ], 500);
         }
     }
+  public function search(Request $request)
+{
+    $query = $request->input('query');
+
+    $events = Event::where('name', 'ILIKE', '%' . $query . '%')
+        ->orWhere('location', 'ILIKE', '%' . $query . '%')
+        ->orWhere('venue', 'ILIKE', '%' . $query . '%')
+        ->orWhere('description', 'ILIKE', '%' . $query . '%')
+        ->orWhere('contact_info', 'ILIKE', '%' . $query . '%')
+        ->get();
+
+    return view('search_results', compact('events', 'query'));
+}
+public function suggestions(Request $request)
+{
+    $query = $request->query('q');
+
+    $suggestions = Event::where('name', 'ILIKE', '%' . $query . '%')
+                        ->select('name')
+                        ->limit(10)
+                        ->get();
+
+    return response()->json($suggestions);
+}
+
 }

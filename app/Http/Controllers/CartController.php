@@ -24,19 +24,36 @@ class CartController extends Controller
         $ticketQuantities = json_decode($request->input('ticketQuantities'), true);
 
         $event = Event::findOrFail($eventId);
-        $ticketData = is_array($event->ticket_category_price) ? $event->ticket_category_price : json_decode($event->ticket_category_price, true);
+        if ($event->status == 'cancelled') {
+            return redirect()->back()->with(['status'=>0, 'message' => "The event {$event->name} is cancelled! Please contact the organizers."]);
+        }
 
+        if ($event->status == 'completed') {
+            return redirect()->back()->with(['status'=>0, 'message' => "The event {$event->name} has already finished! Please be with us for such events."]);
+        }
+
+        $ticketData = is_array($event->ticket_category_price) ? $event->ticket_category_price : json_decode($event->ticket_category_price, true);
         $validCategories = array_column($ticketData, 'category');
+        $ticketsSold = $event->tickets_sold ?? 0;
+        $eventCapacity = $event->capacity ?? 0;
+
         $enrichedTickets = [];
+        $totalRequestedQuantity = 0;
+
         foreach ($ticketQuantities as $index => $item) {
             $category = $item['category'];
             $quantity = $item['quantity'];
 
             if (!in_array($category, $validCategories)) {
-                return redirect()->back()->withErrors(['ticketQuantities' => "Invalid ticket category: {$category}"]);
+                return redirect()->back()->with(['status' => 2, 'error' => "Invalid ticket category: {$category}"]);
             }
 
-            // Find the price for this category
+            // Check available tickets
+            $totalRequestedQuantity += $quantity;
+            if ($ticketsSold + $totalRequestedQuantity > $eventCapacity) {
+                return redirect()->back()->with(['status' => 2, 'error' => "Tickets Exceeded! Only " . ($eventCapacity - $ticketsSold) . " tickets available for {$event->name}"]);
+            }
+
             $price = collect($ticketData)->firstWhere('category', $category)['price'] ?? 0;
             $subtotal = $price * $quantity;
 
@@ -65,6 +82,21 @@ class CartController extends Controller
 
         foreach ($request->input('quantity', []) as $eventId => $quantities) {
             if (isset($cartItems[$eventId])) {
+                $event = Event::findOrFail($eventId);
+                $ticketsSold = $event->tickets_sold ?? 0;
+                $eventCapacity = $event->capacity ?? 0;
+                $totalRequestedQuantity = 0;
+
+                foreach ($quantities as $index => $quantity) {
+                    if (isset($cartItems[$eventId][$index])) {
+                        $totalRequestedQuantity += $quantity;
+                    }
+                }
+
+                if ($ticketsSold + $totalRequestedQuantity > $eventCapacity) {
+                    return redirect()->back()->with(['status' => 2, 'quantity' => "Tickets Exceeded! Only " . ($eventCapacity - $ticketsSold) . " tickets available for {$event->name}"]);
+                }
+
                 foreach ($quantities as $index => $quantity) {
                     if (isset($cartItems[$eventId][$index])) {
                         $quantity = max(1, (int) $quantity); // Ensure quantity is at least 1
@@ -76,7 +108,7 @@ class CartController extends Controller
         }
 
         session()->put('cart', $cartItems);
-        return redirect()->back()->with('success', 'Cart updated successfully.');
+        return redirect()->back()->with(['status' => 1, 'message' => 'Cart updated successfully.']);
     }
 
     public function removeCart($eventId)
@@ -84,13 +116,10 @@ class CartController extends Controller
         $cartItems = session()->get('cart', []);
         if (isset($cartItems[$eventId])) {
             unset($cartItems[$eventId]);
-            if (empty($cartItems[$eventId])) {
-                unset($cartItems[$eventId]);
-            }
             session()->put('cart', $cartItems);
         }
 
-        return redirect()->back()->with('success', 'Item removed from cart.');
+        return redirect()->back()->with(['status' => 1, 'message' => 'Item removed from cart.']);
     }
 
     public function checkout(Request $request)
@@ -99,8 +128,6 @@ class CartController extends Controller
         if (empty($cartItems)) {
             return redirect()->back()->with('error', 'Cart is empty.');
         }
-
-
 
         session()->forget('cart');
         return redirect()->route('home')->with('success', 'Checkout successful!');
@@ -120,6 +147,6 @@ class CartController extends Controller
             }
             session()->put('cart', $cartItems);
         }
-        return redirect()->back()->with(['status' => 3, $index === '0' || $index === '-1' ? 'All items removed from cart.' : 'Item removed from cart.']);
+        return redirect()->back()->with(['status' => 3, 'message' => $index === '0' || $index === '-1' ? 'All items removed from cart.' : 'Item removed from cart.']);
     }
 }
