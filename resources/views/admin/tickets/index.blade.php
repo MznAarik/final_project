@@ -303,6 +303,10 @@
         background: #e0f2fe;
         color: #0277bd;
     }
+    .payment-esewa {
+        background: #e0f2fe;
+        color: #11ac0b;
+    }
 
     .payment-stripe {
         background: #f3e8ff;
