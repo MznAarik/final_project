@@ -431,15 +431,6 @@
         opacity: 0.3;
     }
 
-    .pagination-wrapper {
-        padding: 1.5rem;
-        background: #f9fafb;
-        border-top: 1px solid #e5e7eb;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
     .loading-overlay {
         position: absolute;
         top: 0;
@@ -587,7 +578,7 @@
                     <select class="filter-select" id="paymentFilter">
                         <option value="">All Methods</option>
                         <option value="paypal">PayPal</option>
-                        <option value="stripe">Stripe</option>
+                        <option value="esewa">Esewa</option>
                         <option value="bank">Bank Transfer</option>
                         <option value="cash">Cash</option>
                     </select>
@@ -655,8 +646,8 @@
                                 </div>
                             </td>
                             <td>
-                                <span class="status-badge status-{{ $ticket->status }}">
-                                    @switch($ticket->status)
+                                <span class="status-badge status-{{ strtolower($ticket->status) }}">
+                                    @switch(strtolower($ticket->status))
                                         @case('confirmed') <i class="fa-solid fa-check-circle"></i> @break
                                         @case('pending') <i class="fa-solid fa-clock"></i> @break
                                         @case('cancelled') <i class="fa-solid fa-times-circle"></i> @break
@@ -666,27 +657,27 @@
                                 </span>
                             </td>
                             <td>
-                                <div class="payment-info">
-                                    @if($payment)
-                                        <div class="payment-method payment-{{ $payment['payment_method'] }}">
-                                            @switch($payment['payment_method'])
-                                                @case('paypal') <i class="fa-brands fa-paypal"></i> @break
-                                                @case('stripe') <i class="fa-brands fa-stripe"></i> @break
-                                                @case('bank') <i class="fa-solid fa-university"></i> @break
-                                                @case('cash') <i class="fa-solid fa-money-bills"></i> @break
-                                                @default <i class="fa-solid fa-credit-card"></i>
-                                            @endswitch
-                                            {{ ucfirst($payment['payment_method']) }}
-                                        </div>
-                                        <div class="payment-amount">
-                                            <span>NPR {{ number_format($payment['amount'] * 133, 2) }}</span>
-                                            <span class="payment-amount-usd">(USD {{ number_format($payment['amount'], 2) }})</span>
-                                        </div>
-                                        <div class="payment-id">ID: {{ $payment['id'] }}</div>
-                                    @else
-                                        <span style="color: #6b7280; font-style: italic;">No payment</span>
-                                    @endif
-                                </div>
+                                <td>
+                                    <div class="payment-info">
+                                        @if($payment)
+                                            <div class="payment-method payment-{{ $payment['payment_method'] }}">
+                                                @switch($payment['payment_method'])
+                                                    @case('paypal') <i class="fa-brands fa-paypal"></i> @break
+                                                    @case('stripe') <i class="fa-brands fa-stripe"></i> @break
+                                                    @case('bank') <i class="fa-solid fa-university"></i> @break
+                                                    @case('cash') <i class="fa-solid fa-money-bills"></i> @break
+                                                    @default <i class="fa-solid fa-credit-card"></i>
+                                                @endswitch
+                                                {{ ucfirst($payment['payment_method']) }}
+                                            </div>
+                                            <div class="payment-amount">
+                                                <span>NPR {{ number_format($payment['amount'], 2) }}</span>
+                                            </div>
+                                        @else
+                                            <span style="color: #6b7280; font-style: italic;">No payment</span>
+                                        @endif
+                                    </div>
+                                </td>
                             </td>
                             <td>
                                 <div class="category-tags">
@@ -725,13 +716,6 @@
             </div>
         @endif
     </div>
-
-    <!-- Pagination Section -->
-    @if(isset($tickets) && method_exists($tickets, 'links'))
-        <div class="pagination-wrapper">
-            {{ $tickets->links() }}
-        </div>
-    @endif
 </div>
 
 <script>
