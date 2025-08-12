@@ -19,7 +19,7 @@ class AdminController extends Controller
         $tickets = Ticket::with(['user:id,name', 'event:id,name','payments:id,ticket_id,payment_method,amount'])
             ->where('delete_flag', 0)
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->get();
             
         return view('admin.tickets.index', compact('tickets'));
     }
