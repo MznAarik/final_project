@@ -27,7 +27,6 @@
             {{-- Ticket Categories --}}
             <div class="bg-gray-50 rounded-lg p-5 space-y-4">
                 <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">Purchased By: {{$ticket->user->name}}</h3>
-                <h3 class="text-lg font-semibold text-gray-800 border-b pb-2">Ticket Categories</h3>
                 @if (!empty($categories))
                     <ul class="space-y-3">
                         @foreach ($categories as $item)
@@ -51,6 +50,7 @@
                     <span class="text-red-600 font-bold">{{ $ticket->event->currency }}
                         {{ number_format($ticket->total_price, 2) }}</span>
                 </p>
+                <p><strong>Ticket Status: {{ $ticket->status }}</strong></p>
                 <p><strong>Deadline:</strong>
                     {{ $ticket->deadline ? \Carbon\Carbon::parse($ticket->deadline)->format('Y-m-d H:i:s') : 'N/A' }}
                 </p>
