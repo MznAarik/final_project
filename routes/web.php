@@ -52,6 +52,8 @@ Route::middleware(['checkRole:admin'])->prefix('admin')->group(function () {
     Route::get('verify-ticket', [AdminController::class, 'verifyTicket'])->name('admin.verify-ticket');
     Route::get('dashboard', [AdminController::class, 'adminDashboard'])->name('admin.dashboard');
     Route::get('/tickets', [AdminController::class, 'viewAllTickets'])->name('admin.tickets.index');
+    Route::put('/tickets/{ticket}/status', [AdminController::class, 'updateStatus'])->name('admin.tickets.updateStatus');
+
 });
 
 // Route::middleware(['checkRole:admin'])->prefix('admin/tickets')->group(function () {

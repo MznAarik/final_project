@@ -16,12 +16,50 @@ class AdminController extends Controller
 {
     public function viewAllTickets()
     {
-        $tickets = Ticket::with(['user:id,name', 'event:id,name','payments:id,ticket_id,payment_method,amount'])
+        $tickets = Ticket::with(['user:id,name', 'event:id,name', 'payments:id,ticket_id,payment_method,amount'])
             ->where('delete_flag', 0)
             ->orderBy('created_at', 'desc')
             ->get();
-            
-        return view('admin.tickets.index', compact('tickets'));
+
+        $usdToNprRate = 133;
+        $totalSumNpr = 0;
+
+        foreach ($tickets as &$ticket) {
+            $ticketTotal = 0;
+
+            foreach ($ticket['payments'] as $payment) {
+                $amount = (float) $payment['amount'];
+
+                if (strtolower($payment['payment_method']) === 'paypal') {
+                    $amount *= $usdToNprRate;
+                }
+
+                $ticketTotal += $amount;
+            }
+
+            $ticket['total_payment_npr'] = $ticketTotal;
+
+            $totalSumNpr += $ticketTotal;
+        }
+
+        return view('admin.tickets.index', compact('tickets', 'totalSumNpr'));
+
+    }
+
+    public function updateStatus(Request $request, Ticket $ticket)
+    {
+        $request->validate([
+            'status' => 'required|in:confirmed,pending,cancelled'
+        ]);
+
+        $ticket->update([
+            'status' => $request->status
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ticket status updated successfully'
+        ]);
     }
 
     public function showScanQrPage()
