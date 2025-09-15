@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Services\EventService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -12,54 +13,26 @@ class HomeController extends Controller
     /**
      * Display a listing of the resource.
      */
+    protected $eventService;
+
+    public function __construct(EventService $eventService)
+    {
+        $this->eventService = $eventService;
+    }
+
     public function index()
     {
         try {
-            //Auto updating status and  deleting finished event after 24hours
-            Event::where('end_date', '<=', Carbon::now())
-                ->where('status', '!=', 'completed')
-                ->update(['status' => 'completed']);
+            $this->eventService->updateEventStatuses();
 
-            $cutoffTime = Carbon::now()->subHours(24);
-            Event::whereDate('end_date', '<=', $cutoffTime)
-                ->where('delete_flag', false)
-                ->update(['delete_flag' => true]);
-
-            $recommendedEvents = [];
-
-            if (Auth::check()) {
-                $user = Auth::user();
-
-                //Auto redirect admin to admin dashboard
-                if ($user->role === 'admin') {
-                    return redirect()->route('admin.dashboard')->with([
-                        'status' => 1,
-                        'message' => 'Welcome Admin!'
-                    ]);
-                }
-
-                $countryId = $user->country_id;
-                $provinceId = $user->province_id;
-                $districtId = $user->district_id;
-
-                $recommendedEvents = $this->getRecommendedEvents($countryId, $provinceId, $districtId);
-
-                if ($recommendedEvents->isEmpty()) {
-                    $recommendedEvents = Event::where('delete_flag', 0)
-                        ->where('status', '!=', 'cancelled')
-                        ->orderBy('popularity_score', 'desc')
-                        ->orderBy('created_at', 'desc')
-                        ->take(4)
-                        ->get();
-                }
-            } else {
-                $recommendedEvents = Event::where('delete_flag', 0)
-                    ->where('status', '!=', 'cancelled')
-                    ->orderBy('popularity_score', 'desc')
-                    ->orderBy('created_at', 'desc')
-                    ->take(4)
-                    ->get();
+            if (Auth::check() && Auth::user()->role === 'admin') {
+                return redirect()->route('admin.dashboard')->with([
+                    'status' => 1,
+                    'message' => 'Welcome Admin!'
+                ]);
             }
+
+            $recommendedEvents = $this->eventService->getActiveEvents(Auth::user(), 4);
             return view('home', [
                 'recommendedEvents' => $recommendedEvents,
                 'title' => '- Welcome to Ticket Booking System -',
