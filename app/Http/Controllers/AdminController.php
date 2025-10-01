@@ -96,23 +96,31 @@ class AdminController extends Controller
                 ->where('status', '!=', 'cancelled')
                 ->first();
 
-            if($ticket->status === 'used') {
+            if (!$ticket) {
                 return response()->json([
                     'status' => 'invalid',
-                    'message' => 'Invalid! Ticket is already used!',
-                ], 400);
+                    'message' => 'Invalid! Ticket not found',
+                ], 404);
             }
-                
-            if ($ticket->status === 'cancelled') {
-                return response()->json([
-                    'status' => 'invalid',
-                    'message' => 'Invalid! Ticket is cancelled',
-                ], 400);
+
+            switch ($ticket->status) {
+                case 'used':
+                    $msg = 'Invalid! Ticket is already used!';
+                    break;
+                case 'cancelled':
+                    $msg = 'Invalid! Ticket is cancelled';
+                    break;
+                case 'pending':
+                    $msg = 'Invalid! Ticket is still pending';
+                    break;
+                default:
+                    $msg = null;
             }
-            if ($ticket->status === 'pending') {
+
+            if ($msg) {
                 return response()->json([
                     'status' => 'invalid',
-                    'message' => 'Invalid! Ticket is still pending',
+                    'message' => $msg,
                 ], 400);
             }
 
@@ -137,7 +145,7 @@ class AdminController extends Controller
 
                     return response()->json([
                         'status' => 'valid',
-                        'message' => 'Ticket validated for ' . $ticket->user->name . ' of categories ' . implode(', ', array_keys($categories)) . ' with quantities ' . implode(', ', $categories) . ' respectively' . ' of event ' . $ticket->event->name,
+                        'message' => 'Ticket validated for ' . $ticket->user->name . ' for categories ' . implode(', ', array_keys($categories)) . ' with quantities ' . implode(', ', $categories) . ' respectively' . ' of event ' . $ticket->event->name,
                     ]);
                 }
             }
