@@ -808,7 +808,6 @@
                         <th>Payment</th>
                         <th>Categories</th>
                         <th>Quantity</th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="ticketsTableBody">
@@ -914,16 +913,6 @@
                                 <div class="quantity-info">
                                     <div class="quantity-number">{{ $totalQuantity }}</div>
                                     <div class="quantity-label">{{ $totalQuantity == 1 ? 'ticket' : 'tickets' }}</div>
-                                </div>
-                            </td>
-                            <td class="actions-cell">
-                                <div class="action-buttons">
-                                    <button class="action-btn btn-view" onclick="viewTicket({{ $ticket->id }})" title="View Details">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </button>
-                                    <button class="action-btn btn-edit" onclick="editTicket({{ $ticket->id }})" title="Edit Ticket">
-                                        <i class="fa-solid fa-edit"></i>
-                                    </button>
                                 </div>
                             </td>
                         </tr>
