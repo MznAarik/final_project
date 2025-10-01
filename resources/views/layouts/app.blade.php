@@ -5,6 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    {{-- <input type="hidden" name="g-recaptcha-response" value="..."> --}}
 
     <title>@yield('title', 'BooKets')</title>
 

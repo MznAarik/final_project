@@ -69,7 +69,7 @@
                 <!-- PayPal Form -->
                 <form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post" target="_top">
                     <input type="hidden" name="cmd" value="_xclick">
-                    <input type="hidden" name="business" value="{{ env('PAYPAL_BUSINESS_EMAIL') }}">
+                    <input type="hidden" name="business" value="sb-zwqzo29824330@business.example.com">
                     <input type="hidden" name="item_name" value="Event Tickets">
                     <input type="hidden" name="amount" value="{{ $paypalAmount }}">
                     <input type="hidden" name="currency_code" value="{{ $paypalCurrency }}">
