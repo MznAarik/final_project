@@ -93,9 +93,28 @@ class AdminController extends Controller
                 ->where('user_id', $decodedQr['user_id'])
                 ->where('event_id', $decodedQr['event_id'])
                 ->where('delete_flag', '!=', true)
-                ->where('status', '!=', 'used')
                 ->where('status', '!=', 'cancelled')
                 ->first();
+
+            if($ticket->status === 'used') {
+                return response()->json([
+                    'status' => 'invalid',
+                    'message' => 'Invalid! Ticket is already used!',
+                ], 400);
+            }
+                
+            if ($ticket->status === 'cancelled') {
+                return response()->json([
+                    'status' => 'invalid',
+                    'message' => 'Invalid! Ticket is cancelled',
+                ], 400);
+            }
+            if ($ticket->status === 'pending') {
+                return response()->json([
+                    'status' => 'invalid',
+                    'message' => 'Invalid! Ticket is still pending',
+                ], 400);
+            }
 
             if ($ticket) {
                 $batchCode = $ticket->batch_code;
@@ -126,7 +145,7 @@ class AdminController extends Controller
             Log::warning('Ticket validation failed: No matching ticket or invalid conditions');
             return response()->json([
                 'status' => 'invalid',
-                'message' => 'Invalid! Ticket already verified or expired',
+                'message' => 'Invalid! Ticket is already expired',
             ], 400);
         } catch (\Exception $e) {
             Log::error('QR validation error:', [
