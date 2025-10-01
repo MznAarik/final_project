@@ -23,7 +23,7 @@
                         <input type="password" id="password" class="form-control" name="password" placeholder="******">
                     </div>
                 </div>
-
+                <x-re-captcha />
                 <button id="loginSubmitButton" type="submit" class="btn btn-primary w-100 mt-3">Login</button>
             </form>
 
