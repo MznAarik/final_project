@@ -189,7 +189,7 @@ class PaymentController extends Controller
                     'ticket_details' => json_encode($tickets),
                     'total_quantity' => $totalQuantity,
                     'total_price' => $totalPrice,
-                    'status' => 'Confirmed',
+                    'status' => 'pending',
                     'deadline' => $deadline,
                     'created_by' => $userId,
                     'updated_by' => $userId,

@@ -93,9 +93,36 @@ class AdminController extends Controller
                 ->where('user_id', $decodedQr['user_id'])
                 ->where('event_id', $decodedQr['event_id'])
                 ->where('delete_flag', '!=', true)
-                ->where('status', '!=', 'used')
                 ->where('status', '!=', 'cancelled')
                 ->first();
+
+            if (!$ticket) {
+                return response()->json([
+                    'status' => 'invalid',
+                    'message' => 'Invalid! Ticket not found',
+                ], 404);
+            }
+
+            switch ($ticket->status) {
+                case 'used':
+                    $msg = 'Invalid! Ticket is already used!';
+                    break;
+                case 'cancelled':
+                    $msg = 'Invalid! Ticket is cancelled';
+                    break;
+                case 'pending':
+                    $msg = 'Invalid! Ticket is still pending';
+                    break;
+                default:
+                    $msg = null;
+            }
+
+            if ($msg) {
+                return response()->json([
+                    'status' => 'invalid',
+                    'message' => $msg,
+                ], 400);
+            }
 
             if ($ticket) {
                 $batchCode = $ticket->batch_code;
@@ -118,7 +145,7 @@ class AdminController extends Controller
 
                     return response()->json([
                         'status' => 'valid',
-                        'message' => 'Ticket validated for ' . $ticket->user->name . ' of categories ' . implode(', ', array_keys($categories)) . ' with quantities ' . implode(', ', $categories) . ' respectively' . ' of event ' . $ticket->event->name,
+                        'message' => 'Ticket validated for ' . $ticket->user->name . ' for categories ' . implode(', ', array_keys($categories)) . ' with quantities ' . implode(', ', $categories) . ' respectively' . ' of event ' . $ticket->event->name,
                     ]);
                 }
             }
@@ -126,7 +153,7 @@ class AdminController extends Controller
             Log::warning('Ticket validation failed: No matching ticket or invalid conditions');
             return response()->json([
                 'status' => 'invalid',
-                'message' => 'Invalid! Ticket already verified or expired',
+                'message' => 'Invalid! Ticket is already expired',
             ], 400);
         } catch (\Exception $e) {
             Log::error('QR validation error:', [
