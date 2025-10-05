@@ -25,7 +25,7 @@ class Event extends Model
         'end_date',
         'status',
         'organizer',
-        'image_url',
+        'img_path',
         'currency',
         'created_by',
         'updated_by',

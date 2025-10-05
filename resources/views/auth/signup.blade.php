@@ -347,8 +347,8 @@
           <span id="addressError" style="color:red; display:none;overflow:hidden;"></span>
 
           @php
-      $maxDate = \Carbon\Carbon::now()->subYears(16)->format('Y-m-d');
-      @endphp
+            $maxDate = \Carbon\Carbon::now()->subYears(16)->format('Y-m-d');
+          @endphp
 
           <div class="horizontal-date-field">
             <label for="dateOfBirthUnique" style="color: black;">Date of Birth</label>
@@ -360,13 +360,20 @@
           <label for="provinceIdUnique">Province Name</label>
           <select name="province_name" id="provinceIdUnique" required>
             <option value="" disabled selected>Select Province</option>
-            <option value="Koshi Pradesh" {{ old('province_name') == 'Koshi Pradesh' ? 'selected' : '' }}>Koshi Pradesh</option>
-            <option value="Madhesh Pradesh" {{ old('province_name') == 'Madhesh Pradesh' ? 'selected' : '' }}>Madhesh Pradesh</option>
-            <option value="Bagmati Pradesh" {{ old('province_name') == 'Bagmati Pradesh' ? 'selected' : '' }}>Bagmati Pradesh</option>
-            <option value="Gandaki Pradesh" {{ old('province_name') == 'Gandaki Pradesh' ? 'selected' : '' }}>Gandaki Pradesh</option>
-            <option value="Lumbini Pradesh" {{ old('province_name') == 'Lumbini Pradesh' ? 'selected' : '' }}>Lumbini Pradesh</option>
-            <option value="Karnali Pradesh" {{ old('province_name') == 'Karnali Pradesh' ? 'selected' : '' }}>Karnali Pradesh</option>
-            <option value="Sudurpashchim Pradesh" {{ old('province_name') == 'Sudurpashchim Pradesh' ? 'selected' : '' }}>Sudurpashchim Pradesh</option>
+            <option value="Koshi Pradesh" {{ old('province_name') == 'Koshi Pradesh' ? 'selected' : '' }}>Koshi Pradesh
+            </option>
+            <option value="Madhesh Pradesh" {{ old('province_name') == 'Madhesh Pradesh' ? 'selected' : '' }}>Madhesh
+              Pradesh</option>
+            <option value="Bagmati Pradesh" {{ old('province_name') == 'Bagmati Pradesh' ? 'selected' : '' }}>Bagmati
+              Pradesh</option>
+            <option value="Gandaki Pradesh" {{ old('province_name') == 'Gandaki Pradesh' ? 'selected' : '' }}>Gandaki
+              Pradesh</option>
+            <option value="Lumbini Pradesh" {{ old('province_name') == 'Lumbini Pradesh' ? 'selected' : '' }}>Lumbini
+              Pradesh</option>
+            <option value="Karnali Pradesh" {{ old('province_name') == 'Karnali Pradesh' ? 'selected' : '' }}>Karnali
+              Pradesh</option>
+            <option value="Sudurpashchim Pradesh" {{ old('province_name') == 'Sudurpashchim Pradesh' ? 'selected' : '' }}>
+              Sudurpashchim Pradesh</option>
           </select>
 
           <label for="districtIdUnique">District Name</label>
@@ -400,7 +407,7 @@
             onclick="confirmTogglePasswordVisibility()" style="position: relative; bottom: 30px; left: 370px;">
             <i id="eye-icon-confirm" class="fas fa-eye-slash"></i>
           </span>
-
+          <x-re-captcha />
           <button type="submit" id="signupSubmitButtonUnique">Sign Up</button>
 
           <div class="alreadyLoginUnique">
@@ -418,34 +425,34 @@
     // Province-District data for Nepal
     const provinceDistrictData = {
       "Koshi Pradesh": [
-        "Bhojpur", "Dhankuta", "Ilam", "Jhapa", "Khotang", "Morang", 
-        "Okhaldhunga", "Panchthar", "Sankhuwasabha", "Solukhumbu", 
+        "Bhojpur", "Dhankuta", "Ilam", "Jhapa", "Khotang", "Morang",
+        "Okhaldhunga", "Panchthar", "Sankhuwasabha", "Solukhumbu",
         "Sunsari", "Taplejung", "Terhathum", "Udayapur"
       ],
       "Madhesh Pradesh": [
-        "Bara", "Dhanusha", "Mahottari", "Parsa", "Rautahat", 
+        "Bara", "Dhanusha", "Mahottari", "Parsa", "Rautahat",
         "Saptari", "Sarlahi", "Siraha"
       ],
       "Bagmati Pradesh": [
-        "Bhaktapur", "Chitwan", "Dhading", "Dolakha", "Kathmandu", 
-        "Kavrepalanchok", "Lalitpur", "Makwanpur", "Nuwakot", 
+        "Bhaktapur", "Chitwan", "Dhading", "Dolakha", "Kathmandu",
+        "Kavrepalanchok", "Lalitpur", "Makwanpur", "Nuwakot",
         "Ramechhap", "Rasuwa", "Sindhuli", "Sindhupalchok"
       ],
       "Gandaki Pradesh": [
-        "Baglung", "Gorkha", "Kaski", "Lamjung", "Manang", 
+        "Baglung", "Gorkha", "Kaski", "Lamjung", "Manang",
         "Mustang", "Myagdi", "Nawalpur", "Parbat", "Syangja", "Tanahun"
       ],
       "Lumbini Pradesh": [
-        "Arghakhanchi", "Banke", "Bardiya", "Dang", "Gulmi", 
-        "Kapilvastu", "Palpa", "Parasi", "Pyuthan", "Rolpa", 
+        "Arghakhanchi", "Banke", "Bardiya", "Dang", "Gulmi",
+        "Kapilvastu", "Palpa", "Parasi", "Pyuthan", "Rolpa",
         "Rukum East", "Rupandehi"
       ],
       "Karnali Pradesh": [
-        "Dailekh", "Dolpa", "Humla", "Jajarkot", "Jumla", 
+        "Dailekh", "Dolpa", "Humla", "Jajarkot", "Jumla",
         "Kalikot", "Mugu", "Rukum West", "Salyan", "Surkhet"
       ],
       "Sudurpashchim Pradesh": [
-        "Achham", "Baitadi", "Bajhang", "Bajura", "Dadeldhura", 
+        "Achham", "Baitadi", "Bajhang", "Bajura", "Dadeldhura",
         "Darchula", "Doti", "Kailali", "Kanchanpur"
       ]
     };
@@ -491,13 +498,13 @@
     }
 
     // Province-District functionality
-    provinceSelect.addEventListener('change', function() {
+    provinceSelect.addEventListener('change', function () {
       const selectedProvince = this.value;
       const districts = provinceDistrictData[selectedProvince] || [];
-      
+
       // Clear existing district options
       districtSelect.innerHTML = '<option value="" disabled selected>Select District</option>';
-      
+
       // Add districts for selected province
       districts.forEach(district => {
         const option = document.createElement('option');
@@ -505,7 +512,7 @@
         option.textContent = district;
         districtSelect.appendChild(option);
       });
-      
+
       // Enable district dropdown
       districtSelect.disabled = false;
     });
@@ -535,7 +542,7 @@
         eyeIcon.classList.add('fa-eye-slash');
       }
     }
-    
+
     function confirmTogglePasswordVisibility(e) {
       const confirmPasswordInput = document.getElementById('passwordConfirmationUnique');
       const eyeIcon = document.getElementById('eye-icon-confirm');
@@ -646,7 +653,7 @@
     // Initialize district dropdown as disabled
     districtSelect.disabled = true;
   </script>
-  
+
   <!-- Font Awesome for eye icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </body>

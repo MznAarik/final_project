@@ -157,5 +157,8 @@ return [
     'aliases' => [
         'Auth' => Illuminate\Support\Facades\Auth::class,
         'NoCaptcha' => Anhskohbo\NoCaptcha\Facades\NoCaptcha::class,
+        'Str' => Illuminate\Support\Str::class,
+        'Storage' => Illuminate\Support\Facades\Storage::class,
+        'URL' => Illuminate\Support\Facades\URL::class,
     ]
 ];
