@@ -141,7 +141,7 @@ class EventController extends Controller
             if ($request->hasFile('img_path')) {
                 // Delete old image if it exists
                 if ($event->img_path && Storage::disk('public')->exists($event->img_path)) {
-                    Storage::delete($event->img_path);
+                    Storage::disk('public')->delete($event->img_path);
                 }
                 
                 // Store new image
