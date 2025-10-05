@@ -138,20 +138,18 @@ class EventController extends Controller
         try {
             $event = Event::findOrFail($id);
             $data = $request->validated();
-
-            if ($request->hasFile('image')) {
+            if ($request->hasFile('img_path')) {
                 // Delete old image if it exists
-                if ($event->image && Storage::exists($event->image)) {
-                    Storage::delete($event->image);
+                if ($event->img_path && Storage::exists($event->img_path)) {
+                    Storage::delete($event->img_path);
                 }
-
+                
                 // Store new image
-                $file = $request->file('image');
+                $file = $request->file('img_path');
                 $imageName = time() . '.' . $file->getClientOriginalExtension();
-                $imgPath = $file->storeAs('images/events', $imageName);
-                $data['image'] = $imgPath;
+                $imgPath = $file->storeAs('images/events', $imageName, 'public');
+                $data['img_path'] = $imgPath;
             }
-
             // Update the event
             $event->update($data);
 

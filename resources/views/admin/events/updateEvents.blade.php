@@ -122,32 +122,16 @@
                 </div>
                 <div style="flex: 1;">
                     <label for="image" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Event Image</label>
-                    <input type="file" id="image" name="image" accept="image/*"
-                        style="width: 100%; border: 1px solid; @error('image') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
-                    @if($event->image)
-                        <p style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem;">Current: {{ basename($event->image) }}</p>
+                    <input type="file" id="image" name="img_path" accept="image/*"
+                        style="width: 100%; border: 1px solid; @error('img_path') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
+                    @if($event->img_path)
+                        <p style="font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem;">Current: {{ basename($event->img_path) }}</p>
                     @endif
-                    @error('image')
+                    @error('img_path')
                         <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
                     @enderror
                 </div>
             </div>
-
-            <!-- Current Image Display -->
-            @if($event->image)
-    <div style="margin-bottom: 1.5rem; text-align: center;">
-        <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">
-            Current Event Image
-        </label>
-        <img 
-            src="{{ asset('storage/' . $event->image) }}" 
-            alt="Current Event Image" 
-            style="max-width: 300px; max-height: 200px; border-radius: 0.375rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);"
-            loading="lazy"
-        >
-    </div>
-@endif
- 
 
             <!-- Description -->
             <div style="margin-bottom: 1.5rem;">
@@ -203,13 +187,12 @@
             <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
                 <div style="flex: 1;">
                     <label for="currency" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Currency</label>
-                    <select id="currency" name="currency" required
+                    <select id="currency" name="currency" required disabled
                         style="width: 100%; border: 1px solid; @error('currency') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
-                        <option value="">-- Select Currency --</option>
                         <option value="NPR" {{ old('currency', $event->currency) == 'NPR' ? 'selected' : '' }}>NPR (Nepalese Rupee)</option>
-                        <option value="USD" {{ old('currency', $event->currency) == 'USD' ? 'selected' : '' }}>USD (US Dollar)</option>
+                        {{-- <option value="USD" {{ old('currency', $event->currency) == 'USD' ? 'selected' : '' }}>USD (US Dollar)</option>
                         <option value="EUR" {{ old('currency', $event->currency) == 'EUR' ? 'selected' : '' }}>EUR (Euro)</option>
-                        <option value="INR" {{ old('currency', $event->currency) == 'INR' ? 'selected' : '' }}>INR (Indian Rupee)</option>
+                        <option value="INR" {{ old('currency', $event->currency) == 'INR' ? 'selected' : '' }}>INR (Indian Rupee)</option> --}}
                     </select>
                     @error('currency')
                         <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
