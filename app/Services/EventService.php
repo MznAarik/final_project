@@ -20,20 +20,21 @@ class EventService
         Event::where('start_date', '<=', $now)
             ->where('end_date', '>=', $now)
             ->where('status', '!=', 'cancelled')
-            ->where('status', '!=', 'active')
+            ->where('status', '=', 'upcoming')
+            // ->where('status', '!=', 'active')
             ->update(['status' => 'active']);
-            
-            // Completed events
-            Event::where('end_date', '<', $now)
+
+        // Completed events
+        Event::where('end_date', '<', $now)
             ->where('status', '!=', 'cancelled')
             ->where('status', '!=', 'completed')
             ->update(['status' => 'completed']);
-            
-            // Upcoming events
-            Event::where('start_date', '>', $now)
-            ->where('status', '!=', 'cancelled')
-            ->where('status', '!=', 'upcoming')
-            ->update(['status' => 'upcoming']);
+
+        // // Upcoming events
+        // Event::where('start_date', '>', $now)
+        //     ->where('status', '!=', 'cancelled')
+        //     ->where('status', '!=', 'upcoming')
+        //     ->update(['status' => 'upcoming']);
     }
 
     /**

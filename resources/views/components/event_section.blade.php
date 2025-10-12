@@ -3,7 +3,7 @@
         return;
 
     $groupedEvents = $recommendedEvents->groupBy('status');
-    $prioritizedStatuses = ['upcoming','exclusive', 'active', 'completed', 'cancelled'];
+    $prioritizedStatuses = ['upcoming', 'exclusive', 'active', 'completed', 'cancelled'];
 @endphp
 
 <section class="event-section">
@@ -210,15 +210,17 @@
             let value = parseInt(input.value) || 0;
 
             if (btn.classList.contains('add-btn')) {
-                if (value === 0) {
-                    // Enforce exclusive selection
-                    previewTicketCategories.querySelectorAll('.text-quantity').forEach(i => {
-                        if (i !== input) i.value = '0';
-                    });
-                    previewTicketCategories.querySelectorAll('.ticket-box').forEach(box => box.classList.remove('active'));
-                    ticketBox.classList.add('active');
+                if (value < 10) {
+                    if (value === 0) {
+                        // Enforce exclusive selection
+                        previewTicketCategories.querySelectorAll('.text-quantity').forEach(i => {
+                            if (i !== input) i.value = '0';
+                        });
+                        previewTicketCategories.querySelectorAll('.ticket-box').forEach(box => box.classList.remove('active'));
+                        ticketBox.classList.add('active');
+                    }
+                    value += 1;
                 }
-                value += 1;
             } else if (btn.classList.contains('sub-btn') && value > 0) {
                 value -= 1;
                 if (value === 0) ticketBox.classList.remove('active');

@@ -13,13 +13,16 @@ class AesHelper
     private static function getKey()
     {
         if (self::$key === null) {
-            self::$key = env('AES_KEY', 'e8c23aed79a443415e42f90cc6db4a0a');
-            if (mb_strlen(self::$key, '8bit') !== 32) {
-                throw new \RuntimeException('AES_KEY must be a 32-byte (256-bit) key');
+            $keyHex = env('AES_KEY', 'ff627acaa4db8e8e114e3baf33fdc1ac8970056f229d4b463f5660db04982192');
+            self::$key = hex2bin($keyHex);
+
+            if (self::$key === false || mb_strlen(self::$key, '8bit') !== 32) {
+                throw new \RuntimeException('AES_KEY must be a valid 64-character hex string representing a 32-byte (256-bit) key');
             }
         }
         return self::$key;
     }
+
 
     /**
      * Encrypt JSON data using AES-256-CBC
@@ -54,6 +57,7 @@ class AesHelper
      */
     public static function decrypt($base64Data)
     {
+        // $base64Data = str_replace(' ', '', $base64Data); // Remove space(s)
         $data = base64_decode($base64Data, true);
         if ($data === false || strlen($data) <= self::$ivLength) {
             throw new \InvalidArgumentException('Invalid encrypted data');
