@@ -426,7 +426,6 @@
     </style>
 
     <div class="events-container">
-        <!-- Header Section with Stats -->
         <div class="events-header">
             <h1>
                 <i class="fa-solid fa-calendar-days"></i>
@@ -507,9 +506,7 @@
                         $priceRange = $prices->isEmpty() ? 'Free' : ($minPrice == $maxPrice ? "Rs. " . number_format($minPrice) : "Rs. " . number_format($minPrice) . " - " . number_format($maxPrice));
                         
                         // Calculate tickets sold for this event
-                        $ticketsSold = isset($tickets) ? $tickets->where('event_id', $event->id)->sum(function($ticket) {
-                            return collect(json_decode($ticket->ticket_details, true))->sum('quantity');
-                        }) : 0;
+                        $ticketsSold = $event->tickets_sold ?? 0;
                     @endphp
 
                     <div class="event-card" data-event-id="{{ $event->id }}" data-status="{{ strtolower($event->status ?? '') }}" data-name="{{ strtolower($event->name) }}" data-date="{{ $event->start_date }}">

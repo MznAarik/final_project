@@ -5,13 +5,13 @@
 
             <span class="login-modal-close" data-bs-dismiss="modal" aria-label="Close">&times;</span>
 
-            <h2 class="mb-4 text-center">Login</h2>
+            <h2 class="mb-2 text-center">Login</h2>
             <!-- Alert Container for Dynamic Messages -->
-            <div id="login-alert-container" class="mb-3"></div>
+            <div id="login-alert-container" class="mb-1"></div>
 
             <form id="loginForm" method="POST" action="{{ route('login.submit') }}">
                 @csrf
-                <div class="mb-3">
+                <div class="mb-1">
                     <label for="email" class="form-label">Email</label>
                     <input class="lowercase form-control" type="email" name="email" id="email"
                         placeholder="example@gmail.com" value="{{ old('email') }}" required>
@@ -24,10 +24,10 @@
                     </div>
                 </div>
                 <x-re-captcha />
-                <button id="loginSubmitButton" type="submit" class="btn btn-primary w-100 mt-3">Login</button>
+                <button id="loginSubmitButton" type="submit" class="btn btn-primary w-100 mt-1">Login</button>
             </form>
 
-            <p class="signup-link-container mt-3">
+            <p class="signup-link-container mt-1">
                 Don't have an account? <a href="#" id="openSignupFromLogin">Sign Up</a>
             </p>
 

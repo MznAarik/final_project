@@ -89,7 +89,11 @@ class HomeController extends Controller
     public function showAllEvents()
     {
         try {
-            $events = Event::orderByDesc('created_at')->where('delete_flag', 0)->get();
+            $events = Event::orderByDesc('created_at')
+                ->where('delete_flag', 0)
+                ->orWhere('status', 'cancelled')
+                ->orWhere('status', 'completed')
+                ->get();
             return view('home', [
                 'recommendedEvents' => $events,
                 'sectionType' => 'all',

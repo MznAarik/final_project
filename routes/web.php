@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CaptchaController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\HomeController;
@@ -37,10 +38,10 @@ Route::get('/search/suggestions', [EventController::class, 'suggestions']);
 
 
 Route::post('register', [AuthController::class, 'register'])->name('register.submit');
-Route::middleware('throttle: 5, 1')->post('login', [AuthController::class, 'login'])->name('login.submit');
+Route::middleware('throttle: 10, 1')->post('login', [AuthController::class, 'login'])->name('login.submit');
 Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])
-    ->middleware(['signed', 'throttle:6,1'])
+    ->middleware(['signed', 'throttle:10,1'])
     ->name('verification.verify');
 Route::get('/email/verify', [AuthController::class, 'sendVerificationEmail'])
     ->middleware('auth')
@@ -57,8 +58,8 @@ Route::middleware(['checkRole:admin'])->prefix('admin')->group(function () {
 });
 
 // Route::middleware(['checkRole:admin'])->prefix('admin/tickets')->group(function () {
-    // Route::get('/tickets/create', [TicketController::class, 'create'])->name('admin.tickets.create');
-    // Route::post('/tickets', [TicketController::class, 'store'])->name('admin.tickets.store');
+// Route::get('/tickets/create', [TicketController::class, 'create'])->name('admin.tickets.create');
+// Route::post('/tickets', [TicketController::class, 'store'])->name('admin.tickets.store');
 // });
 
 Route::prefix('events')->middleware('checkRole:admin')->group(function () {
@@ -100,6 +101,9 @@ Route::middleware(['checkRole:admin'])->prefix('admin/users')->group(function ()
     Route::delete('/{id}', [UserController::class, 'destroy'])->name('users.delete');
     Route::patch('/{user}/role', [UserController::class, 'updateRole'])->name('users.updateRole');
 });
+
+Route::get('/captcha/generate', [CaptchaController::class, 'generate'])->name('captcha.generate');
+Route::post('/captcha/verify', [CaptchaController::class, 'verifyCaptcha'])->name('captcha.verify');
 
 Route::get('/test-alert', function () {
     return redirect()->route('home')->with([
