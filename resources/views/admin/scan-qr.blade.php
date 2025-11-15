@@ -12,7 +12,7 @@
 
     #video {
         width: 100%;
-        max-width: 500px;
+        max-width: 400px;
         border: 2px solid #333;
     }
 

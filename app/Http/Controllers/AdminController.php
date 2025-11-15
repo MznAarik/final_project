@@ -96,6 +96,19 @@ class AdminController extends Controller
                 ->where('status', '!=', 'cancelled')
                 ->first();
 
+            $event = Event::find($ticket->event_id);
+            if (!$event) {
+                return response()->json(['status' => 'invalid', 'message' => 'Invalid event'], 400);
+            }
+
+            if ($event->status === 'upcoming') {
+                return response()->json(['status' => 'invalid', 'message' => 'Invalid! Event has not started yet!'], 400);
+            }
+
+            if ($event->status === 'completed') {
+                return response()->json(['status' => 'invalid', 'message' => 'Invalid! Event is already completed!'], 400);
+            }
+
             if (!$ticket) {
                 return response()->json([
                     'status' => 'invalid',

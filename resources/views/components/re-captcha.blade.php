@@ -1,10 +1,18 @@
-<div>
-    {!! NoCaptcha::display() !!}
-    @if ($errors->has('g-recaptcha-response'))
-        <span class="text-red-500 text-sm">
-            {{ $errors->first('g-recaptcha-response') }}
-        </span>
-    @endif
+<div class="flex items-center justify-center mb-5">
+    <img id="captcha-img" alt="captcha" style="pointer-events:none;">
+    <button type="button" onclick="refreshCaptcha()" class="text-3xl hover:shadow-md hover:bg-gray-600">🔃</button>
 </div>
 
-{!! NoCaptcha::renderJs() !!}
+<input type="text" name="captcha" placeholder="Enter CAPTCHA" required>
+
+<script>
+    function loadCaptcha() {
+        document.getElementById('captcha-img').src =
+            "{{ route('captcha.generate') }}" + '?t=' + Date.now();
+    }
+
+    function refreshCaptcha() {
+        loadCaptcha();
+    }
+    window.onload = loadCaptcha;
+</script>
