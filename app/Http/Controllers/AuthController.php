@@ -29,19 +29,18 @@ class AuthController extends Controller
     public function register(UserValidate $userValidate)
     {
         $userValidate->validate([
-            'captcha' => 'required|string|size:6',
+            'captcha' => 'required',
         ]);
 
-        $validCaptcha = strtolower($userValidate->input('captcha')) === strtolower(session('captcha'));
+        $validatedCaptcha = $this->captchaService->verifyCaptcha($userValidate->input('captcha'));
+        // Session::forget('captcha');
 
-        Session::forget('captcha');
-
-        if (!$validCaptcha) {
-            return response()->json([
-                'danger' => true,
-                'message' => 'Incorrect captcha. Please retry.',
-            ], 409);
+        if (!$validatedCaptcha) {
+            if ($userValidate->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Incorrect captcha. Please retry.'], 400);
+            }
         }
+
 
         DB::beginTransaction();
         try {
@@ -150,9 +149,9 @@ class AuthController extends Controller
         ]);
 
         $validatedCaptcha = $this->captchaService->verifyCaptcha($request->input('captcha'));
-        Session::forget('captcha');
+        // Session::forget('captcha');
 
-        if(!$validatedCaptcha) {
+        if (!$validatedCaptcha) {
             if ($request->expectsJson()) {
                 return response()->json(['success' => false, 'message' => 'Incorrect captcha. Please retry.'], 400);
             }
