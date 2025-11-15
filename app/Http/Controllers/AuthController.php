@@ -29,7 +29,7 @@ class AuthController extends Controller
     public function register(UserValidate $userValidate)
     {
         $userValidate->validate([
-            'captcha' => 'required',
+            'captcha' => 'required|string|6',
         ]);
 
         $validatedCaptcha = $this->captchaService->verifyCaptcha($userValidate->input('captcha'));
@@ -145,7 +145,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'captcha' => 'required',
+            'captcha' => 'required|string|6',
         ]);
 
         $validatedCaptcha = $this->captchaService->verifyCaptcha($request->input('captcha'));
