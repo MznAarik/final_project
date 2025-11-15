@@ -4,7 +4,10 @@
     padding: 0;
     box-sizing: border-box;
     font-family: "Poppins", sans-serif;
-    text-transform: capitalize;
+
+    input.no-upper {
+        text-transform: none !important;
+    }
 }
 
 html,
@@ -862,26 +865,28 @@ body.blurred {
 }
 
 #suggestionsBox {
-  display: none;  /* Hide initially */
-  background-color: white;
-  border: 1px solid #ccc;
-  border-top: none; /* Remove top border if you want */
-  width: 100%;
-  max-height: 200px;
-  overflow-y: auto;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  font-size: 14px;
-  color: #333;
-  border-radius: 0 0 6px 6px;
+    display: none;
+    /* Hide initially */
+    background-color: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    /* Remove top border if you want */
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    font-size: 14px;
+    color: #333;
+    border-radius: 0 0 6px 6px;
 }
 
 
 #suggestionsBox .suggestion-item {
-  padding: 8px 12px;
-  cursor: pointer;
+    padding: 8px 12px;
+    cursor: pointer;
 }
 
 #suggestionsBox .suggestion-item:hover {
-  background-color: #007bff;
-  color: white;
+    background-color: #007bff;
+    color: white;
 }

@@ -57,7 +57,8 @@ class AesHelper
      */
     public static function decrypt($base64Data)
     {
-        // $base64Data = str_replace(' ', '', $base64Data); // Remove space(s)
+        $base64Data = str_replace(' ', '+', $base64Data);
+
         $data = base64_decode($base64Data, true);
         if ($data === false || strlen($data) <= self::$ivLength) {
             throw new \InvalidArgumentException('Invalid encrypted data');
@@ -86,4 +87,5 @@ class AesHelper
 
         return $jsonData;
     }
+
 }

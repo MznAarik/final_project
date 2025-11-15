@@ -14,12 +14,35 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
-
+use Illuminate\Support\Facades\Session;
+use App\Services\CaptchaService;
 class AuthController extends Controller
 {
 
+    protected $captchaService;
+
+    public function __construct(CaptchaService $captchaService)
+    {
+        $this->captchaService = $captchaService;
+    }
+
     public function register(UserValidate $userValidate)
     {
+        $userValidate->validate([
+            'captcha' => 'required|string|size:6',
+        ]);
+
+        $validCaptcha = strtolower($userValidate->input('captcha')) === strtolower(session('captcha'));
+
+        Session::forget('captcha');
+
+        if (!$validCaptcha) {
+            return response()->json([
+                'danger' => true,
+                'message' => 'Incorrect captcha. Please retry.',
+            ], 409);
+        }
+
         DB::beginTransaction();
         try {
             $role = $userValidate['role'];
@@ -122,6 +145,19 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        $request->validate([
+            'captcha' => 'required',
+        ]);
+
+        $validatedCaptcha = $this->captchaService->verifyCaptcha($request->input('captcha'));
+        Session::forget('captcha');
+
+        if(!$validatedCaptcha) {
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Incorrect captcha. Please retry.'], 400);
+            }
+        }
+
         if ($request->expectsJson()) {
 
             if (!User::where('email', $request->email)->where('delete_flag', 0)->exists()) {
