@@ -41,10 +41,8 @@ class TicketController extends Controller
 
             $event = Event::findOrFail($request->event_id);
 
-            // determine deadline based on event end date
-            //canbe chenaged to strat date if needed
-            $deadline = $event->start_date ? Carbon::parse($event->start_date) : null;
-
+            $deadline = $event->end_date ? Carbon::parse($event->end_date) : null;
+            dd($deadline);
             $ticketDetails = [];
             $totalPrice = 0;
             $totalQuantity = 0;

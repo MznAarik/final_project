@@ -407,7 +407,29 @@
             onclick="confirmTogglePasswordVisibility()" style="position: relative; bottom: 30px; left: 370px;">
             <i id="eye-icon-confirm" class="fas fa-eye-slash"></i>
           </span>
-          <x-re-captcha />
+          {{-- captcha --}}
+
+          <div class="captcha-box">
+            <div class="flex gap-2 mb-2">
+              <img src="{{ url('/captcha') }}?{{ time() }}" id="captchaImageSignup" alt="CAPTCHA"
+                class="h-15 border-2 border-gray-300 rounded-xl shadow-sm bg-white">
+
+              <button type="button" onclick="refreshCaptcha1()"
+                class="group flex items-center gap-2 text-orange-600 hover:text-orange-700 font-medium text-sm transition-all duration-200">
+
+                <svg class="w-5 h-5 group-hover:rotate-180 transition-transform duration-500" fill="none"
+                  stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+
+                <span class="tracking-wider">Refresh</span>
+              </button>
+            </div>
+            <input type="text" name="captcha" placeholder="Enter code" required
+              class="px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-100 transition">
+          </div>
+
           <button type="submit" id="signupSubmitButtonUnique">Sign Up</button>
 
           <div class="alreadyLoginUnique">
@@ -422,6 +444,13 @@
   <div id="globalAlert" style="display: none;"></div>
 
   <script>
+    function refreshCaptcha1() {
+      document.getElementById('captchaImageSignup').src =
+        "{{ url('/captcha') }}?" + new Date().getTime();
+    }
+
+    // refreshCaptcha();
+
     // Province-District data for Nepal
     const provinceDistrictData = {
       "Koshi Pradesh": [
@@ -570,9 +599,7 @@
       try {
         const res = await fetch(form.action, {
           method: 'POST',
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-          },
+          headers: { 'X-Requested-With': 'XMLHttpRequest' },
           body: formData
         });
 
@@ -583,13 +610,24 @@
           showAlert('Please check your email for verification');
         } else if (data.errors) {
           let msg = '';
-          Object.values(data.errors).forEach(err => {
-            msg += `<div>${err}</div>`;
-          });
+          Object.values(data.errors).forEach(err => { msg += `<div>${err}</div>`; });
           showAlert(msg, 'danger');
+
+          // If backend sends a new captcha URL, update it
+          if (data.new_captcha_url) {
+            document.getElementById('captchaImageSignup').src = data.new_captcha_url;
+          }
+        } else if (data.message) {
+          showAlert(data.message, 'danger');
+
+          // Replace captcha if backend provides it
+          if (data.new_captcha_url) {
+            document.getElementById('captchaImageSignup').src = data.new_captcha_url;
+          }
         } else {
           showAlert('Unexpected error occurred.', 'danger');
         }
+
       } catch (err) {
         showAlert('Server error. Try again.', 'danger');
       } finally {
