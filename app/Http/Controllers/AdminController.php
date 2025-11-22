@@ -158,7 +158,7 @@ class AdminController extends Controller
 
                     return response()->json([
                         'status' => 'valid',
-                        'message' => 'Ticket validated for ' . $ticket->user->name . ' for categories ' . implode(', ', array_keys($categories)) . ' with quantities ' . implode(', ', $categories) . ' respectively' . ' of event ' . $ticket->event->name,
+                        'message' => 'Ticket validated for ' . $ticket->user->name . ' for category ' . implode(', ', array_keys($categories)) . ' with quantities ' . implode(', ', $categories) . ' respectively' . ' of event ' . $ticket->event->name,
                     ]);
                 }
             }

@@ -15,7 +15,7 @@ class UserValidate extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|min:3',
+            'name' => 'required|string|min:4',
             'email' => 'required|string|email:rfc,dns|max:255|unique:users',
             'password' => 'required|string|min:6|max:25',
             'gender' => 'required|string',
@@ -29,7 +29,7 @@ class UserValidate extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Name is required and must be at least 3 characters.',
+            'name.required' => 'Name is required and must be at least 4 characters.',
             'email.required' => 'A valid email is required.',
             'email.unique' => 'This email is already in use.',
             'password.required' => 'Password is required and must be between 6 and 25 characters.',

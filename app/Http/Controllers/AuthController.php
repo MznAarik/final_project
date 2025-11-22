@@ -19,28 +19,26 @@ use App\Services\CaptchaService;
 class AuthController extends Controller
 {
 
-    protected $captchaService;
-
-    public function __construct(CaptchaService $captchaService)
+    public function captcha(CaptchaService $captcha)
     {
-        $this->captchaService = $captchaService;
+        return $captcha->generate();
     }
 
-    public function register(UserValidate $userValidate)
+
+    public function register(UserValidate $userValidate, CaptchaService $captcha)
     {
         $userValidate->validate([
-            'captcha' => 'required|string|6',
+            'captcha' => 'required|size:6',
         ]);
 
-        $validatedCaptcha = $this->captchaService->verifyCaptcha($userValidate->input('captcha'));
-        // Session::forget('captcha');
-
-        if (!$validatedCaptcha) {
-            if ($userValidate->expectsJson()) {
-                return response()->json(['success' => false, 'message' => 'Incorrect captcha. Please retry.'], 400);
-            }
+        if (!$captcha->verifyCaptcha($userValidate->captcha)) {
+            // $captcha->generate();
+            return response()->json([
+                'success' => false,
+                'message' => 'Wrong captcha',
+                'new_captcha_url' => url('/captcha') . '?' . time(),
+            ]);
         }
-
 
         DB::beginTransaction();
         try {
@@ -142,19 +140,19 @@ class AuthController extends Controller
     }
 
 
-    public function login(Request $request)
+    public function login(Request $request, CaptchaService $captcha)
     {
         $request->validate([
-            'captcha' => 'required|string|6',
+            'captcha' => 'required|size:6',
         ]);
 
-        $validatedCaptcha = $this->captchaService->verifyCaptcha($request->input('captcha'));
-        // Session::forget('captcha');
-
-        if (!$validatedCaptcha) {
-            if ($request->expectsJson()) {
-                return response()->json(['success' => false, 'message' => 'Incorrect captcha. Please retry.'], 400);
-            }
+        if (!$captcha->verifyCaptcha($request->captcha)) {
+            // $captcha->generate();
+            return response()->json([
+                'success' => false,
+                'message' => 'Wrong captcha',
+                'new_captcha_url' => url('/captcha') . '?' . time(),
+            ]);
         }
 
         if ($request->expectsJson()) {
@@ -178,7 +176,7 @@ class AuthController extends Controller
                 $request->session()->regenerate();
 
                 $message = $user->role === 'admin' ? 'Welcome, admin!' : 'Welcome back, ' . $user->name . '!';
-
+                
                 return response()->json([
                     'success' => true,
                     'message' => $message,

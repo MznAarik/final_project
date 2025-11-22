@@ -128,8 +128,8 @@ class PaymentController extends Controller
                     Log::error("Event {$event->name} (ID: {$eventId}) capacity exceeded: {$newTicketsSold}/{$eventCapacity}");
                     return redirect()->route('cart.index')->with('error', "Sorry! All tickets for {$event->name} are sold out.");
                 }
-
-                $deadline = $event->start_date ? Carbon::parse($event->start_date)->subHours(24) : null;
+                // set deadline here
+                $deadline = $event->end_date ? Carbon::parse($event->end_date)->subHours(24) : null;
                 $popularityScore = ($event->tickets_sold * 5) + (10 / (now()->diffInDays($event->created_at) + 1));
 
                 $event->update([
