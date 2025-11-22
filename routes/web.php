@@ -38,7 +38,7 @@ Route::get('/search/suggestions', [EventController::class, 'suggestions']);
 
 
 Route::post('register', [AuthController::class, 'register'])->name('register.submit');
-Route::middleware('throttle: 10, 1')->post('login', [AuthController::class, 'login'])->name('login.submit');
+Route::middleware('throttle: 15, 1')->post('login', [AuthController::class, 'login'])->name('login.submit');
 Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])
     ->middleware(['signed', 'throttle:10,1'])
@@ -102,8 +102,8 @@ Route::middleware(['checkRole:admin'])->prefix('admin/users')->group(function ()
     Route::patch('/{user}/role', [UserController::class, 'updateRole'])->name('users.updateRole');
 });
 
-Route::get('/captcha/generate', [CaptchaController::class, 'generate'])->name('captcha.generate');
-Route::post('/captcha/verify', [CaptchaController::class, 'verifyCaptcha'])->name('captcha.verify');
+Route::get('/captcha', [AuthController::class, 'captcha'])->name('captcha');
+// Route::post('/captcha/verify', [CaptchaController::class, 'verifyCaptcha'])->name('captcha.verify');
 
 Route::get('/test-alert', function () {
     return redirect()->route('home')->with([

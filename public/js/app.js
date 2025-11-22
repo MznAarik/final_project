@@ -157,68 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// Login form submission
-document.addEventListener("DOMContentLoaded", () => {
-    const loginForm = document.getElementById("loginForm");
 
-    if (!loginForm) return;
-
-    loginForm.addEventListener("submit", async function (e) {
-        e.preventDefault();
-
-        const loginBtn = document.getElementById("loginSubmitButton");
-        if (loginBtn) {
-            loginBtn.disabled = true;
-            loginBtn.textContent = "Logging in...";
-        }
-
-        const formData = new FormData(loginForm);
-
-        try {
-            const res = await fetch(loginForm.action, {
-                method: "POST",
-                headers: {
-                    Accept: "application/json",
-                    "X-CSRF-TOKEN": document.querySelector(
-                        'input[name="_token"]',
-                    ).value,
-                },
-                body: formData,
-            });
-
-            const data = await res.json();
-            const alertContainer = document.getElementById(
-                "login-alert-container",
-            );
-            if (alertContainer) alertContainer.innerHTML = "";
-
-            if (data.success) {
-                if (alertContainer)
-                    alertContainer.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
-                setTimeout(() => {
-                    window.location.href = data.redirect_url;
-                }, 1500);
-            } else {
-                if (alertContainer)
-                    alertContainer.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
-                if (loginBtn) {
-                    loginBtn.disabled = false;
-                    loginBtn.textContent = "Login";
-                }
-            }
-        } catch (error) {
-            const alertContainer = document.getElementById(
-                "login-alert-container",
-            );
-            if (alertContainer)
-                alertContainer.innerHTML = `<div class="alert alert-danger">Something went wrong. Please try again.</div>`;
-            if (loginBtn) {
-                loginBtn.disabled = false;
-                loginBtn.textContent = "Login";
-            }
-        }
-    });
-});
 
 document
     .getElementById("loginModal")
