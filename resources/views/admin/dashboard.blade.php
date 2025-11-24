@@ -177,7 +177,7 @@
         <!-- Dashboard Header -->
         <div class="dashboard-header">
             <h2>Welcome Back!</h2>
-            <h1>{{ Auth::user()->name }}</h1>
+            <h1 style="text-transform:capitalize">{{ Auth::user()->name }}</h1>
         </div>
 
         <!-- Statistics Cards -->
@@ -214,27 +214,49 @@
 
         <!-- Latest Events Section -->
         <div class="latest-events">
-            <h2>Latest Events</h2>
+            <h2>Latest Upcoming Events</h2>
             <div class="event-cards">
-                @if (isset($events) && $events->isNotEmpty())
+                @if ($events && $events->isNotEmpty())
                     @foreach ($events->take(5) as $event)
                         <div class="event-card">
                             <h3>{{ $event->name }}</h3>
 
                             @php
-                                $startDate = \Carbon\Carbon::now();
-                                $eventDate = \Carbon\Carbon::parse($event->start_date);
-                                $diff = $startDate->diff($eventDate);
+
+                                $now = \Carbon\Carbon::now();
+                                $start = \Carbon\Carbon::parse($event->start_date);
+                                $end = \Carbon\Carbon::parse($event->end_date);
                             @endphp
 
                             <p class="event-date">
                                 <i class="fa-regular fa-calendar"></i>
-                                Starts in
-                                @if($diff->m > 0)
-                                    {{ $diff->m }} month{{ $diff->m > 1 ? 's' : '' }}
-                                @endif
-                                @if($diff->d > 0)
-                                    {{ $diff->m > 0 ? ' and ' : '' }}{{ $diff->d }} day{{ $diff->d > 1 ? 's' : '' }}
+
+                                {{-- Event has not started yet --}}
+                                @if ($now->lt($start))
+                                    @php $diff = $now->diff($start); @endphp
+                                    Starts in
+                                    @if($diff->m > 0)
+                                        {{ $diff->m }} month{{ $diff->m > 1 ? 's' : '' }}
+                                    @endif
+                                    @if($diff->d > 0)
+                                        {{ $diff->m > 0 ? ' and ' : '' }}{{ $diff->d }} day{{ $diff->d > 1 ? 's' : '' }}
+                                    @endif
+
+                                    {{-- Event is happening now --}}
+                                @elseif ($now->between($start, $end))
+                                    Ongoing now
+
+                                    {{-- Event already ended --}}
+                                @else
+                                    @php $diff = $end->diff($now); @endphp
+                                    Ended
+                                    @if($diff->m > 0)
+                                        {{ $diff->m }} month{{ $diff->m > 1 ? 's' : '' }} ago
+                                    @elseif($diff->d > 0)
+                                        {{ $diff->d }} day{{ $diff->d > 1 ? 's' : '' }} ago
+                                    @else
+                                        today
+                                    @endif
                                 @endif
                             </p>
 

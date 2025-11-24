@@ -19,7 +19,9 @@ class EventController extends Controller
 
     public function index()
     {
-        $events = Event::latest()->get();
+        $events = Event::where('start_date', '>=', now())
+            ->orderBy('start_date', 'asc')
+            ->get();
         return view('admin.events.index', compact('events'));
     }
     /**
@@ -105,10 +107,10 @@ class EventController extends Controller
     /**
      * Display the specified resource.
      */
-     // {
-     //     $event = Event::where('id', $id)
-     //         ->where('delete_flag', 0)
-     //         ->where('status', '!=', 'cancelled')
+    // {
+    //     $event = Event::where('id', $id)
+    //         ->where('delete_flag', 0)
+    //         ->where('status', '!=', 'cancelled')
     //         ->where('status', '!=', 'cancelled')
     //         ->firstOrFail();
     //     if (!$event) {
@@ -143,7 +145,7 @@ class EventController extends Controller
                 if ($event->img_path && Storage::disk('public')->exists($event->img_path)) {
                     Storage::disk('public')->delete($event->img_path);
                 }
-                
+
                 // Store new image
                 $file = $request->file('img_path');
                 $imageName = time() . '.' . $file->getClientOriginalExtension();
@@ -192,29 +194,29 @@ class EventController extends Controller
             ], 500);
         }
     }
-  public function search(Request $request)
-{
-    $query = $request->input('query');
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
 
-    $events = Event::where('name', 'ILIKE', '%' . $query . '%')
-        ->orWhere('location', 'ILIKE', '%' . $query . '%')
-        ->orWhere('venue', 'ILIKE', '%' . $query . '%')
-        ->orWhere('description', 'ILIKE', '%' . $query . '%')
-        ->orWhere('contact_info', 'ILIKE', '%' . $query . '%')
-        ->get();
+        $events = Event::where('name', 'ILIKE', '%' . $query . '%')
+            ->orWhere('location', 'ILIKE', '%' . $query . '%')
+            ->orWhere('venue', 'ILIKE', '%' . $query . '%')
+            ->orWhere('description', 'ILIKE', '%' . $query . '%')
+            ->orWhere('contact_info', 'ILIKE', '%' . $query . '%')
+            ->get();
 
-    return view('search_results', compact('events', 'query'));
-}
-public function suggestions(Request $request)
-{
-    $query = $request->query('q');
+        return view('search_results', compact('events', 'query'));
+    }
+    public function suggestions(Request $request)
+    {
+        $query = $request->query('q');
 
-    $suggestions = Event::where('name', 'ILIKE', '%' . $query . '%')
-                        ->select('name')
-                        ->limit(10)
-                        ->get();
+        $suggestions = Event::where('name', 'ILIKE', '%' . $query . '%')
+            ->select('name')
+            ->limit(10)
+            ->get();
 
-    return response()->json($suggestions);
-}
+        return response()->json($suggestions);
+    }
 
 }
