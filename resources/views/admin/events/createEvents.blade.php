@@ -175,15 +175,22 @@
             <!-- Currency and Event Category Row -->
             <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
                 <div style="flex: 1;">
-                    <label for="currency" style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">Currency</label>
-                    <select id="currency" name="currency" disabled
-                        style="width: 100%; border: 1px solid; @error('currency') border-color: #ef4444; @else border-color: #d1d5db; @enderror border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
-                        <option value="NPR"  {{ old('currency') == 'NPR' ? 'selected' : '' }}>NPR (Nepalese Rupee)</option>
-                        {{-- <option value="" >-- Select Currency --</option>
-                        <option value="USD" {{ old('currency') == 'USD' ? 'selected' : '' }}>USD (US Dollar)</option>
-                        <option value="EUR" {{ old('currency') == 'EUR' ? 'selected' : '' }}>EUR (Euro)</option>
-                        <option value="INR" {{ old('currency') == 'INR' ? 'selected' : '' }}>INR (Indian Rupee)</option> --}}
+                   <label for="currency" 
+                           style="display: block; font-weight: 600; margin-bottom: 0.25rem; color: #374151;">
+                        Currency
+                    </label>
+                    
+                    <!-- Disabled select for UI -->
+                    <select id="currency" name="currency_disabled" disabled
+                        style="width: 100%; border: 1px solid; 
+                               @error('currency') border-color: #ef4444; @else border-color: #d1d5db; @enderror 
+                               border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 1rem; transition: border-color 0.2s;">
+                        <option value="NPR" selected>NPR (Nepalese Rupee)</option>
                     </select>
+                    
+                    <!-- Hidden input to actually submit the value -->
+                    <input type="hidden" name="currency" value="NPR">
+                    
                     @error('currency')
                         <p style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
                     @enderror

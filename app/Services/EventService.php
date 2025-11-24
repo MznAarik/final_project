@@ -83,30 +83,30 @@ class EventService
      */
     public function getDashboardStats()
     {
+        // Get ticket totals
         $ticketData = Ticket::select(DB::raw('event_id, SUM(total_price) as total_price'))
             ->where('status', '!=', 'cancelled')
             ->where('delete_flag', false)
             ->groupBy('event_id')
             ->get();
 
-        $eventIds = $ticketData->pluck('event_id')->toArray();
-
-        $now = now();
-        $events = Event::whereIn('id', $eventIds)
-            ->where('end_date', '>=', $now) // active/upcoming events
+        // ALL upcoming / active events (NOT limited by ticket sales)
+        $events = Event::where('end_date', '>=', now())
             ->orderBy('start_date', 'asc')
-            ->take(5)
             ->get();
 
+        // Map ticket revenue (0 if event has no tickets)
         $ticketRevenue = $events->mapWithKeys(function ($event) use ($ticketData) {
             $total = $ticketData->firstWhere('event_id', $event->id)->total_price ?? 0;
             return [$event->id => $total];
         });
 
+        // Active users count
         $activeUsers = User::where('delete_flag', false)->count();
 
         return compact('ticketRevenue', 'events', 'activeUsers');
     }
+
 
     /**
      * Check if tickets are available for a given event
