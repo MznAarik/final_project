@@ -58,7 +58,7 @@
                                                 BooKets
                                             </span>
                                         </div>
-                                        <h2 class="text-xl font-bold text-white mb-1 line-clamp-2">
+                                        <h2 class="text-xl font-bold text-white mb-1 line-clamp-2 capitalize">
                                             {{ $ticket->event->name }}
                                         </h2>
                                         <p class="text-red-100 text-sm">

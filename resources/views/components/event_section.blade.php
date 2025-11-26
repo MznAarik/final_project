@@ -36,7 +36,7 @@
                         </p>
                         <img src="{{ asset('storage/' . $event->img_path) }}" alt="{{ $event->name }}">
                         <div class="card-content">
-                            <h3 class="bold">{{ $event->name }}</h3>
+                            <h3 class="bold capitalize">{{ $event->name }}</h3>
                             <p class="event-date"><i class="fas fa-calendar-alt"></i>
                                 {{ $event->start_date ?? 'Date not specified' }} - {{ $event->end_date ?? '' }}</p>
                             <p class="event-location"><i class="fas fa-map-marker-alt"></i> {{ $event->location }}</p>
@@ -182,7 +182,18 @@
                 <p class="price" id="price-${index}">Rs. ${ticket.price}</p>
                 <div class="quantity flex mt-2" data-index="${index}">
                     <button class="sub-btn m-2 text-2xl" type="button">-</button>
-                    <input type="text" class="text-quantity" value="0" oninput="this.value = this.value.replace(/[^0-9]/g, '')" style="width: 40px; text-align: center;">
+                    <input 
+                        type="text" 
+                        class="text-quantity" 
+                        min="0" 
+                        max="10" 
+                        value="0" 
+                        oninput="
+                            this.value = this.value.replace(/[^0-9]/g, '');
+                            if (this.value > 10) this.value = 10;
+                        "
+                        style="width: 40px; text-align: center;"
+                    >
                     <button class="add-btn m-2 text-2xl" type="button">+</button>
                 </div>
             `;

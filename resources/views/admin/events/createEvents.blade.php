@@ -380,15 +380,15 @@
         }
     });
 
-    document.getElementById('end_date').addEventListener('change', function() {
-        const startDate = new Date(document.getElementById('start_date').value);
-        const endDate = new Date(this.value);
-        
-        if (endDate < startDate) {
-            alert('End date cannot be before start date');
-            this.value = '';
-        }
-    });
 </script>
+{{-- document.getElementById('end_date').addEventListener('change', function() {
+    const startDate = new Date(document.getElementById('start_date').value);
+    const endDate = new Date(this.value);
+    
+    if (endDate < startDate) {
+        alert('End date cannot be before start date');
+        this.value = '';
+    }
+}); --}}
 
 @endsection

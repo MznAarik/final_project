@@ -19,9 +19,7 @@ class EventController extends Controller
 
     public function index()
     {
-        $events = Event::where('start_date', '>=', now())
-            ->orderBy('start_date', 'asc')
-            ->get();
+        $events = Event::latest('start_date')->get();
         return view('admin.events.index', compact('events'));
     }
     /**
