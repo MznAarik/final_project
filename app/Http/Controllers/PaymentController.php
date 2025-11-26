@@ -129,7 +129,7 @@ class PaymentController extends Controller
                     return redirect()->route('cart.index')->with('error', "Sorry! All tickets for {$event->name} are sold out.");
                 }
                 // set deadline here
-                $deadline = $event->end_date ? Carbon::parse($event->end_date)->subHours(24) : null;
+                $deadline = $event->end_date ? Carbon::parse($event->end_date) : null;
                 $popularityScore = ($event->tickets_sold * 5) + (10 / (now()->diffInDays($event->created_at) + 1));
 
                 $event->update([
