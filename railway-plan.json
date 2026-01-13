@@ -1,0 +1,21 @@
+{
+    "$schema": "https://railway.com/railpack.schema.json",
+    "php": {
+        "extensions": [
+            "ctype",
+            "curl",
+            "dom",
+            "fileinfo",
+            "filter",
+            "hash",
+            "mbstring",
+            "openssl",
+            "pcre",
+            "pdo",
+            "session",
+            "tokenizer",
+            "xml",
+            "gd"
+        ]
+    }
+}
