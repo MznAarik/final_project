@@ -541,7 +541,7 @@
                         </div>
 
                         <div class="card-content">
-                            <h3 class="event-title">{{ $event->name }}</h3>
+                            <h3 class="event-title capitalize">{{ $event->name }}</h3>
                             
                             <div class="event-details">
                                 <div class="event-detail">

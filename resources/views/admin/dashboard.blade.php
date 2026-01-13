@@ -218,7 +218,7 @@
             <div class="event-cards">
                 @if ($events && $events->isNotEmpty())
                     @foreach ($events->take(5) as $event)
-                        <div class="event-card">
+                        <div class="event-card capitalize">
                             <h3>{{ $event->name }}</h3>
 
                             @php
