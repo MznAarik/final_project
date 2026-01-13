@@ -1,0 +1,31 @@
+FROM php:8.2-fpm-bullseye
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    zip unzip git curl
+
+# Install PHP extensions
+RUN docker-php-ext-configure gd --with-jpeg --with-freetype \
+    && docker-php-ext-install gd pdo pdo_mysql mbstring tokenizer xml ctype curl fileinfo
+
+# Set working directory
+WORKDIR /var/www
+
+# Copy composer files first for caching
+COPY composer.json composer.lock ./
+
+# Install composer dependencies
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN composer install --optimize-autoloader --no-interaction
+
+# Copy the rest of the app
+COPY . .
+
+# Expose port for Laravel development server
+EXPOSE 8000
+
+# Start Laravel
+CMD php artisan serve --host=0.0.0.0 --port=8000
