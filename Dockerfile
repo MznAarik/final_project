@@ -1,33 +1,44 @@
-# Base image
-FROM php:8.2-fpm-bullseye
-
-# Set working directory
-WORKDIR /var/www/html
+FROM php:8.2-fpm
 
 RUN apt-get update && apt-get install -y \
-    libpng-dev libjpeg-dev libfreetype6-dev libonig-dev libzip-dev libxml2-dev \
-    zip unzip git curl nginx supervisor \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libwebp-dev \
+    libavif-dev \
+    libzip-dev \
+    zip \
+    unzip \
+    git \
+    curl \
+    libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN docker-php-ext-configure gd --with-jpeg --with-freetype \
-    && docker-php-ext-install gd pdo pdo_pgsql mbstring xml zip
+# ---- Configure & install PHP extensions ----
+RUN docker-php-ext-configure gd \
+        --with-freetype=/usr/include/freetype2 \
+        --with-jpeg=/usr/include \
+        --with-webp \
+        --with-avif \
+    && docker-php-ext-install -j$(nproc) \
+        gd \
+        pdo \
+        pdo_pgsql \
+        mbstring \
+        xml \
+        zip
 
-# Install Composer
+# ---- Install Composer ----
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy application
-COPY . .
+# ---- Set working directory ----
+WORKDIR /var/www/html
 
-# Fix permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 storage bootstrap/cache
+# ---- Copy app (optional) ----
+# COPY . .
 
-# Copy Nginx & supervisor configs
-COPY nginx.conf /etc/nginx/sites-available/default
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+# ---- Expose port ----
+EXPOSE 9000
 
-# Expose port
-EXPOSE 80
-
-# Start supervisord
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+# ---- Default command ----
+CMD ["php-fpm"]
