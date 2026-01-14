@@ -1,9 +1,5 @@
 FROM php:8.2-apache
 
-# Disable unwanted MPMs, enable prefork + rewrite in one step
-RUN a2dismod mpm_event mpm_worker \
-    && a2enmod mpm_prefork rewrite
-
 WORKDIR /var/www/html
 
 # System dependencies
@@ -33,6 +29,9 @@ RUN chown -R www-data:www-data /var/www/html \
 
 # Point Apache to /public
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
+
+# Enable Apache rewrite
+RUN a2enmod rewrite
 
 # Install PHP deps
 RUN composer install --optimize-autoloader --no-interaction --no-scripts
