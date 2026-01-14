@@ -1,4 +1,7 @@
-FROM php:8.2-fpm-bullseye
+FROM php:8.2-apache
+
+# Enable Apache rewrite (needed for Laravel)
+RUN a2enmod rewrite
 
 WORKDIR /var/www/html
 
@@ -13,7 +16,7 @@ RUN apt-get update && apt-get install -y \
     zip unzip git curl pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
-# PHP extensions (ONLY what is needed)
+# PHP extensions (ONLY non-core ones)
 RUN docker-php-ext-configure gd --with-jpeg --with-freetype \
     && docker-php-ext-install \
         gd \
@@ -26,19 +29,19 @@ RUN docker-php-ext-configure gd --with-jpeg --with-freetype \
 # Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# App files
+# Copy app
 COPY . .
 
-# Node (only if your app truly needs it)
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
-    && apt-get install -y nodejs
+# Fix permissions for Laravel
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 775 storage bootstrap/cache
 
-# Bun (optional – only if used)
-RUN curl -fsSL https://bun.sh/install | bash
+# Apache must point to /public
+RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
 
-# PHP deps
+# Install PHP deps
 RUN composer install --optimize-autoloader --no-interaction --no-scripts
 
-EXPOSE 9000
+EXPOSE 80
 
-CMD ["php-fpm"]
+CMD ["apache2-foreground"]
