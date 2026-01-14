@@ -1,11 +1,8 @@
 FROM php:8.2-apache
 
-# Force correct MPM
+# Disable unwanted MPMs, enable prefork + rewrite in one step
 RUN a2dismod mpm_event mpm_worker \
-    && a2enmod mpm_prefork
-
-# Enable rewrite
-RUN a2enmod rewrite
+    && a2enmod mpm_prefork rewrite
 
 WORKDIR /var/www/html
 
@@ -20,15 +17,9 @@ RUN apt-get update && apt-get install -y \
     zip unzip git curl pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
-# PHP extensions (ONLY non-core ones)
+# PHP extensions
 RUN docker-php-ext-configure gd --with-jpeg --with-freetype \
-    && docker-php-ext-install \
-        gd \
-        pdo \
-        pdo_mysql \
-        mbstring \
-        xml \
-        zip
+    && docker-php-ext-install gd pdo pdo_mysql mbstring xml zip
 
 # Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -36,11 +27,11 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copy app
 COPY . .
 
-# Fix permissions for Laravel
+# Fix permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 storage bootstrap/cache
 
-# Apache must point to /public
+# Point Apache to /public
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
 
 # Install PHP deps
