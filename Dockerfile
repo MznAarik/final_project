@@ -1,4 +1,5 @@
-FROM php:8.2-apache
+# Stage 1: Build PHP environment
+FROM php:8.2-fpm-bullseye AS php
 
 WORKDIR /var/www/html
 
@@ -10,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libzip-dev \
     libxml2-dev \
-    zip unzip git curl pkg-config \
+    zip unzip git curl pkg-config nginx supervisor \
     && rm -rf /var/lib/apt/lists/*
 
 # PHP extensions
@@ -27,15 +28,27 @@ COPY . .
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 storage bootstrap/cache
 
-# Point Apache to /public
-RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
-
-# Enable Apache rewrite
-RUN a2enmod rewrite
-
 # Install PHP deps
 RUN composer install --optimize-autoloader --no-interaction --no-scripts
 
+# Stage 2: Nginx + Supervisor
+FROM php:8.2-fpm-bullseye
+
+WORKDIR /var/www/html
+
+# Copy app from previous stage
+COPY --from=php /var/www/html /var/www/html
+
+# Install Nginx and Supervisor
+RUN apt-get update && apt-get install -y nginx supervisor \
+    && rm -rf /var/lib/apt/lists/*
+
+# Configure Nginx
+COPY nginx.conf /etc/nginx/sites-available/default
+
+# Supervisor config to run PHP-FPM + Nginx
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
 EXPOSE 80
 
-CMD ["apache2-foreground"]
+CMD ["/usr/bin/supervisord", "-n"]
