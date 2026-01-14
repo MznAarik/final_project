@@ -1,6 +1,10 @@
 FROM php:8.2-apache
 
-# Enable Apache rewrite (needed for Laravel)
+# Force correct MPM
+RUN a2dismod mpm_event mpm_worker \
+    && a2enmod mpm_prefork
+
+# Enable rewrite
 RUN a2enmod rewrite
 
 WORKDIR /var/www/html
