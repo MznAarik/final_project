@@ -1,6 +1,5 @@
 FROM php:8.2-fpm
 
-# 1. Install ALL dependencies in one layer (including pkg-config for safety)
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
@@ -14,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     libpq-dev \
     libonig-dev \
+    libxml2-dev \
     pkg-config \
     nginx \
     supervisor \
@@ -21,10 +21,10 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /etc/nginx/sites-enabled/default \
     && mkdir -p /var/log/nginx /var/log/php-fpm /var/log/supervisor
 
-# 2. Verify oniguruma is detectable BEFORE installing extensions
-RUN pkg-config --modversion oniguruma || (echo "oniguruma not found by pkg-config" && exit 1)
+RUN pkg-config --modversion oniguruma \
+    && pkg-config --modversion libxml-2.0 \
+    || (echo "pkg-config failed to find oniguruma or libxml-2.0" && exit 1)
 
-# 3. Now configure & install extensions in a separate layer
 RUN docker-php-ext-configure gd \
         --with-freetype=/usr/include/freetype2 \
         --with-jpeg=/usr/include \
@@ -38,7 +38,6 @@ RUN docker-php-ext-configure gd \
         xml \
         zip
 
-# Rest of your Dockerfile (Composer, COPY configs, WORKDIR /app, sed tweaks, EXPOSE 80, CMD supervisord)
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
