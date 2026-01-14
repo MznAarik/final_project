@@ -4,31 +4,30 @@ FROM php:8.2-fpm-bullseye
 # Set working directory
 WORKDIR /var/www/html
 
-# Install system dependencies + Nginx
 RUN apt-get update && apt-get install -y \
     libpng-dev libjpeg-dev libfreetype6-dev libonig-dev libzip-dev libxml2-dev \
-    zip unzip git curl nginx \
+    zip unzip git curl nginx supervisor \
     && rm -rf /var/lib/apt/lists/*
 
-# PHP extensions
 RUN docker-php-ext-configure gd --with-jpeg --with-freetype \
-    && docker-php-ext-install gd pdo pdo_mysql mbstring xml zip
+    && docker-php-ext-install gd pdo pdo_pgsql mbstring xml zip
 
-# Composer
+# Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy application files
+# Copy application
 COPY . .
 
 # Fix permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 storage bootstrap/cache
 
-# Enable Nginx to serve Laravel
+# Copy Nginx & supervisor configs
 COPY nginx.conf /etc/nginx/sites-available/default
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Expose port
 EXPOSE 80
 
-# Start both services
-CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]
+# Start supervisord
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
