@@ -48,6 +48,7 @@ WORKDIR /app
 RUN sed -i 's/listen = 127.0.0.1:9000/listen = 9000/' /usr/local/etc/php-fpm.d/www.conf \
     && echo "daemon off;" >> /etc/nginx/nginx.conf
 
+ENV PORT=80
 EXPOSE 80
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
