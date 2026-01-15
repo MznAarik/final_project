@@ -18,11 +18,12 @@ RUN apt-get update && apt-get install -y \
         gd \
     && rm -rf /var/lib/apt/lists/*
 
-COPY . .
-
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-RUN composer install --no-dev --optimize-autoloader
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader || true
+
+COPY . .
 
 RUN chmod -R 775 storage bootstrap/cache
 
