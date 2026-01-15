@@ -12,6 +12,7 @@
         "php": "^8.2",
         "anhskohbo/no-captcha": "^3.7",
         "laravel/framework": "^12.0",
+        "laravel/passport": "^13.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
         "paypal/paypal-checkout-sdk": "^1.0",

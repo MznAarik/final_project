@@ -42,7 +42,7 @@ class AdminSeeder extends Seeder
         DB::table('users')->insert([
             'id' => 1,
             'name' => 'super admin',
-            'email' => 'mhrznaaa.980@gmail.com',
+            'email' => 'adminuser@gmail.com',
             'email_verified_at' => now(),
             'password' => Hash::make('123123'), // Always hash passwords
             'gender' => 'male',
